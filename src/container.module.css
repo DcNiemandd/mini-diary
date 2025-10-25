@@ -1,0 +1,10 @@
+.container {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    width: 100lvw;
+    height: 100lvh;
+    background-color: var(--bg);
+    color: var(--text);
+    font: var(--h3);
+}

@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { patchCssModules } from 'vite-css-modules'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/mini-diary/',
   plugins: [
+    patchCssModules({
+      generateSourceTypes: true
+    }),
     react({
       babel: {
         plugins: [['babel-plugin-react-compiler']],
