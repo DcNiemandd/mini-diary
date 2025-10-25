@@ -7,7 +7,7 @@ export interface ColorSettings {
     colorScheme: ColorScheme;
     setColorScheme: Dispatch<ColorScheme>;
     customColor?: CSSProperties['color'];
-    setCustomColor?: Dispatch<CSSProperties['color']>;
+    setCustomColor: Dispatch<CSSProperties['color'] | undefined>;
 }
 
 

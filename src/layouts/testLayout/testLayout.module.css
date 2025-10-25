@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    flex-flow: column;
+    align-content: stretch;
+
+    width: 100lvw;
+    height: 100lvh;
+
+    background-color: var(--bg);
+    color: var(--text);
+    font: var(--h3);
+}
+
+.top-bar {
+    flex: 0 0 auto;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.5rem 2rem;
+}
+
+.content {
+    flex: 1 1 auto;
+
+    display: grid;
+    place-content: center;
+}
+
+.color-samples {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    > * {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 1rem;
+        align-items: center;
+    }
+}

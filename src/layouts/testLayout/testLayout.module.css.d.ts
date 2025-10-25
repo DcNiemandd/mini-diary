@@ -7,12 +7,19 @@
  */
 
 declare const container: string;
+declare const topBar: string;
+declare const content: string;
+declare const colorSamples: string;
 
 export {
-	container
+	container,
+	content
 };
 
 declare const __default_export__: {
 	container: typeof container;
+	"top-bar": typeof topBar;
+	content: typeof content;
+	"color-samples": typeof colorSamples;
 };
 export default __default_export__;

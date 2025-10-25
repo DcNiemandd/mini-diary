@@ -12,7 +12,7 @@ export interface AppContext {
     settings: ColorSettings;
 }
 
-const AppContext = createContext<AppContext>({
+export const AppContext = createContext<AppContext>({
     auth: {
         isLoggedIn: false,
         tryToLogin: (): Promise<boolean> => {

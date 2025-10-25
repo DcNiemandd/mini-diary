@@ -1,12 +1,10 @@
-import style from './container.module.css';
-import { AppContextProvider } from './contexts/context';
+import { AppContextProvider } from './contexts/appContext';
+import { TestLayout } from './layouts/testLayout/testLayout';
 
 function App() {
     return (
         <AppContextProvider>
-            <div className={style.container}>
-                <div className="item">Mini diary</div>
-            </div>
+            <TestLayout />
         </AppContextProvider>
     );
 }
