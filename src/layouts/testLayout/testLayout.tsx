@@ -37,9 +37,11 @@ export const TestLayout: FC = () => {
                     Settings
                 </button>
                 <div
+                    ref={(el) => {
+                        el?.setAttribute('anchor', 'settings-popover-button');
+                    }}
                     popover="auto"
                     id="settings-popover"
-                    anchor="settings-popover-button"
                     style={{ top: 'anchor(bottom)', left: 'anchor(left)' }}
                 >
                     <ThemeSwitcher

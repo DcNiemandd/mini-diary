@@ -9,8 +9,7 @@ export interface AuthState {
 export function useAuth() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const tryToLogin = async (password: string): Promise<boolean> => {
+    const tryToLogin = async (): Promise<boolean> => {
         setIsLoggedIn(true);
         return true;
     };
