@@ -18,18 +18,13 @@
     $chroma-text: min(c, 0.1);
     $chroma-action: max(c, 0.1);
     $chroma-alert: max(c, 0.05);
+
     /* bg */
     --bg-dark: light-dark(oklch(from var(--base) 0.92 #{$chroma-bg} h), oklch(from var(--base) 0.1 #{$chroma-bg} h));
     --bg: light-dark(oklch(from var(--base) 0.96 #{$chroma-bg} h), oklch(from var(--base) 0.15 #{$chroma-bg} h));
     --bg-light: light-dark(oklch(from var(--base) 1 #{$chroma-bg} h), oklch(from var(--base) 0.2 #{$chroma-bg} h));
-    --gradient: light-dark(
-        linear-gradient(0deg, var(--bg) 97%, var(--bg-light)),
-        linear-gradient(0deg, var(--bg) 97%, var(--bg-light))
-    );
-    --gradient-hover: light-dark(
-        linear-gradient(0deg, var(--bg), var(--bg-light)),
-        linear-gradient(0deg, var(--bg), var(--bg-light))
-    );
+    --gradient: linear-gradient(0deg, var(--bg) 97%, var(--bg-light));
+    --gradient-hover: linear-gradient(0deg, var(--bg), var(--bg-light));
     /* text */
     --text: light-dark(oklch(from var(--base) 0.15 c h), oklch(from var(--base) 0.96 #{$chroma-text} h));
     --text-muted: light-dark(oklch(from var(--base) 0.4 c h), oklch(from var(--base) 0.76 #{$chroma-text} h));
@@ -37,7 +32,7 @@
     --highlight: light-dark(oklch(from var(--base) 1 c h), oklch(from var(--base) 0.5 c h));
     --border: light-dark(oklch(from var(--base) 0.6 c h), oklch(from var(--base) 0.4 c h));
     --border-muted: light-dark(oklch(from var(--base) 0.7 c h), oklch(from var(--base) 0.3 c h));
-    --border-card: light-dark(solid 1px var(--bg), solid 1px var(--border-muted));
+    --border-card: solid 1px light-dark(var(--bg), var(--border-muted));
     /* action */
     --primary: light-dark(
         oklch(from var(--base) 0.4 #{$chroma-action} h),
@@ -74,4 +69,13 @@
     --h4: 700 1rem/1.6em var(--ff);
     --p: 400 1rem/1.6em var(--ff);
     --small: 400 0.75rem/1.8em var(--ff);
+
+    /* constants */
+    --border-radius-small: 4px;
+    --border-radius: 8px;
+
+    font-family: var(--ff);
+    font-style: normal;
+    font-optical-sizing: auto;
+    font-variation-settings: 'MONO' 0.65;
 }
