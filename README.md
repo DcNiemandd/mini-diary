@@ -102,3 +102,5 @@ Try to use modern browser features such as:
 -   [ASCII graph](https://asciiflow.com/#/)
 -   [PWA Vite install](https://www.saurabhmisra.dev/setup-react-pwa-using-vite/)
 -   [modern features video](https://www.youtube.com/watch?v=55uUK-iJeNM)
+-   [pick ui colors video](https://www.youtube.com/watch?v=vvPklRN0Tco)
+-   [pick ui colors logic](https://codepen.io/whosajid/pen/QwbZOzG)
