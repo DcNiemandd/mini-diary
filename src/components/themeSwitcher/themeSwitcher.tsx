@@ -1,35 +1,20 @@
 import type { FC } from 'react';
-import type { ColorSettings } from '../../hooks/useColorTheme';
+import type { ThemeSettings } from '../../hooks/useColorTheme';
 
-export const ThemeSwitcher: FC<Pick<ColorSettings, 'colorScheme' | 'setColorScheme'>> = ({
+export const ThemeSwitcher: FC<Pick<ThemeSettings, 'colorScheme' | 'setColorScheme'>> = ({
     colorScheme,
     setColorScheme,
 }) => {
     return (
         <select
             onChange={(e) => {
-                setColorScheme(e.target.value as ColorSettings['colorScheme']);
+                setColorScheme(e.target.value as ThemeSettings['colorScheme']);
             }}
             value={colorScheme}
         >
-            <option
-                value="light"
-                selected={colorScheme === 'light'}
-            >
-                Light
-            </option>
-            <option
-                value="dark"
-                selected={colorScheme === 'dark'}
-            >
-                Dark
-            </option>
-            <option
-                value="system"
-                selected={colorScheme === 'system'}
-            >
-                System
-            </option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
         </select>
     );
 };

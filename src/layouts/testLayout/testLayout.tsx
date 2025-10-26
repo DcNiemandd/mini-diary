@@ -1,6 +1,7 @@
 import { useContext, type FC } from 'react';
+import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
-import { AppContext } from '../../contexts/appContext';
+import { AppContext } from '../../contexts/appContext/appContext';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
@@ -29,28 +30,43 @@ export const TestLayout: FC = () => {
     return (
         <div className={style.container}>
             <div className={style['top-bar']}>
-                <ThemeSwitcher
-                    colorScheme={settings.colorScheme}
-                    setColorScheme={(scheme) => settings.setColorScheme(scheme)}
-                />
-
-                <label>
-                    Color:
-                    <input
-                        type="color"
-                        value={settings.customColor}
-                        onChange={(e) => settings.setCustomColor(e.currentTarget.value)}
+                <button
+                    id="settings-popover-button"
+                    popoverTarget="settings-popover"
+                >
+                    Settings
+                </button>
+                <div
+                    popover="auto"
+                    id="settings-popover"
+                    anchor="settings-popover-button"
+                    style={{ top: 'anchor(bottom)', left: 'anchor(left)' }}
+                >
+                    <ThemeSwitcher
+                        colorScheme={settings.colorScheme}
+                        setColorScheme={(scheme) => settings.setColorScheme(scheme)}
                     />
-                </label>
+
+                    <ColorPicker
+                        customColor={settings.customColor}
+                        setCustomColor={(color) => settings.setCustomColor(color)}
+                    />
+                </div>
             </div>
             <div className={style['content']}>
                 Mini diary
                 <div className={style['color-samples']}>
                     {colors.map((color) => (
-                        <div>
+                        <div key={color}>
                             <div
-                                key={color}
-                                style={{ backgroundColor: `var(${color})`, width: '50px', height: '50px' }}
+                                style={{
+                                    backgroundColor: `var(${color})`,
+                                    width: '50px',
+                                    height: '50px',
+                                    ...(color.includes('border')
+                                        ? { outline: color, backgroundColor: 'var(--bg-dark)' }
+                                        : {}),
+                                }}
                             />
                             {color}
                         </div>

@@ -1,19 +1,20 @@
 import { useEffect, type CSSProperties, type Dispatch } from "react";
 import { useLocalStorage } from "./useStorage";
 
-export type ColorScheme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system';
+export type Color = CSSProperties['color'] | undefined;
 
-export interface ColorSettings {
-    colorScheme: ColorScheme;
-    setColorScheme: Dispatch<ColorScheme>;
-    customColor?: CSSProperties['color'];
-    setCustomColor: Dispatch<CSSProperties['color'] | undefined>;
+export interface ThemeSettings {
+    colorScheme: Theme;
+    setColorScheme: Dispatch<Theme>;
+    customColor: Color;
+    setCustomColor: Dispatch<Color>;
 }
 
 
 
-export const useColorTheme = (): ColorSettings => {
-    const [theme, setTheme] = useLocalStorage<ColorScheme>('state-theme', 'system');
+export const useColorTheme = (): ThemeSettings => {
+    const [theme, setTheme] = useLocalStorage<Theme>('state-theme', 'system');
     const [customColor, setCustomColor] = useLocalStorage<CSSProperties['color'] | undefined>('state-custom-color', 'oklch(0.76 0.2 20)');
 
     const root = window.document.documentElement;

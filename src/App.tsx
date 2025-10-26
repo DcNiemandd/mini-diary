@@ -1,4 +1,4 @@
-import { AppContextProvider } from './contexts/appContext';
+import { AppContextProvider } from './contexts/appContext/appContextProvider';
 import { TestLayout } from './layouts/testLayout/testLayout';
 
 function App() {

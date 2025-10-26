@@ -1,0 +1,51 @@
+/* hue and chroma sliders */
+.sliders {
+    :global {
+        margin: 2rem 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+
+        .slider-label {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            font: var(--p);
+            border-radius: 0.5rem;
+        }
+        .slider-label span {
+            width: 4rem;
+        }
+        #chroma-slider,
+        #hue-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, oklch(from var(--base) 0.4 0 h), oklch(from var(--base) 0.6 0.2 h));
+            border-radius: 0.55rem;
+            height: 1rem;
+            margin: 0 0.5rem;
+        }
+        #hue-slider {
+            background: linear-gradient(
+                90deg,
+                oklch(from var(--base) 0.6 c 20),
+                oklch(from var(--base) 0.6 c 60),
+                oklch(from var(--base) 0.6 c 100),
+                oklch(from var(--base) 0.6 c 140),
+                oklch(from var(--base) 0.6 c 180),
+                oklch(from var(--base) 0.6 c 220),
+                oklch(from var(--base) 0.6 c 260),
+                oklch(from var(--base) 0.6 c 300),
+                oklch(from var(--base) 0.6 c 340)
+            );
+        }
+        input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--text-muted);
+            height: 1.5rem;
+            width: 0.5rem;
+            border-radius: 0.25rem;
+        }
+    }
+}
