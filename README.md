@@ -104,3 +104,13 @@ Try to use modern browser features such as:
 -   [modern features video](https://www.youtube.com/watch?v=55uUK-iJeNM)
 -   [pick ui colors video](https://www.youtube.com/watch?v=vvPklRN0Tco)
 -   [pick ui colors logic](https://codepen.io/whosajid/pen/QwbZOzG)
+
+## TODO
+
+-   note component
+-   notes layout
+-   settings/bottom/logout styling
+-   authentication
+-   saving notes to indexedDB
+-   import/export - plain json, hashed
+-   logout timeout
