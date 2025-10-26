@@ -24,13 +24,22 @@
 .content {
     flex: 1 1 auto;
 
-    display: grid;
-    place-content: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+        margin-bottom: 3rem;
+    }
+
+    > * {
+        width: min(700px, 90%);
+    }
 }
 
 .color-samples {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(max(200px, 100%/3), 1fr));
 
     > * {
         display: flex;

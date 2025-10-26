@@ -56,23 +56,25 @@ export const TestLayout: FC = () => {
                 </div>
             </div>
             <div className={style['content']}>
-                Mini diary
-                <div className={style['color-samples']}>
-                    {colors.map((color) => (
-                        <div key={color}>
-                            <div
-                                style={{
-                                    backgroundColor: `var(${color})`,
-                                    width: '50px',
-                                    height: '50px',
-                                    ...(color.includes('border')
-                                        ? { outline: color, backgroundColor: 'var(--bg-dark)' }
-                                        : {}),
-                                }}
-                            />
-                            {color}
-                        </div>
-                    ))}
+                <div>
+                    <h1>Minimalistic diary</h1>
+                    <div className={style['color-samples']}>
+                        {colors.map((color) => (
+                            <div key={color}>
+                                <div
+                                    style={{
+                                        backgroundColor: `var(${color})`,
+                                        width: '50px',
+                                        height: '50px',
+                                        ...(color.includes('border')
+                                            ? { outline: color, backgroundColor: 'var(--bg-dark)' }
+                                            : {}),
+                                    }}
+                                />
+                                {color}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
