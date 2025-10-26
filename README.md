@@ -1,5 +1,8 @@
 # Minimalistic diary
 
+> [!TIP]
+> Try on [Github Sites](https://dcniemandd.github.io/mini-diary/)!!!
+
 The goal of this project is to make basic React app, that is not to-do list. I know, this is has-done list, but shh. I want to expand on the idea with some extra features:
 
 -   [**persistence**](#persistence) - user data will be saved in browser storage
@@ -114,3 +117,4 @@ Try to use modern browser features such as:
 -   saving notes to indexedDB
 -   import/export - plain json, hashed
 -   logout timeout
+
