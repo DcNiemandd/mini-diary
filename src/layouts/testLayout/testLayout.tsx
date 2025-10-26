@@ -125,18 +125,16 @@ Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot 
             <div className={style['content']}>
                 <div ref={scrollRef}>
                     <div>
-                        <h1>Minimalistic diary</h1>
                         <div className={style['color-samples']}>
                             {colors.map((color) => (
                                 <div key={color}>
                                     <div
                                         style={{
-                                            backgroundColor: `var(${color})`,
                                             width: '50px',
                                             height: '50px',
-                                            ...(color.includes('border')
-                                                ? { outline: color, backgroundColor: 'var(--bg-dark)' }
-                                                : {}),
+                                            ...(color.includes('border-card')
+                                                ? { border: color, backgroundColor: 'var(--bg-dark)' }
+                                                : { background: `var(${color})` }),
                                         }}
                                     />
                                     {color}
