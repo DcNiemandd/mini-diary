@@ -1,0 +1,19 @@
+@use '/src/styles/textarea_grow' as tg;
+
+.daily-note {
+    display: flex;
+    flex-flow: column;
+    gap: 1rem;
+    align-items: stretch;
+
+    :global {
+        @include tg.textarea-grow('.note-grow');
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 3rem;
+        }
+    }
+}

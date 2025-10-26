@@ -1,11 +1,14 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vite'
 import { patchCssModules } from 'vite-css-modules'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/mini-diary/',
+  build: {
+    cssCodeSplit: false
+  },
   plugins: [
     patchCssModules({
       generateSourceTypes: true

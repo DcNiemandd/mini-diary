@@ -38,6 +38,10 @@ export const AppContext = createContext<AppContext>({
         customColor: undefined,
         setCustomColor: () => {
             throw new Error("Function not implemented.");
+        },
+        useCustomColor: false,
+        setUseCustomColor: () => {
+            throw new Error("Function not implemented.");
         }
     },
 });
