@@ -9,5 +9,9 @@ const TestLayout = lazy(() =>
 export const Router = () => {
     const { auth } = useContext(AppContext);
 
-    return <Suspense fallback={<div>Loading...</div>}>{auth.isLoggedIn ? <TestLayout /> : <LoginLayout />}</Suspense>;
+    return (
+        <Suspense fallback={<div className="loader">Loading...</div>}>
+            {auth.isLoggedIn ? <TestLayout /> : <LoginLayout />}
+        </Suspense>
+    );
 };
