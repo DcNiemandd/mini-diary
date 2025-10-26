@@ -1,15 +1,12 @@
 import { createContext } from "react";
 import type { AuthState } from "../../hooks/useAuth";
 import type { ThemeSettings } from "../../hooks/useColorTheme";
+import type { EntriesState } from "../../hooks/useEntries";
 
 
 export interface AppContext {
     auth: AuthState;
-    entries: {
-        entries: Record<string, string> | null;
-        updateTodaysEntry: (content: string) => void;
-        todaysEntry: string | null;
-    };
+    entries: EntriesState;
     settings: ThemeSettings;
 }
 
@@ -22,6 +19,13 @@ export const AppContext = createContext<AppContext>({
         logout: (): void => {
             throw new Error('Function not implemented.');
         },
+        isUser: false,
+        encryptData: () => {
+            throw new Error("Function not implemented.");
+        },
+        decryptData: () => {
+            throw new Error("Function not implemented.");
+        }
     },
     entries: {
         entries: null,

@@ -1,10 +1,10 @@
 import { AppContextProvider } from './contexts/appContext/appContextProvider';
-import { TestLayout } from './layouts/testLayout/testLayout';
+import { Router } from './Router';
 
 function App() {
     return (
         <AppContextProvider>
-            <TestLayout />
+            <Router />
         </AppContextProvider>
     );
 }

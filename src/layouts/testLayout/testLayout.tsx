@@ -6,7 +6,7 @@ import { AppContext } from '../../contexts/appContext/appContext';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
-    const { settings } = useContext(AppContext);
+    const { settings, auth } = useContext(AppContext);
 
     const [note, setNote] = useState(`
 
@@ -50,8 +50,6 @@ Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot 
     const [noteCount, setNoteCount] = useState(5);
     const intervalRef = useRef<number | null>(null);
     useEffect(() => {
-        console.log('MiMu noteCount');
-
         intervalRef.current = setInterval(() => {
             setNoteCount((prev) => prev + 1);
         }, 1500);
@@ -85,6 +83,15 @@ Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot 
                     }}
                 >
                     Bottom
+                </button>
+                <div style={{ flexGrow: 1 }} />
+                <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        auth.logout();
+                    }}
+                >
+                    Log out
                 </button>
                 <div
                     ref={(el) => {

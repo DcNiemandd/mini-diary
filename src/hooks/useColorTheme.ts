@@ -16,9 +16,9 @@ export interface ThemeSettings {
 
 
 export const useColorTheme = (): ThemeSettings => {
-    const [theme, setTheme] = useLocalStorage<Theme>('state-theme', 'system');
-    const [customColor, setCustomColor] = useLocalStorage<CSSProperties['color'] | undefined>('state-custom-color', 'oklch(0.76 0.2 20)');
-    const [useCustomColor, setUseCustomColor] = useLocalStorage<boolean>('state-use-custom-color', false);
+    const [theme, setTheme] = useLocalStorage<Theme>('state-theme-theme', 'system');
+    const [customColor, setCustomColor] = useLocalStorage<CSSProperties['color'] | undefined>('state-theme-custom-color', 'oklch(0.76 0.2 20)');
+    const [useCustomColor, setUseCustomColor] = useLocalStorage<boolean>('state-theme-use-custom-color', false);
 
     const root = window.document.documentElement;
 
