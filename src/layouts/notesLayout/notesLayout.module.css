@@ -23,7 +23,7 @@
     max-height: calc(100% - 50px);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
 
     h1 {
         font: var(--h1);
