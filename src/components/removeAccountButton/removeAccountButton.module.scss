@@ -1,0 +1,20 @@
+.remove-account-popover {
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    button.yes {
+        background-color: var(--danger);
+
+        &:hover {
+            background-image: linear-gradient(rgba(0, 0, 0, 10%));
+        }
+    }
+}

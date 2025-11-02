@@ -76,7 +76,7 @@ export const NotesLayout: FC = () => {
             <div className={style['content']}>
                 <div ref={scrollRef}>
                     <div>
-                        {entries.entries?.map((entry, i) => (
+                        {entries.entries?.map((entry) => (
                             <DailyNote
                                 key={entry.date.toISOString()}
                                 note={entry.content}

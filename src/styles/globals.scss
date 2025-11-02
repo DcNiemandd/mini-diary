@@ -39,6 +39,7 @@ input {
 button {
     cursor: pointer;
     border: 0;
+    white-space: nowrap;
 }
 
 #root {
@@ -51,4 +52,8 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+dialog {
+    margin: auto;
 }

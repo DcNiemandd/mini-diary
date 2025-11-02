@@ -10,42 +10,4 @@ export interface AppContext {
     settings: ThemeSettings;
 }
 
-export const AppContext = createContext<AppContext>({
-    auth: {
-        isLoggedIn: false,
-        tryToLogin: (): Promise<boolean> => {
-            throw new Error('Function not implemented.');
-        },
-        logout: (): void => {
-            throw new Error('Function not implemented.');
-        },
-        isUser: false,
-        encryptData: () => {
-            throw new Error("Function not implemented.");
-        },
-        decryptData: () => {
-            throw new Error("Function not implemented.");
-        }
-    },
-    entries: {
-        entries: null,
-        updateTodaysEntry: (): void => {
-            throw new Error('Function not implemented.');
-        },
-        todaysEntry: null,
-    },
-    settings: {
-        colorScheme: "light",
-        setColorScheme: () => {
-            throw new Error("Function not implemented.");
-        },
-        customColor: undefined,
-        setCustomColor: () => {
-            throw new Error("Function not implemented.");
-        },
-        useCustomColor: false,
-        setUseCustomColor: () => {
-            throw new Error("Function not implemented.");
-        }
-    },
-});
+export const AppContext = createContext<AppContext>({} as AppContext);

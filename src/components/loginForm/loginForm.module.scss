@@ -1,9 +1,13 @@
 .login-form {
     display: flex;
-    flex-flow: row;
+    flex-flow: row wrap;
     gap: 1rem;
 
     @container (width < 400px) {
         flex-flow: column;
+    }
+
+    & > * {
+        flex: 1 0 auto;
     }
 }

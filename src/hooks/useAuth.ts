@@ -9,6 +9,7 @@ export interface AuthState {
     logout: () => void;
     encryptData: (data: string) => Promise<string>;
     decryptData: (gibberish: string) => Promise<string>;
+    removeAccount: () => void;
 }
 
 interface UserAuth {
@@ -44,14 +45,33 @@ export function useAuth() {
         }
 
         const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
-        const databaseKey = await MyCrypto.decryptAESGCM(userAuth.databaseKey, encodedPassword);
+        let databaseKey: string | null = null;
+        try {
+            databaseKey = await MyCrypto.decryptAESGCM(userAuth.databaseKey, encodedPassword);
+        } catch {
+            console.error('Cannot decrypt database key');
+            return false;
+        }
+
         if (await MyCrypto.verifyKey(databaseKey, userAuth.hmac, encodedPassword) === false) {
+            console.error('HMAC verification failed');
             return false;
         }
 
         setDatabaseKey(databaseKey);
         return true;
     };
+
+    const removeAccount = () => {
+        setUserAuth(null);
+        setDatabaseKey(null);
+        // TODO: clear entries data from useEntries
+        const existing = localStorage.getItem('state-entries-data');
+        if (existing) {
+            localStorage.setItem(`state-entries-data-deleted-${(new Date()).toISOString()}`, existing);
+            localStorage.removeItem('state-entries-data');
+        }
+    }
 
     const logout = () => {
         setDatabaseKey(null);
@@ -73,6 +93,7 @@ export function useAuth() {
         logout,
         isUser,
         encryptData,
-        decryptData
+        decryptData,
+        removeAccount
     };
 }
