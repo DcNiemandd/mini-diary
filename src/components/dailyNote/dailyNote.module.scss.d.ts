@@ -7,8 +7,14 @@
  */
 
 declare const dailyNote: string;
+declare const readonly: string;
+
+export {
+	readonly
+};
 
 declare const __default_export__: {
 	"daily-note": typeof dailyNote;
+	readonly: typeof readonly;
 };
 export default __default_export__;

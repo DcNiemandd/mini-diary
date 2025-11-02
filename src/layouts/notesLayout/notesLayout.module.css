@@ -37,8 +37,12 @@
         width: 100%;
     }
     > * > * {
+        display: flex;
+        gap: 3rem;
+        flex-direction: column;
         width: min(700px, 90%);
         margin-inline: auto;
+        margin-block: 2rem;
     }
 }
 

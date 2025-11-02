@@ -81,7 +81,6 @@ export const NotesLayout: FC = () => {
                                 key={entry.date.toISOString()}
                                 note={entry.content}
                                 date={entry.date}
-                                daysInRow={i}
                             />
                         ))}
                         <DailyNote

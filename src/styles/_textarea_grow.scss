@@ -25,13 +25,12 @@
     #{$wrapper-class} > textarea,
     #{$wrapper-class}::after {
         /* Identical styling required!! */
-        border: 1px solid black;
-        padding: 0.5rem;
-        font: inherit;
         word-break: break-word;
         hyphens: auto;
 
         /* Place on top of each other */
         grid-area: 1 / 1 / 2 / 2;
+
+        @content;
     }
 }
