@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState, type FC } from 'react';
+import { useContext, useRef, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
@@ -6,16 +6,7 @@ import { AppContext } from '../../contexts/appContext/appContext';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
-    const { settings, auth } = useContext(AppContext);
-
-    const [note, setNote] = useState(`
-
-Prow scuttle parrel provost Sail ho shrouds spirits boom mizzenmast yardarm. Pinnace holystone mizzenmast quarter crow's nest nipperkin grog yardarm hempen halter furl. Swab barque interloper chantey doubloon starboard grog black jack gangway rutters.
-
-Deadlights jack lad schooner scallywag dance the hempen jig carouser broadside cable strike colors. Bring a spring upon her cable holystone blow the man down spanker Shiver me timbers to go on account lookout wherry doubloon chase. Belay yo-ho-ho keelhaul squiffy black spot yardarm spyglass sheet transom heave to.
-
-Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot Shiver me timbers gangplank crack Jennys tea cup ballast Blimey lee snow crow's nest rutters. Fluke jib scourge of the seven seas boatswain schooner gaff booty Jack Tar transom spirits.
-`);
+    const { settings, auth, entries } = useContext(AppContext);
 
     const colors: string[] = [
         '--bg-dark',
@@ -46,26 +37,6 @@ Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot 
             });
         }
     };
-
-    const [noteCount, setNoteCount] = useState(5);
-    const intervalRef = useRef<number | null>(null);
-    useEffect(() => {
-        intervalRef.current = setInterval(() => {
-            setNoteCount((prev) => prev + 1);
-        }, 1500);
-
-        return () => {
-            if (intervalRef.current) clearInterval(intervalRef.current);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (noteCount >= 20 && intervalRef.current) {
-            clearInterval(intervalRef.current);
-        }
-    }, [noteCount]);
-
-    const arrayFrom = Array.from({ length: noteCount }).map((_, i) => i + 1);
 
     return (
         <div className={style.container}>
@@ -142,15 +113,16 @@ Trysail Sail ho Corsair red ensign hulk smartly boom jib rum gangway. Case shot 
                             ))}
                         </div>
                         <div>
-                            {arrayFrom.map((i) => (
-                                <DailyNote
-                                    key={i + 1}
-                                    date={new Date()}
-                                    note={note}
-                                    onChange={(newNote) => setNote(newNote)}
-                                    daysInRow={i + 1}
-                                />
-                            ))}
+                            <DailyNote
+                                date={entries.todaysEntry ? entries.todaysEntry.date : new Date()}
+                                note={entries.todaysEntry?.content || ''}
+                                onChange={(newNote) =>
+                                    entries.updateTodaysEntry({
+                                        content: newNote,
+                                        date: entries.todaysEntry ? entries.todaysEntry.date : new Date(),
+                                    })
+                                }
+                            />
                         </div>
                     </div>
                 </div>

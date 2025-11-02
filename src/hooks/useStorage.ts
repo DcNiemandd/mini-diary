@@ -20,8 +20,8 @@ export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): 
     const setValue: Dispatch<SetStateAction<T>> = value => {
         try {
             const valueToStore = value instanceof Function ? value(storedValue) : value;
-            setStoredValue(valueToStore);
             storage.setItem(key, JSON.stringify(valueToStore));
+            setStoredValue(valueToStore);
         } catch {
             // Ignore write errors
         }
