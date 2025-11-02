@@ -71,6 +71,41 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
         saveTodaysEntry();
     }, [decryptData, encryptData, todaysDebounced]);
 
+    // useEffect(() => {
+    //     const populateEntries = async () => {
+    //         if (!encryptData) return;
+
+
+
+    //         const entriesArr = await Promise.all(
+    //             Array.from({ length: 20 }, (_, i) => i).map(async (i) => {
+    //                 const date = new Date();
+    //                 date.setDate(date.getDate() - (25 - i));
+    //                 date.setMonth(date.getMonth() - 1);
+    //                 ;
+    //                 return ({
+    //                     date: date,
+    //                     content: await encryptData(await fetch(`https://lorem-api.com/api/lorem?paragraphs=${Math.floor(Math.random() * 4) + 1}&seed=ciririckf`)
+    //                         .then(response => response.text())),
+    //                 })
+    //             })
+    //         );
+    //         setConvertedEntries(entriesArr.sort((a, b) => a.date.getTime() - b.date.getTime()));
+    //         setSavedEntries(prevEntries => ({
+    //             ...prevEntries,
+    //             ...entriesArr.reduce((acc, entry) => {
+    //                 const dateStr = entry.date.toISOString().split('T')[0];
+    //                 acc[dateStr] = entry.content;
+    //                 return acc;
+    //             }, {} as Record<string, string>)
+    //         }))
+
+    //     };
+
+    //     populateEntries();
+    // }, [encryptData]);
+
+
     return {
         entries,
         updateTodaysEntry: setTodaysEntry,

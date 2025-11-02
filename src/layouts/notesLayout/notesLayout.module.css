@@ -1,0 +1,55 @@
+.container {
+    display: flex;
+    flex-flow: column;
+    align-content: stretch;
+
+    width: 100lvw;
+    height: 100lvh;
+}
+
+.top-bar {
+    flex: 0 0 50px;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.5rem 2rem;
+}
+
+.content {
+    flex: 1 1 auto;
+
+    max-height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+        font: var(--h1);
+    }
+    > * {
+        display: flex;
+        flex-direction: column-reverse;
+        overflow-y: auto;
+        max-height: 100%;
+        scroll-behavior: smooth;
+        width: 100%;
+    }
+    > * > * {
+        width: min(700px, 90%);
+        margin-inline: auto;
+    }
+}
+
+.color-samples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(max(200px, 100%/3), 1fr));
+
+    > * {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 1rem;
+        align-items: center;
+    }
+}
