@@ -15,7 +15,8 @@ export interface EntriesState {
 }
 
 interface UseEntriesProps {
-    encryptData: (data: string) => Promise<string>; decryptData: (data: string) => Promise<string>
+    encryptData?: (data: string) => Promise<string>;
+    decryptData?: (data: string) => Promise<string>;
 }
 
 const isDateToday = (date: Date): boolean => {
@@ -26,7 +27,7 @@ const isDateToday = (date: Date): boolean => {
 }
 
 export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): EntriesState => {
-    const [savedEntries, setSavedEntries] = useLocalStorage('state-entries-data', [])
+    const [savedEntries, setSavedEntries] = useLocalStorage<Record<string, string>>('state-entries-data', {});
     const [todaysEntry, setTodaysEntry] = useState<Entry | null>(null);
     const todaysDebounced = useDebounce(todaysEntry, 1000);
 
@@ -34,6 +35,8 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
     const [convertedEntries, setConvertedEntries] = useState<Entry[]>([]);
     useEffect(() => {
         const convertEntries = async () => {
+            if (!decryptData) return;
+
             const entriesArr = await Promise.all(
                 Object.entries(savedEntries).map(async ([dateStr, content]) => ({
                     date: new Date(dateStr),
@@ -43,7 +46,7 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
             setConvertedEntries(entriesArr.sort((a, b) => a.date.getTime() - b.date.getTime()));
         };
         convertEntries();
-    }, []);
+    }, [decryptData]);
 
     const entries = convertedEntries.filter(entry => !isDateToday(entry.date));
 
@@ -55,17 +58,18 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
     // Save todays entry
     useEffect(() => {
         const saveTodaysEntry = async () => {
-            if (todaysDebounced === null || !todaysDebounced.content) return;
+            if (todaysDebounced === null || !todaysDebounced.content || !encryptData) return;
 
             const todayStr = todaysDebounced.date.toISOString().split('T')[0];
             const encryptedEntry = await encryptData(todaysDebounced.content);
+
             setSavedEntries(prevEntries => ({
                 ...prevEntries,
                 [todayStr]: encryptedEntry,
             }));
         }
         saveTodaysEntry();
-    }, [encryptData, setSavedEntries, todaysDebounced]);
+    }, [decryptData, encryptData, todaysDebounced]);
 
     return {
         entries,

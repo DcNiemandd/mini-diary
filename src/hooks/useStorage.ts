@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 
 
 
@@ -17,7 +17,7 @@ export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): 
         return getValue(key, initialValue);
     });
 
-    const setValue: Dispatch<SetStateAction<T>> = value => {
+    const setValue: Dispatch<SetStateAction<T>> = useCallback((value) => {
         try {
             const valueToStore = value instanceof Function ? value(storedValue) : value;
             storage.setItem(key, JSON.stringify(valueToStore));
@@ -25,13 +25,13 @@ export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): 
         } catch {
             // Ignore write errors
         }
-    };
+    }, [key, storage, storedValue]);
 
     useEffect(() => {
         setStoredValue(getValue(key, initialValue));
     }, [getValue, initialValue, key])
 
-    return [storedValue, setValue];
+    return useMemo(() => [storedValue, setValue], [storedValue, setValue]);
 }
 
 

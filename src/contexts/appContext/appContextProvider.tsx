@@ -8,8 +8,8 @@ export const AppContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const auth = useAuth();
     const colorSettings = useColorTheme();
     const entries = useEntries({
-        decryptData: auth.isLoggedIn ? auth.decryptData : (data: string) => Promise.resolve(data),
-        encryptData: auth.isLoggedIn ? auth.encryptData : (data: string) => Promise.resolve(data),
+        decryptData: auth.isLoggedIn ? auth.decryptData : undefined,
+        encryptData: auth.isLoggedIn ? auth.encryptData : undefined,
     });
 
     const state: AppContext = {
