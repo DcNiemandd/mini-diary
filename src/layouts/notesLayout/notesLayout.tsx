@@ -39,7 +39,11 @@ export const NotesLayout: FC = () => {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        auth.logout();
+                        if (entries.isSaved) {
+                            auth.logout();
+                        } else {
+                            alert('Please wait until your changes are saved before logging out.');
+                        }
                     }}
                 >
                     Log out
@@ -85,12 +89,12 @@ export const NotesLayout: FC = () => {
                         ))}
                         <DailyNote
                             key="today-entry"
-                            note={entries.todaysEntry ? entries.todaysEntry.content : ''}
-                            date={entries.todaysEntry ? entries.todaysEntry.date : new Date()}
+                            note={entries.todaysEntry.content}
+                            date={entries.todaysEntry.date}
                             onChange={(newEntry) =>
                                 entries.updateTodaysEntry({
                                     content: newEntry,
-                                    date: entries.todaysEntry ? entries.todaysEntry.date : new Date(),
+                                    date: entries.todaysEntry.date,
                                 })
                             }
                         />

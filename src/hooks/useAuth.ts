@@ -69,7 +69,7 @@ export function useAuth() {
         const existing = localStorage.getItem('state-entries-data');
         if (existing) {
             localStorage.setItem(`state-entries-data-deleted-${(new Date()).toISOString()}`, existing);
-            localStorage.removeItem('state-entries-data');
+            localStorage.setItem('state-entries-data', '');
         }
     }
 

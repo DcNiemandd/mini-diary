@@ -1,17 +1,19 @@
+import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useDebounce } from "./useDebounce";
 import { useLocalStorage } from "./useStorage";
 
 
 interface Entry {
-    date: Date;
+    date: DateTime;
     content: string;
 }
 
 export interface EntriesState {
-    entries: Entry[] | null;
+    entries: Entry[];
     updateTodaysEntry: (content: Entry) => void;
-    todaysEntry: Entry | null;
+    todaysEntry: Entry;
+    isSaved: boolean;
 }
 
 interface UseEntriesProps {
@@ -19,17 +21,15 @@ interface UseEntriesProps {
     decryptData?: (data: string) => Promise<string>;
 }
 
-const isDateToday = (date: Date): boolean => {
-    const today = new Date();
-    return date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
+const isDateToday = (date: DateTime): boolean => {
+    return date.diffNow('days').days < 1;
 }
 
 export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): EntriesState => {
     const [savedEntries, setSavedEntries] = useLocalStorage<Record<string, string>>('state-entries-data', {});
-    const [todaysEntry, setTodaysEntry] = useState<Entry | null>(null);
-    const todaysDebounced = useDebounce(todaysEntry, 1000);
+    const [todaysEntry, setTodaysEntry] = useState<Entry>({ date: DateTime.now(), content: '' });
+    const todaysDebounced = useDebounce(todaysEntry, 500);
+    const [isSaved, setIsSaved] = useState<boolean>(true);
 
     // Convert only on mount
     const [convertedEntries, setConvertedEntries] = useState<Entry[]>([]);
@@ -39,20 +39,39 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
 
             const entriesArr = await Promise.all(
                 Object.entries(savedEntries).map(async ([dateStr, content]) => ({
-                    date: new Date(dateStr),
+                    date: DateTime.fromISO(dateStr),
                     content: await decryptData(content),
                 }))
             );
-            setConvertedEntries(entriesArr.sort((a, b) => a.date.getTime() - b.date.getTime()));
+            setConvertedEntries(entriesArr.sort((a, b) => a.date.diff(b.date, 'day').days));
         };
         convertEntries();
     }, [decryptData]);
 
     const entries = convertedEntries.filter(entry => !isDateToday(entry.date));
 
+    // Block browser nav before save is done
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+        if (todaysDebounced?.content !== todaysEntry?.content) {
+            window.addEventListener('beforeunload', handleBeforeUnload);
+            setIsSaved(false);
+        } else {
+            setIsSaved(true);
+        }
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        }
+    }, [todaysDebounced, todaysEntry]);
+
     // Update today's entry 
     useEffect(() => {
-        setTodaysEntry(convertedEntries.find(entry => isDateToday(entry.date)) ?? null);
+        const todays = convertedEntries.find(entry => isDateToday(entry.date));
+        if (todays) { setTodaysEntry(todays); }
     }, [convertedEntries]);
 
     // Save todays entry
@@ -60,7 +79,7 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
         const saveTodaysEntry = async () => {
             if (todaysDebounced === null || !todaysDebounced.content || !encryptData) return;
 
-            const todayStr = todaysDebounced.date.toISOString().split('T')[0];
+            const todayStr = todaysDebounced.date.toISODate() as string;
             const encryptedEntry = await encryptData(todaysDebounced.content);
 
             setSavedEntries(prevEntries => ({
@@ -110,5 +129,6 @@ export const useEntries = ({ encryptData, decryptData }: UseEntriesProps): Entri
         entries,
         updateTodaysEntry: setTodaysEntry,
         todaysEntry,
+        isSaved
     }
 }

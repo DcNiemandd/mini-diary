@@ -13,12 +13,14 @@
         "deploy": "npm run build && npx gh-pages -d dist"
     },
     "dependencies": {
+        "luxon": "^3.7.2",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "sass": "^1.93.2"
     },
     "devDependencies": {
         "@eslint/js": "^9.36.0",
+        "@types/luxon": "^3.7.1",
         "@types/node": "^24.6.0",
         "@types/react": "^19.1.16",
         "@types/react-dom": "^19.1.9",
@@ -38,4 +40,3 @@
         "vite-plugin-pwa": "^1.1.0"
     }
 }
-
