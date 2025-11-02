@@ -2,4 +2,8 @@
     display: flex;
     flex-flow: row;
     gap: 1rem;
+
+    @container (width < 400px) {
+        flex-flow: column;
+    }
 }
