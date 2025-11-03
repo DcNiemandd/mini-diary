@@ -16,6 +16,11 @@
     gap: 2rem;
     padding: 0.5rem 2rem;
 }
+@media (max-width: 600px) {
+    .scroll-bottom-button {
+        display: none;
+    }
+}
 
 .content {
     flex: 1 1 auto;

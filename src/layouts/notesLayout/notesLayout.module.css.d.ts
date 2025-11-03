@@ -8,6 +8,7 @@
 
 declare const container: string;
 declare const topBar: string;
+declare const scrollBottomButton: string;
 declare const content: string;
 declare const colorSamples: string;
 
@@ -19,6 +20,7 @@ export {
 declare const __default_export__: {
 	container: typeof container;
 	"top-bar": typeof topBar;
+	"scroll-bottom-button": typeof scrollBottomButton;
 	content: typeof content;
 	"color-samples": typeof colorSamples;
 };

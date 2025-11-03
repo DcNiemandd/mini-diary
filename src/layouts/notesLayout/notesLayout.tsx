@@ -27,27 +27,6 @@ export const NotesLayout: FC = () => {
                 >
                     Settings
                 </button>
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        scrollBottom();
-                    }}
-                >
-                    Bottom
-                </button>
-                <div style={{ flexGrow: 1 }} />
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        if (entries.isSaved) {
-                            auth.logout();
-                        } else {
-                            alert('Please wait until your changes are saved before logging out.');
-                        }
-                    }}
-                >
-                    Log out
-                </button>
                 <div
                     ref={(el) => {
                         el?.setAttribute('anchor', 'settings-popover-button');
@@ -76,6 +55,28 @@ export const NotesLayout: FC = () => {
                         disabled={!settings.useCustomColor}
                     />
                 </div>
+                <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        scrollBottom();
+                    }}
+                    className={style['scroll-bottom-button']}
+                >
+                    Bottom
+                </button>
+                <div style={{ flexGrow: 1 }} />
+                <button
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (entries.isSaved) {
+                            auth.logout();
+                        } else {
+                            alert('Please wait until your changes are saved before logging out.');
+                        }
+                    }}
+                >
+                    Log out
+                </button>
             </div>
             <div className={style['content']}>
                 <div ref={scrollRef}>
