@@ -83,7 +83,7 @@ export const NotesLayout: FC = () => {
                     <div>
                         {entries.entries?.map((entry) => (
                             <DailyNote
-                                key={entry.date.toISOString()}
+                                key={entry.date.toISODate()}
                                 note={entry.content}
                                 date={entry.date}
                             />

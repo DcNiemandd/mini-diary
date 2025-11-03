@@ -113,7 +113,6 @@ Try to use modern browser features such as:
 -   note component
 -   notes layout
 -   settings/bottom/logout styling
--   authentication
 -   saving notes to indexedDB
 -   import/export - plain json, hashed
 -   logout timeout
