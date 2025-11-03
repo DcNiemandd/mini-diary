@@ -114,12 +114,12 @@ export const TestLayout: FC = () => {
                         </div>
                         <div>
                             <DailyNote
-                                date={entries.todaysEntry ? entries.todaysEntry.date : new Date()}
-                                note={entries.todaysEntry?.content || ''}
+                                date={entries.todaysEntry.date}
+                                note={entries.todaysEntry.content}
                                 onChange={(newNote) =>
                                     entries.updateTodaysEntry({
                                         content: newNote,
-                                        date: entries.todaysEntry ? entries.todaysEntry.date : new Date(),
+                                        date: entries.todaysEntry.date,
                                     })
                                 }
                             />
