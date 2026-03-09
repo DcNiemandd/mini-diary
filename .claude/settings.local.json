@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "mcp__plugin_context7_context7__query-docs",
-      "mcp__plugin_context7_context7__resolve-library-id"
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "Bash(git add src/main.tsx src/queryKeys.ts)",
+      "Bash(git commit -m \"feat: add QueryClientProvider and queryKeys\")",
+      "Bash(git add src/services/entriesService.ts)",
+      "Bash(git commit -m \"feat: add entriesService with pure async read/save/clear functions\")",
+      "Bash(git add src/hooks/useEntriesQuery.ts)",
+      "Bash(git commit -m \"feat: add useEntriesQuery hook using TanStack Query\")",
+      "Bash(git add src/contexts/authContext/ src/contexts/settingsContext/)",
+      "Bash(git commit -m \"feat: split AppContext into AuthContext and SettingsContext\")",
+      "Bash(npm run build)"
     ]
   }
 }

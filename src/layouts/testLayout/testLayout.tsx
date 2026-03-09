@@ -1,12 +1,16 @@
-import { useContext, useRef, type FC } from 'react';
+import { DateTime } from 'luxon';
+import { useContext, useRef, useState, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
-import { AppContext } from '../../contexts/appContext/appContext';
+import { AuthContext } from '../../contexts/authContext/authContext';
+import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
-    const { settings, auth, entries } = useContext(AppContext);
+    const { logout } = useContext(AuthContext);
+    const settings = useContext(SettingsContext);
+    const [todayContent, setTodayContent] = useState('');
 
     const colors: string[] = [
         '--bg-dark',
@@ -59,7 +63,7 @@ export const TestLayout: FC = () => {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        auth.logout();
+                        logout();
                     }}
                 >
                     Log out
@@ -114,14 +118,9 @@ export const TestLayout: FC = () => {
                         </div>
                         <div>
                             <DailyNote
-                                date={entries.todaysEntry.date}
-                                note={entries.todaysEntry.content}
-                                onChange={(newNote) =>
-                                    entries.updateTodaysEntry({
-                                        content: newNote,
-                                        date: entries.todaysEntry.date,
-                                    })
-                                }
+                                date={DateTime.now()}
+                                note={todayContent}
+                                onChange={setTodayContent}
                             />
                         </div>
                     </div>
