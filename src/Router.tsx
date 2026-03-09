@@ -1,5 +1,5 @@
 import { lazy, Suspense, useContext } from 'react';
-import { AppContext } from './contexts/appContext/appContext';
+import { AuthContext } from './contexts/authContext/authContext';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
 const NotesLayout = lazy(() =>
@@ -7,7 +7,7 @@ const NotesLayout = lazy(() =>
 );
 
 export const Router = () => {
-    const { auth } = useContext(AppContext);
+    const auth = useContext(AuthContext);
 
     return (
         <Suspense fallback={<div className="loader">Loading...</div>}>

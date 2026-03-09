@@ -1,11 +1,14 @@
-import { AppContextProvider } from './contexts/appContext/appContextProvider';
+import { AuthContextProvider } from './contexts/authContext/authContextProvider';
+import { SettingsContextProvider } from './contexts/settingsContext/settingsContextProvider';
 import { Router } from './Router';
 
 function App() {
     return (
-        <AppContextProvider>
-            <Router />
-        </AppContextProvider>
+        <AuthContextProvider>
+            <SettingsContextProvider>
+                <Router />
+            </SettingsContextProvider>
+        </AuthContextProvider>
     );
 }
 

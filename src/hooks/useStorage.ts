@@ -1,20 +1,22 @@
-import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 
 
 
 
 export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): [T, Dispatch<SetStateAction<T>>] => {
-    const getValue = useCallback((key: string, initialValue: T): T => {
+    const initialValueRef = useRef(initialValue);
+
+    const getValue = useCallback((key: string): T => {
         try {
             const item = storage.getItem(key);
-            return item ? JSON.parse(item) : initialValue;
+            return item ? JSON.parse(item) : initialValueRef.current;
         } catch {
-            return initialValue;
+            return initialValueRef.current;
         }
     }, [storage])
 
     const [storedValue, setStoredValue] = useState<T>(() => {
-        return getValue(key, initialValue);
+        return getValue(key);
     });
 
     const setValue: Dispatch<SetStateAction<T>> = useCallback((value) => {
@@ -28,8 +30,8 @@ export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): 
     }, [key, storage, storedValue]);
 
     useEffect(() => {
-        setStoredValue(getValue(key, initialValue));
-    }, [getValue, initialValue, key])
+        setStoredValue(getValue(key));
+    }, [getValue, key])
 
     return useMemo(() => [storedValue, setValue], [storedValue, setValue]);
 }

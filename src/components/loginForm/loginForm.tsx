@@ -1,10 +1,10 @@
 import { useContext, useRef, useState, type FC } from 'react';
-import { AppContext } from '../../contexts/appContext/appContext';
+import { AuthContext } from '../../contexts/authContext/authContext';
 import { RemoveAccountButton } from '../removeAccountButton/removeAccountButton';
 import style from './loginForm.module.scss';
 
 export const LoginForm: FC = () => {
-    const { auth } = useContext(AppContext);
+    const auth = useContext(AuthContext);
 
     const [resetAccountCounter, setResetAccountCounter] = useState(0);
     const formRef = useRef<HTMLFormElement>(null);

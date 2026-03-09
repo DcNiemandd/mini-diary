@@ -1,21 +1,60 @@
-import { useContext, useRef, type FC } from 'react';
+import { DateTime } from 'luxon';
+import { useContext, useEffect, useRef, useState, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
-import { AppContext } from '../../contexts/appContext/appContext';
+import { AuthContext } from '../../contexts/authContext/authContext';
+import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
+import { useDebounce } from '../../hooks/useDebounce';
+import { useEntriesQuery } from '../../hooks/useEntriesQuery';
 import style from './notesLayout.module.css';
 
+const isDateToday = (date: DateTime): boolean => date.diffNow('days').days < 1;
+
 export const NotesLayout: FC = () => {
-    const { settings, auth, entries } = useContext(AppContext);
+    const { logout } = useContext(AuthContext);
+    const settings = useContext(SettingsContext);
+    const { entries, isPending, isError, saveEntry, isSaving } = useEntriesQuery();
+
+    const [todayContent, setTodayContent] = useState('');
+    const debouncedContent = useDebounce(todayContent, 500);
+
+    const todaysEntry = entries.find((e) => isDateToday(e.date));
+    const pastEntries = entries.filter((e) => !isDateToday(e.date));
+
+    // Populate textarea from loaded entry on first load
+    useEffect(() => {
+        if (todaysEntry && !todayContent) {
+            setTodayContent(todaysEntry.content);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [todaysEntry]);
+
+    // Debounced auto-save
+    useEffect(() => {
+        if (debouncedContent) {
+            saveEntry({ date: DateTime.now(), content: debouncedContent });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedContent]);
+
+    const isSaved = todayContent === debouncedContent && !isSaving;
+
+    // Block browser nav before save is done
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        if (!isSaved) {
+            window.addEventListener('beforeunload', handleBeforeUnload);
+        }
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isSaved]);
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollBottom = () => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight,
-                behavior: 'smooth',
-            });
-        }
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     };
 
     return (
@@ -48,7 +87,6 @@ export const NotesLayout: FC = () => {
                             onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
                         />
                     </label>
-
                     <ColorPicker
                         customColor={settings.customColor}
                         setCustomColor={(color) => settings.setCustomColor(color)}
@@ -68,8 +106,8 @@ export const NotesLayout: FC = () => {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        if (entries.isSaved) {
-                            auth.logout();
+                        if (isSaved) {
+                            logout();
                         } else {
                             alert('Please wait until your changes are saved before logging out.');
                         }
@@ -81,7 +119,9 @@ export const NotesLayout: FC = () => {
             <div className={style['content']}>
                 <div ref={scrollRef}>
                     <div>
-                        {entries.entries?.map((entry) => (
+                        {isPending && <p>Loading entries…</p>}
+                        {isError && <p>Failed to decrypt entries.</p>}
+                        {pastEntries.map((entry) => (
                             <DailyNote
                                 key={entry.date.toISODate()}
                                 note={entry.content}
@@ -90,14 +130,9 @@ export const NotesLayout: FC = () => {
                         ))}
                         <DailyNote
                             key="today-entry"
-                            note={entries.todaysEntry.content}
-                            date={entries.todaysEntry.date}
-                            onChange={(newEntry) =>
-                                entries.updateTodaysEntry({
-                                    content: newEntry,
-                                    date: entries.todaysEntry.date,
-                                })
-                            }
+                            note={todayContent}
+                            date={DateTime.now()}
+                            onChange={setTodayContent}
                         />
                     </div>
                 </div>

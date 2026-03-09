@@ -1,10 +1,13 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { clearEntries } from '../services/entriesService';
 import { MyCrypto } from '../utils/crypto';
 import { useLocalStorage } from './useStorage';
 
 export interface AuthState {
     isUser: boolean;
     isLoggedIn: boolean;
+    databaseKeyId: string | null;
     tryToLogin: (password: string) => Promise<boolean>;
     logout: () => void;
     encryptData: (data: string) => Promise<string>;
@@ -24,6 +27,7 @@ interface UserAuth {
 export function useAuth() {
     const [userAuth, setUserAuth] = useLocalStorage<UserAuth | null>('state-auth-user', null);
     const [databaseKey, setDatabaseKey] = useState<string | null>(null);
+    const queryClient = useQueryClient();
     const isLoggedIn = Boolean(databaseKey);
     const isUser = userAuth !== null;
 
@@ -63,37 +67,35 @@ export function useAuth() {
     };
 
     const removeAccount = () => {
+        clearEntries();
         setUserAuth(null);
         setDatabaseKey(null);
-        // TODO: clear entries data from useEntries
-        const existing = localStorage.getItem('state-entries-data');
-        if (existing) {
-            localStorage.setItem(`state-entries-data-deleted-${(new Date()).toISOString()}`, existing);
-            localStorage.setItem('state-entries-data', '');
-        }
-    }
+        queryClient.clear();
+    };
 
     const logout = () => {
         setDatabaseKey(null);
+        queryClient.clear();
     };
 
     const encryptData = async (data: string): Promise<string> => {
         if (!databaseKey) throw new Error('No user auth available for encryption');
         return MyCrypto.encryptAESGCM(data, databaseKey);
-    }
+    };
 
     const decryptData = async (gibberish: string): Promise<string> => {
         if (!databaseKey) throw new Error('No user auth available for encryption');
         return MyCrypto.decryptAESGCM(gibberish, databaseKey);
-    }
+    };
 
     return {
         isLoggedIn,
+        databaseKeyId: databaseKey,
         tryToLogin,
         logout,
         isUser,
         encryptData,
         decryptData,
-        removeAccount
+        removeAccount,
     };
 }
