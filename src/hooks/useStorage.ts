@@ -1,23 +1,30 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 
 
 
 
 export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): [T, Dispatch<SetStateAction<T>>] => {
-    const initialValueRef = useRef(initialValue);
-
-    const getValue = useCallback((key: string): T => {
+    const [storedValue, setStoredValue] = useState<T>(() => {
         try {
             const item = storage.getItem(key);
-            return item ? JSON.parse(item) : initialValueRef.current;
+            return item ? JSON.parse(item) : initialValue;
         } catch {
-            return initialValueRef.current;
+            return initialValue;
         }
-    }, [storage])
-
-    const [storedValue, setStoredValue] = useState<T>(() => {
-        return getValue(key);
     });
+
+    const onLoadFromStorage = useEffectEvent(() => {
+        try {
+            const item = storage.getItem(key);
+            setStoredValue(item ? JSON.parse(item) : initialValue);
+        } catch {
+            setStoredValue(initialValue);
+        }
+    });
+
+    useEffect(() => {
+        onLoadFromStorage();
+    }, [key]);
 
     const setValue: Dispatch<SetStateAction<T>> = useCallback((value) => {
         try {
@@ -28,10 +35,6 @@ export const useStorage = <T,>(key: string, initialValue: T, storage: Storage): 
             // Ignore write errors
         }
     }, [key, storage, storedValue]);
-
-    useEffect(() => {
-        setStoredValue(getValue(key));
-    }, [getValue, key])
 
     return useMemo(() => [storedValue, setValue], [storedValue, setValue]);
 }
