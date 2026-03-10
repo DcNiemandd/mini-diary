@@ -10,7 +10,9 @@
         "lint": "eslint .",
         "preview": "vite preview",
         "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg",
-        "deploy": "npm run build && npx gh-pages -d dist"
+        "deploy": "npm run build && npx gh-pages -d dist",
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.90.21",
@@ -39,6 +41,7 @@
         "typescript-eslint": "^8.57.0",
         "vite": "^7.3.1",
         "vite-css-modules": "^1.13.0",
-        "vite-plugin-pwa": "^1.2.0"
+        "vite-plugin-pwa": "^1.2.0",
+        "vitest": "^4.0.18"
     }
 }
