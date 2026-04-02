@@ -1,47 +1,32 @@
-import { useRef, type FC } from 'react';
-import style from './removeAccountButton.module.scss';
+import type { FC } from 'react';
+import { openDialog } from '../dialog/index.ts';
 
 export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) => {
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    const handleClick = async () => {
+        const result = await openDialog({
+            title: 'Remove account',
+            content: <p>Are you sure you want to remove your account? This action cannot be undone.</p>,
+            buttons: [
+                {
+                    type: 'confirm',
+                    label: 'Yes, remove my account',
+                    style: { backgroundColor: 'var(--danger)' },
+                },
+                {
+                    type: 'cancel',
+                    label: 'Cancel',
+                },
+            ],
+        });
+
+        if (result.closedBy === 'button' && result.button?.type === 'confirm') {
+            onReset();
+        }
+    };
 
     return (
-        <>
-            <button
-                type="button"
-                onClick={() => {
-                    dialogRef.current?.showModal();
-                }}
-            >
-                Remove account
-            </button>
-            <dialog
-                ref={dialogRef}
-                className={style['remove-account-popover']}
-                closedby="any"
-            >
-                <p>Are you sure you want to remove your account? This action cannot be undone.</p>
-                <div className={style.buttons}>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            dialogRef.current?.close();
-                            onReset();
-                        }}
-                        className={style.yes}
-                    >
-                        Yes, remove my account
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            dialogRef.current?.close();
-                        }}
-                        className="no"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </dialog>
-        </>
+        <button type="button" onClick={handleClick}>
+            Remove account
+        </button>
     );
 };
