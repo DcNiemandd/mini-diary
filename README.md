@@ -110,10 +110,15 @@ Try to use modern browser features such as:
 
 ## TODO
 
--   note component
--   notes layout
--   settings/bottom/logout styling
--   saving notes to indexedDB
--   import/export - plain json, hashed
--   logout timeout
+- note component
+    - replace textarea with p for past entries
+    - add indication of a series of days in a row
+- login layout
+    - add about/help button with dialog
+- notes layout
+    - settings/bottom/logout styling
+    - expand settings with password change, about/help
+- logout timeout
+- data export/import
+- multiple users support & saving notes to indexedDB
 
