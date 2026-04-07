@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery';
 import { useSplitEntries } from '../../hooks/useSplitEntries';
+import { useDevTools } from '../../hooks/useDevTools';
 import { useTodayNote } from '../../hooks/useTodayNote';
 import style from './notesLayout.module.css';
 
@@ -16,6 +17,7 @@ export const NotesLayout: FC = () => {
     const { todayEntry, pastEntries, today } = useSplitEntries(entries);
     const { todayContent, setTodayContent, isSaved } = useTodayNote(todayEntry, saveEntry, isSaving);
 
+    useDevTools();
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollBottom = () => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
