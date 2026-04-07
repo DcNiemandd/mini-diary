@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Dialog } from './Dialog.tsx';
-import type { DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
+import type { DialogResult, OpenDialogFn } from './types.ts';
 
 export const openDialog: OpenDialogFn = (options) => {
     return new Promise<DialogResult>((resolve) => {
@@ -24,7 +24,7 @@ export const openDialog: OpenDialogFn = (options) => {
                 ...options,
                 onResult: handleResult,
                 openDialog,
-            }),
+            })
         );
     });
 };

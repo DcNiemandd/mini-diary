@@ -6,7 +6,7 @@ export interface Entry {
     inRow: number;
 }
 
-export interface DbEntry extends Omit<Entry, 'inRow'> {}
+export type DbEntry = Omit<Entry, 'inRow'>;
 
 const STORAGE_KEY = 'state-entries-data';
 
