@@ -1,6 +1,7 @@
 import { useContext, useRef, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
+import { Popover } from '../../components/popover/index.ts';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
@@ -26,39 +27,29 @@ export const NotesLayout: FC = () => {
     return (
         <div className={style.container}>
             <div className={style['top-bar']}>
-                <button
-                    id="settings-popover-button"
-                    popoverTarget="settings-popover"
-                >
-                    Settings
-                </button>
-                <div
-                    ref={(el) => {
-                        el?.setAttribute('anchor', 'settings-popover-button');
-                    }}
-                    popover="auto"
-                    id="settings-popover"
-                    style={{ top: 'anchor(bottom)', left: 'anchor(left)' }}
-                >
-                    <ThemeSwitcher
-                        colorScheme={settings.colorScheme}
-                        setColorScheme={(scheme) => settings.setColorScheme(scheme)}
-                    />
-                    <br />
-                    <label>
-                        Use custom color
-                        <input
-                            type="checkbox"
-                            checked={settings.useCustomColor}
-                            onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+                <Popover.Root>
+                    <Popover.Trigger>Settings</Popover.Trigger>
+                    <Popover.Content>
+                        <ThemeSwitcher
+                            colorScheme={settings.colorScheme}
+                            setColorScheme={(scheme) => settings.setColorScheme(scheme)}
                         />
-                    </label>
-                    <ColorPicker
-                        customColor={settings.customColor}
-                        setCustomColor={(color) => settings.setCustomColor(color)}
-                        disabled={!settings.useCustomColor}
-                    />
-                </div>
+                        <br />
+                        <label>
+                            Use custom color
+                            <input
+                                type="checkbox"
+                                checked={settings.useCustomColor}
+                                onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+                            />
+                        </label>
+                        <ColorPicker
+                            customColor={settings.customColor}
+                            setCustomColor={(color) => settings.setCustomColor(color)}
+                            disabled={!settings.useCustomColor}
+                        />
+                    </Popover.Content>
+                </Popover.Root>
                 <button
                     onClick={(e) => {
                         e.preventDefault();
