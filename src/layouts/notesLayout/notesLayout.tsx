@@ -1,13 +1,12 @@
-import { DateTime } from 'luxon';
-import { useContext, useEffect, useRef, useState, type FC } from 'react';
+import { useContext, useRef, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
-import { useDebounce } from '../../hooks/useDebounce';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery';
 import { useSplitEntries } from '../../hooks/useSplitEntries';
+import { useTodayNote } from '../../hooks/useTodayNote';
 import style from './notesLayout.module.css';
 
 export const NotesLayout: FC = () => {
@@ -15,37 +14,7 @@ export const NotesLayout: FC = () => {
     const settings = useContext(SettingsContext);
     const { entries, isPending, isError, saveEntry, isSaving } = useEntriesQuery();
     const { todayEntry, pastEntries, today } = useSplitEntries(entries);
-
-    const [todayContent, setTodayContent] = useState('');
-    const debouncedContent = useDebounce(todayContent, 500);
-
-    // Populate textarea from loaded entry on first load
-    useEffect(() => {
-        if (todayEntry && !todayContent) {
-            setTodayContent(todayEntry.content);
-        }
-    }, [todayEntry]);
-
-    // Debounced auto-save
-    useEffect(() => {
-        if (debouncedContent) {
-            saveEntry({ date: DateTime.now(), content: debouncedContent });
-        }
-    }, [debouncedContent]);
-
-    const isSaved = todayContent === debouncedContent && !isSaving;
-
-    // Block browser nav before save is done
-    useEffect(() => {
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            e.preventDefault();
-            e.returnValue = '';
-        };
-        if (!isSaved) {
-            window.addEventListener('beforeunload', handleBeforeUnload);
-        }
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [isSaved]);
+    const { todayContent, setTodayContent, isSaved } = useTodayNote(todayEntry, saveEntry, isSaving);
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollBottom = () => {
