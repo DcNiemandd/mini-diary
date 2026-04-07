@@ -27,7 +27,6 @@ export const NotesLayout: FC = () => {
         if (todaysEntry && !todayContent) {
             setTodayContent(todaysEntry.content);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [todaysEntry]);
 
     // Debounced auto-save
@@ -35,7 +34,6 @@ export const NotesLayout: FC = () => {
         if (debouncedContent) {
             saveEntry({ date: DateTime.now(), content: debouncedContent });
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedContent]);
 
     const isSaved = todayContent === debouncedContent && !isSaving;

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
-import { fetchEntries, saveEntry, type Entry } from '../services/entriesService';
+import { fetchEntries, saveEntry, type DbEntry } from '../services/entriesService';
 
 export const useEntriesQuery = () => {
     const { decryptData, encryptData, databaseKeyId } = useContext(AuthContext);
@@ -16,7 +16,7 @@ export const useEntriesQuery = () => {
     });
 
     const mutation = useMutation({
-        mutationFn: (entry: Entry) => saveEntry(entry, encryptData),
+        mutationFn: (entry: DbEntry) => saveEntry(entry, encryptData),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: queryKeys.entries(databaseKeyId!) });
         },
