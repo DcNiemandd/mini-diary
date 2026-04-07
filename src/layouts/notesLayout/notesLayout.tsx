@@ -7,27 +7,24 @@ import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery';
+import { useSplitEntries } from '../../hooks/useSplitEntries';
 import style from './notesLayout.module.css';
-
-const isDateToday = (date: DateTime): boolean => date.diffNow('days').days < 1;
 
 export const NotesLayout: FC = () => {
     const { logout } = useContext(AuthContext);
     const settings = useContext(SettingsContext);
     const { entries, isPending, isError, saveEntry, isSaving } = useEntriesQuery();
+    const { todayEntry, pastEntries, today } = useSplitEntries(entries);
 
     const [todayContent, setTodayContent] = useState('');
     const debouncedContent = useDebounce(todayContent, 500);
 
-    const todaysEntry = entries.find((e) => isDateToday(e.date));
-    const pastEntries = entries.filter((e) => !isDateToday(e.date));
-
     // Populate textarea from loaded entry on first load
     useEffect(() => {
-        if (todaysEntry && !todayContent) {
-            setTodayContent(todaysEntry.content);
+        if (todayEntry && !todayContent) {
+            setTodayContent(todayEntry.content);
         }
-    }, [todaysEntry]);
+    }, [todayEntry]);
 
     // Debounced auto-save
     useEffect(() => {
@@ -129,7 +126,7 @@ export const NotesLayout: FC = () => {
                         <DailyNote
                             key="today-entry"
                             note={todayContent}
-                            date={DateTime.now()}
+                            date={today}
                             onChange={setTodayContent}
                         />
                     </div>
