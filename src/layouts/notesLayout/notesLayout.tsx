@@ -83,6 +83,7 @@ export const NotesLayout: FC = () => {
                                 key={entry.date.toISODate()}
                                 note={entry.content}
                                 date={entry.date}
+                                daysInRow={entry.inRow}
                             />
                         ))}
                         <DailyNote
@@ -90,6 +91,7 @@ export const NotesLayout: FC = () => {
                             note={todayContent}
                             date={today}
                             onChange={setTodayContent}
+                            daysInRow={todayEntry?.inRow}
                         />
                     </div>
                 </div>

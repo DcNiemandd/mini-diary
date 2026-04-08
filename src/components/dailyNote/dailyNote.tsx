@@ -11,7 +11,10 @@ export interface DailyNoteProps {
 
 export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow }) => {
     return (
-        <article className={style['daily-note']}>
+        <article
+            className={style['daily-note']}
+            data-days-in-row={daysInRow}
+        >
             <header className={style['top-bar']}>
                 <time
                     className={style['date-label']}
@@ -19,7 +22,7 @@ export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow 
                 >
                     {date.toLocaleString(DateTime.DATE_FULL)}
                 </time>
-                <span className="days-in-row">{daysInRow}</span>
+                <span className={style['days-in-row']}>✧ {daysInRow}</span>
             </header>
             {onChange ? (
                 <div

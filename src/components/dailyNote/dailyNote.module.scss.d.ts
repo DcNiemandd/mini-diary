@@ -7,12 +7,14 @@
  */
 
 declare const dailyNote: string;
+declare const daysInRow: string;
 declare const topBar: string;
 declare const dateLabel: string;
 declare const noteContent: string;
 
 declare const __default_export__: {
 	"daily-note": typeof dailyNote;
+	"days-in-row": typeof daysInRow;
 	"top-bar": typeof topBar;
 	"date-label": typeof dateLabel;
 	"note-content": typeof noteContent;
