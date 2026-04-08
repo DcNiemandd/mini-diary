@@ -13,5 +13,18 @@
       "Bash(git commit -m \"feat: split AppContext into AuthContext and SettingsContext\")",
       "Bash(npm run build)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/lint-on-edit.sh"
+          }
+        ]
+      }
+    ]
   }
 }
