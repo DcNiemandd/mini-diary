@@ -11,11 +11,16 @@ export interface DailyNoteProps {
 
 export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow }) => {
     return (
-        <div className={`${style['daily-note']} ${!onChange ? style['readonly'] : ''}`}>
-            <div className="top-bar">
-                <span className="date-label">{date.toLocaleString(DateTime.DATE_FULL)}</span>
-                <div className="days-in-row">{daysInRow}</div>
-            </div>
+        <article className={style['daily-note']}>
+            <header className={style['top-bar']}>
+                <time
+                    className={style['date-label']}
+                    dateTime={date.toISODate() ?? undefined}
+                >
+                    {date.toLocaleString(DateTime.DATE_FULL)}
+                </time>
+                <span className="days-in-row">{daysInRow}</span>
+            </header>
             {onChange ? (
                 <div
                     className="note-grow"
@@ -28,8 +33,8 @@ export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow 
                     />
                 </div>
             ) : (
-                <p className="note-content">{note}</p>
+                <p className={style['note-content']}>{note}</p>
             )}
-        </div>
+        </article>
     );
 };

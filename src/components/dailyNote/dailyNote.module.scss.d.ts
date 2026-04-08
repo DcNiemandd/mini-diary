@@ -7,14 +7,14 @@
  */
 
 declare const dailyNote: string;
-declare const readonly: string;
-
-export {
-	readonly
-};
+declare const topBar: string;
+declare const dateLabel: string;
+declare const noteContent: string;
 
 declare const __default_export__: {
 	"daily-note": typeof dailyNote;
-	readonly: typeof readonly;
+	"top-bar": typeof topBar;
+	"date-label": typeof dateLabel;
+	"note-content": typeof noteContent;
 };
 export default __default_export__;
