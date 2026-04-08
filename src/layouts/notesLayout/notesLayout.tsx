@@ -1,7 +1,7 @@
 import { useContext, useRef, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
-import { Popover } from '../../components/popover/index.ts';
+import { Popover } from '../../../lib/popover/index.ts';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';

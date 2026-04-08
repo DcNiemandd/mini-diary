@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { openDialog } from '../dialog/index.ts';
+import { openDialog } from '../../../lib/dialog/index.ts';
 
 export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) => {
     const handleClick = async () => {
