@@ -1,4 +1,4 @@
-import { lazy, Suspense, useContext } from 'react';
+import { lazy, Suspense, useContext, useEffect } from 'react';
 import { AuthContext } from './contexts/authContext/authContext';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
@@ -8,6 +8,10 @@ const NotesLayout = lazy(() =>
 
 export const Router = () => {
     const auth = useContext(AuthContext);
+
+    useEffect(() => {
+        auth.tryToLogin('testtest');
+    }, []);
 
     return (
         <Suspense fallback={<div className="loader">Loading...</div>}>

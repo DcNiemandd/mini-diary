@@ -7,9 +7,10 @@
     align-items: stretch;
 
     &.readonly :global {
-        @include tg.textarea-grow('.note-grow') {
+        .note-content {
             background-color: transparent;
             min-height: unset;
+            white-space: pre-wrap;
         }
     }
 

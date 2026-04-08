@@ -16,17 +16,20 @@ export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow 
                 <span className="date-label">{date.toLocaleString(DateTime.DATE_FULL)}</span>
                 <div className="days-in-row">{daysInRow}</div>
             </div>
-            <div
-                className="note-grow"
-                data-replicated-value={note}
-            >
-                <textarea
-                    className="note-content"
-                    value={note}
-                    onChange={(e) => onChange?.(e.target.value)}
-                    readOnly={!onChange}
-                />
-            </div>
+            {onChange ? (
+                <div
+                    className="note-grow"
+                    data-replicated-value={note}
+                >
+                    <textarea
+                        className="note-content"
+                        value={note}
+                        onChange={(e) => onChange(e.target.value)}
+                    />
+                </div>
+            ) : (
+                <p className="note-content">{note}</p>
+            )}
         </div>
     );
 };
