@@ -26,5 +26,6 @@
     "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "lib"]
+  "include": ["src", "lib"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "src/test/**"]
 }
