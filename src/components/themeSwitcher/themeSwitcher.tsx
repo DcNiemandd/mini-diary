@@ -1,12 +1,14 @@
 import type { FC } from 'react';
 import type { ThemeSettings } from '../../hooks/useColorTheme';
 
-export const ThemeSwitcher: FC<Pick<ThemeSettings, 'colorScheme' | 'setColorScheme'>> = ({
+export const ThemeSwitcher: FC<Pick<ThemeSettings, 'colorScheme' | 'setColorScheme'> & { id?: string }> = ({
     colorScheme,
     setColorScheme,
+    id,
 }) => {
     return (
         <select
+            id={id}
             onChange={(e) => {
                 setColorScheme(e.target.value as ThemeSettings['colorScheme']);
             }}

@@ -20,47 +20,47 @@ export const ColorPicker: FC<
 
     const [chroma, hue] = useMemo(() => {
         return customColor
-            ? customColor.match(/oklch\(0 (\d*\.?\d*) (\d*\.?\d*)\)/)?.slice(1) ?? [CHROMA, HUE]
+            ? (customColor.match(/oklch\(0 (\d*\.?\d*) (\d*\.?\d*)\)/)?.slice(1) ?? [CHROMA, HUE])
             : [CHROMA, HUE];
     }, [customColor]);
 
     return (
-        <div className={style.sliders}>
-            {!disabled && (
-                <>
-                    <label className="slider-label">
-                        <span>Neutral</span>
-                        <input
-                            ref={chromaRef}
-                            type="range"
-                            id="chroma-slider"
-                            min="0"
-                            max=".2"
-                            step="0.01"
-                            value={chroma}
-                            className="slider"
-                            onChange={changeColor}
-                            disabled={disabled}
-                        />
-                        <span>Vivid</span>
-                    </label>
-                    <label className="slider-label">
-                        <span>Warmer</span>
-                        <input
-                            ref={hueRef}
-                            type="range"
-                            id="hue-slider"
-                            min="20"
-                            max="340"
-                            value={hue}
-                            className="slider"
-                            onChange={changeColor}
-                            disabled={disabled}
-                        />
-                        <span>Cooler</span>
-                    </label>
-                </>
-            )}
-        </div>
+        <>
+            <label
+                className={style['slider-label']}
+                aria-disabled={disabled}
+            >
+                <span>Neutral</span>
+                <input
+                    ref={chromaRef}
+                    type="range"
+                    id={style['chroma-slider']}
+                    min="0"
+                    max=".2"
+                    step="0.001"
+                    value={chroma}
+                    onChange={changeColor}
+                    disabled={disabled}
+                />
+                <span>Vivid</span>
+            </label>
+            <label
+                className={style['slider-label']}
+                aria-disabled={disabled}
+            >
+                <span>Warmer</span>
+                <input
+                    ref={hueRef}
+                    type="range"
+                    id={style['hue-slider']}
+                    min="20"
+                    max="340"
+                    value={hue}
+                    onChange={changeColor}
+                    disabled={disabled}
+                />
+                <span>Cooler</span>
+            </label>
+        </>
     );
 };

@@ -90,11 +90,13 @@ dialog {
 }
 
 [popover] {
-    background: var(--bg-light);
+    background: var(--bg);
     color: var(--text);
     border: 1px solid var(--border-muted);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     font: var(--p);
-    padding: 1.5rem;
+    padding: 1rem;
+    box-sizing: border-box;
+    max-width: 90vw;
 }

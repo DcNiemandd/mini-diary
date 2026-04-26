@@ -1,0 +1,13 @@
+@position-try --left {
+    top: anchor(bottom);
+    left: unset;
+    right: anchor(right);
+}
+
+.content {
+    position: fixed;
+    top: anchor(bottom);
+    left: anchor(left);
+
+    position-try-fallbacks: --left;
+}

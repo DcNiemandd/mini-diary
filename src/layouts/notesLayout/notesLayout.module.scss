@@ -22,7 +22,7 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
     padding: $top-bar-padding 2rem;
 
     @media (hover: hover) {
-        button:not(:hover) {
+        & > button:not(:hover) {
             background: transparent;
         }
     }
@@ -53,6 +53,7 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
     h1 {
         font: var(--h1);
     }
+
     > * {
         display: flex;
         flex-direction: column-reverse;
@@ -61,6 +62,7 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
         scroll-behavior: smooth;
         width: 100%;
     }
+
     > * > * {
         display: flex;
         gap: 2rem;

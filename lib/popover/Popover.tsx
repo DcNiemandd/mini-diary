@@ -7,6 +7,7 @@ import {
     type HTMLAttributes,
     type ReactNode,
 } from 'react';
+import styles from './popover.module.css';
 
 type CssName = `--${string}`;
 
@@ -49,14 +50,7 @@ const Trigger: FC<TriggerProps> = ({ style: styleProp, ...props }) => {
     );
 };
 
-/**
- * You can position the content using CSS variable `--popover-id`. Default is bottom left seen in example:
- * @example
- * <Popover.Content style={{ top: `anchor(var(--popover-id) bottom)`, left: `anchor(var(--popover-id) left)` }}>
- *     Content
- * </Popover.Content>
- */
-const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, ...props }) => {
+const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, className, ...props }) => {
     const { triggerId, contentId } = usePopoverContext();
 
     return (
@@ -64,13 +58,10 @@ const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, ...prop
             popover={popover}
             id={contentId}
             style={{
-                top: `anchor(var(--popover-id) bottom)`,
-                left: `anchor(var(--popover-id) left)`,
                 ...styleProp,
-                // @ts-expect-error CSS properties with custom names are not recognized by TypeScript, but they work in CSS.
-                '--popover-id': triggerId,
-                positionAnchor: 'var(--popover-id)',
+                positionAnchor: triggerId,
             }}
+            className={`${styles.content} ${className ?? ''}`}
             {...props}
         />
     );
@@ -78,6 +69,13 @@ const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, ...prop
 
 export const Popover: FC<PopoverProps> & {
     Trigger: FC<TriggerProps>;
+    /**
+     * You can position the content using CSS variable `--popover-id`. Default is bottom left seen in example:
+     * @example
+     * <Popover.Content style={{ top: `anchor(var(--popover-id) bottom)`, left: `anchor(var(--popover-id) left)` }}>
+     *     Content
+     * </Popover.Content>
+     */
     Content: FC<ContentProps>;
 } = ({ children }) => {
     const id = useId();

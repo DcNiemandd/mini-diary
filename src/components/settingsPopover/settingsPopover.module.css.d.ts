@@ -6,13 +6,15 @@
  * https://npmjs.com/vite-css-modules
  */
 
-declare const sliderLabel: string;
-declare const chromaSlider: string;
-declare const hueSlider: string;
+declare const content: string;
+declare const twoColumns: string;
+
+export {
+	content
+};
 
 declare const __default_export__: {
-	"slider-label": typeof sliderLabel;
-	"chroma-slider": typeof chromaSlider;
-	"hue-slider": typeof hueSlider;
+	content: typeof content;
+	"two-columns": typeof twoColumns;
 };
 export default __default_export__;
