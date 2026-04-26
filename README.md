@@ -113,10 +113,10 @@ Try to use modern browser features such as:
 - ~~note component~~
     - ~~replace textarea with p for past entries~~
     - ~~add indication of a series of days in a row~~
-- login layout
-    - add about/help button with dialog
+- ~~login layout~~
+    - ~~add about/help button with dialog~~
 - notes layout
-    - settings/bottom/logout styling
+    - settings/~~bottom/logout~~ styling
     - expand settings with password change, about/help
 - logout timeout
 - data export/import

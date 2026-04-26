@@ -1,4 +1,4 @@
-import { useContext, useRef, type FC } from 'react';
+import { useContext, useEffect, useRef, type FC } from 'react';
 import { Popover } from '../../../lib/popover/index.ts';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
@@ -20,82 +20,103 @@ export const NotesLayout: FC = () => {
 
     useDevTools();
     const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollBottomRef = useRef<HTMLButtonElement>(null);
     const scrollBottom = () => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     };
 
+    useEffect(function scrollButtonShower() {
+        const scrollRefCurrent = scrollRef.current;
+        const handleScroll = () => {
+            if (!scrollRefCurrent || !scrollBottomRef.current) return;
+            const isAtBottom = scrollRefCurrent.scrollTop > -50;
+            scrollBottomRef.current.style.display = isAtBottom ? 'none' : 'block';
+        };
+
+        scrollRefCurrent?.addEventListener('scroll', handleScroll);
+
+        return () => {
+            scrollRefCurrent?.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     return (
-        <div className={style.container}>
-            <div className={style['top-bar']}>
-                <Popover.Root>
-                    <Popover.Trigger>Settings</Popover.Trigger>
-                    <Popover.Content>
-                        <ThemeSwitcher
-                            colorScheme={settings.colorScheme}
-                            setColorScheme={(scheme) => settings.setColorScheme(scheme)}
-                        />
-                        <br />
-                        <label>
-                            Use custom color
-                            <input
-                                type="checkbox"
-                                checked={settings.useCustomColor}
-                                onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+        <>
+            <div className={style.container}>
+                <div className={style['top-bar']}>
+                    <Popover>
+                        <Popover.Trigger>Settings</Popover.Trigger>
+                        <Popover.Content>
+                            <ThemeSwitcher
+                                colorScheme={settings.colorScheme}
+                                setColorScheme={(scheme) => settings.setColorScheme(scheme)}
                             />
-                        </label>
-                        <ColorPicker
-                            customColor={settings.customColor}
-                            setCustomColor={(color) => settings.setCustomColor(color)}
-                            disabled={!settings.useCustomColor}
-                        />
-                    </Popover.Content>
-                </Popover.Root>
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        scrollBottom();
-                    }}
-                    className={style['scroll-bottom-button']}
-                >
-                    Bottom
-                </button>
-                <div style={{ flexGrow: 1 }} />
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        if (isSaved) {
-                            logout();
-                        } else {
-                            alert('Please wait until your changes are saved before logging out.');
-                        }
-                    }}
-                >
-                    Log out
-                </button>
-            </div>
-            <div className={style['content']}>
-                <div ref={scrollRef}>
-                    <div>
-                        {isPending && <p>Loading entries…</p>}
-                        {isError && <p>Failed to decrypt entries.</p>}
-                        {pastEntries.map((entry) => (
+                            <br />
+                            <label>
+                                Use custom color
+                                <input
+                                    type="checkbox"
+                                    checked={settings.useCustomColor}
+                                    onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+                                />
+                            </label>
+                            <ColorPicker
+                                customColor={settings.customColor}
+                                setCustomColor={(color) => settings.setCustomColor(color)}
+                                disabled={!settings.useCustomColor}
+                            />
+                        </Popover.Content>
+                    </Popover>
+                    <div style={{ flexGrow: 1 }} />
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (isSaved) {
+                                logout();
+                            } else {
+                                alert('Please wait until your changes are saved before logging out.');
+                            }
+                        }}
+                    >
+                        Log out
+                    </button>
+                </div>
+                <div className={style['content']}>
+                    <div ref={scrollRef}>
+                        <div>
+                            {isPending && <p>Loading entries…</p>}
+                            {isError && <p>Failed to decrypt entries.</p>}
+                            {pastEntries.map((entry) => (
+                                <DailyNote
+                                    key={entry.date.toISODate()}
+                                    note={entry.content}
+                                    date={entry.date}
+                                    daysInRow={entry.inRow}
+                                />
+                            ))}
                             <DailyNote
-                                key={entry.date.toISODate()}
-                                note={entry.content}
-                                date={entry.date}
-                                daysInRow={entry.inRow}
+                                key="today-entry"
+                                note={todayContent}
+                                date={today}
+                                onChange={setTodayContent}
+                                daysInRow={todayEntry?.inRow}
                             />
-                        ))}
-                        <DailyNote
-                            key="today-entry"
-                            note={todayContent}
-                            date={today}
-                            onChange={setTodayContent}
-                            daysInRow={todayEntry?.inRow}
-                        />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <button
+                ref={scrollBottomRef}
+                onClick={(e) => {
+                    e.preventDefault();
+                    scrollBottom();
+                }}
+                className={`${style['scroll-bottom-button']} icon-button`}
+                title="Scroll to bottom"
+                style={{ display: 'none' }}
+            >
+                ▼
+            </button>
+        </>
     );
 };

@@ -31,48 +31,52 @@ interface ContentProps extends HTMLAttributes<HTMLDivElement> {
     popover?: 'auto' | 'manual';
 }
 
-export const Popover = {
-    Root: (({ children }) => {
-        const id = useId();
-        const triggerId = `popover-trigger${id}`;
-        const contentId = `popover-content${id}`;
+const Trigger: FC<TriggerProps> = (props) => {
+    const { triggerId, contentId } = usePopoverContext();
 
-        return (
-            <PopoverContext.Provider value={{ triggerId, contentId }}>
-                {children}
-            </PopoverContext.Provider>
-        );
-    }) as FC<PopoverProps>,
-
-    Trigger: ((props) => {
-        const { triggerId, contentId } = usePopoverContext();
-
-        return (
-            <button
-                id={triggerId}
-                popoverTarget={contentId}
-                {...props}
-            />
-        );
-    }) as FC<TriggerProps>,
-
-    Content: (({ popover = 'auto', style: styleProp, ...props }) => {
-        const { triggerId, contentId } = usePopoverContext();
-
-        return (
-            <div
-                ref={(el) => {
-                    el?.setAttribute('anchor', triggerId);
-                }}
-                popover={popover}
-                id={contentId}
-                style={{
-                    top: 'anchor(bottom)',
-                    left: 'anchor(left)',
-                    ...styleProp,
-                }}
-                {...props}
-            />
-        );
-    }) as FC<ContentProps>,
+    return (
+        <button
+            id={triggerId}
+            popoverTarget={contentId}
+            {...props}
+        />
+    );
 };
+
+const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, ...props }) => {
+    const { triggerId, contentId } = usePopoverContext();
+
+    return (
+        <div
+            ref={(el) => {
+                el?.setAttribute('anchor', triggerId);
+            }}
+            popover={popover}
+            id={contentId}
+            style={{
+                top: 'anchor(bottom)',
+                left: 'anchor(left)',
+                ...styleProp,
+            }}
+            {...props}
+        />
+    );
+};
+
+export const Popover: FC<PopoverProps> & {
+    Trigger: FC<TriggerProps>;
+    Content: FC<ContentProps>;
+} = ({ children }) => {
+    const id = useId();
+    const triggerId = `popover-trigger${id}`;
+    const contentId = `popover-content${id}`;
+
+    return (
+        <PopoverContext.Provider value={{ triggerId, contentId }}>
+            {children}
+        </PopoverContext.Provider>
+    );
+};
+
+Popover.Trigger = Trigger;
+Popover.Content = Content;

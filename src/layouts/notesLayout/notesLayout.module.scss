@@ -27,9 +27,18 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
         }
     }
 }
-@media (max-width: 600px) {
-    .scroll-bottom-button {
-        display: none;
+
+.scroll-bottom-button {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+
+    &:not(:hover) {
+        background: color-mix(in srgb, var(--bg) 80%, transparent);
+
+        @media (hover: hover) {
+            background: transparent;
+        }
     }
 }
 
