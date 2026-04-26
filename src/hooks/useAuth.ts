@@ -33,19 +33,24 @@ export function useAuth() {
 
     const tryToLogin = async (password: string): Promise<boolean> => {
         if (userAuth === null) {
-            const salt = MyCrypto.generaRandomString();
-            const encodedPassword = await MyCrypto.encodePassword(password, salt);
-            const databaseKey = MyCrypto.generaRandomString();
-            const encodedDatabaseKey = await MyCrypto.encryptAESGCM(databaseKey, encodedPassword);
-            const hmac = await MyCrypto.generateHMAC(databaseKey, encodedPassword);
+            try {
+                const salt = MyCrypto.generaRandomString();
+                const encodedPassword = await MyCrypto.encodePassword(password, salt);
+                const databaseKey = MyCrypto.generaRandomString();
+                const encodedDatabaseKey = await MyCrypto.encryptAESGCM(databaseKey, encodedPassword);
+                const hmac = await MyCrypto.generateHMAC(databaseKey, encodedPassword);
 
-            setDatabaseKey(databaseKey);
-            setUserAuth({
-                databaseKey: encodedDatabaseKey,
-                salt,
-                hmac
-            });
-            return true;
+                setDatabaseKey(databaseKey);
+                setUserAuth({
+                    databaseKey: encodedDatabaseKey,
+                    salt,
+                    hmac,
+                });
+                return true;
+            } catch (e) {
+                console.error(`Error creating new account. ${e}`);
+                return false;
+            }
         }
 
         const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
@@ -57,7 +62,7 @@ export function useAuth() {
             return false;
         }
 
-        if (await MyCrypto.verifyKey(databaseKey, userAuth.hmac, encodedPassword) === false) {
+        if ((await MyCrypto.verifyKey(databaseKey, userAuth.hmac, encodedPassword)) === false) {
             console.error('HMAC verification failed');
             return false;
         }
