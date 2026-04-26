@@ -8,14 +8,17 @@
 
 declare const dialog: string;
 declare const button: string;
+declare const content: string;
 
 export {
 	dialog,
-	button
+	button,
+	content
 };
 
 declare const __default_export__: {
 	dialog: typeof dialog;
 	button: typeof button;
+	content: typeof content;
 };
 export default __default_export__;

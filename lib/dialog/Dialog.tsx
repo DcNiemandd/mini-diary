@@ -58,6 +58,8 @@ export const Dialog: FC<DialogProps> = ({
         [closeWith, openDialog]
     );
 
+    console.log(`Styles: ${style.dialog} ${className}`);
+
     return (
         <dialog
             ref={dialogRef}

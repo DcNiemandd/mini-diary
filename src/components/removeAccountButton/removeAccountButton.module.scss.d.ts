@@ -6,18 +6,9 @@
  * https://npmjs.com/vite-css-modules
  */
 
-declare const removeAccountPopover: string;
-declare const buttons: string;
-declare const yes: string;
-
-export {
-	buttons,
-	yes
-};
+declare const removeAccountButtonYes: string;
 
 declare const __default_export__: {
-	"remove-account-popover": typeof removeAccountPopover;
-	buttons: typeof buttons;
-	yes: typeof yes;
+	"remove-account-button-yes": typeof removeAccountButtonYes;
 };
 export default __default_export__;

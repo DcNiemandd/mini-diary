@@ -11,6 +11,7 @@ export const openAppDialog: OpenDialogFn = (options) => {
             className: `${style.button} ${btn.className ?? ''}`,
         })),
         title: options.title && <h2>{options.title}</h2>,
+        content: options.content && <div className={style.content}>{options.content}</div>,
     });
 };
 

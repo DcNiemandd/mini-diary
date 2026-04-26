@@ -1,16 +1,17 @@
 import type { FC } from 'react';
-import { openDialog } from '../../../lib/dialog/index.ts';
+import { openAppDialog } from '../appDialog/appDialog';
+import style from './removeAccountButton.module.scss';
 
 export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) => {
     const handleClick = async () => {
-        const result = await openDialog({
+        const result = await openAppDialog({
             title: 'Remove account',
             content: <p>Are you sure you want to remove your account? This action cannot be undone.</p>,
             buttons: [
                 {
                     type: 'confirm',
                     label: 'Yes, remove my account',
-                    style: { backgroundColor: 'var(--danger)' },
+                    className: style['remove-account-button-yes'],
                 },
                 {
                     type: 'cancel',
@@ -25,7 +26,10 @@ export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) =>
     };
 
     return (
-        <button type="button" onClick={handleClick}>
+        <button
+            type="button"
+            onClick={handleClick}
+        >
             Remove account
         </button>
     );

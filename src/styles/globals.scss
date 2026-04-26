@@ -88,3 +88,13 @@ dialog {
     align-items: center;
     justify-content: center;
 }
+
+[popover] {
+    background: var(--bg-light);
+    color: var(--text);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    font: var(--p);
+    padding: 1.5rem;
+}
