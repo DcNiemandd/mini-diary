@@ -8,9 +8,11 @@ import {
     type ReactNode,
 } from 'react';
 
+type CssName = `--${string}`;
+
 interface PopoverContextValue {
-    triggerId: string;
-    contentId: string;
+    triggerId: CssName;
+    contentId: CssName;
 }
 
 const PopoverContext = createContext<PopoverContextValue | null>(null);
@@ -31,32 +33,43 @@ interface ContentProps extends HTMLAttributes<HTMLDivElement> {
     popover?: 'auto' | 'manual';
 }
 
-const Trigger: FC<TriggerProps> = (props) => {
+const Trigger: FC<TriggerProps> = ({ style: styleProp, ...props }) => {
     const { triggerId, contentId } = usePopoverContext();
 
     return (
         <button
             id={triggerId}
             popoverTarget={contentId}
+            style={{
+                ...styleProp,
+                anchorName: triggerId,
+            }}
             {...props}
         />
     );
 };
 
+/**
+ * You can position the content using CSS variable `--popover-id`. Default is bottom left seen in example:
+ * @example
+ * <Popover.Content style={{ top: `anchor(var(--popover-id) bottom)`, left: `anchor(var(--popover-id) left)` }}>
+ *     Content
+ * </Popover.Content>
+ */
 const Content: FC<ContentProps> = ({ popover = 'auto', style: styleProp, ...props }) => {
     const { triggerId, contentId } = usePopoverContext();
 
     return (
         <div
-            ref={(el) => {
-                el?.setAttribute('anchor', triggerId);
-            }}
             popover={popover}
             id={contentId}
             style={{
-                top: 'anchor(bottom)',
-                left: 'anchor(left)',
+                top: `anchor(var(--popover-id) bottom)`,
+                left: `anchor(var(--popover-id) left)`,
                 ...styleProp,
+                // @ts-expect-error CSS properties with custom names are not recognized by TypeScript, but they work in CSS.
+                '--popover-id': triggerId,
+                positionAnchor: 'var(--popover-id)',
             }}
             {...props}
         />
@@ -68,15 +81,12 @@ export const Popover: FC<PopoverProps> & {
     Content: FC<ContentProps>;
 } = ({ children }) => {
     const id = useId();
-    const triggerId = `popover-trigger${id}`;
-    const contentId = `popover-content${id}`;
+    const triggerId: CssName = `--popover-trigger${id}`;
+    const contentId: CssName = `--popover-content${id}`;
 
-    return (
-        <PopoverContext.Provider value={{ triggerId, contentId }}>
-            {children}
-        </PopoverContext.Provider>
-    );
+    return <PopoverContext.Provider value={{ triggerId, contentId }}>{children}</PopoverContext.Provider>;
 };
 
 Popover.Trigger = Trigger;
 Popover.Content = Content;
+

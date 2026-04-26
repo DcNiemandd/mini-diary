@@ -8,26 +8,20 @@
 
 declare const dialog: string;
 declare const header: string;
-declare const title: string;
 declare const close: string;
-declare const content: string;
 declare const buttons: string;
 
 export {
 	dialog,
 	header,
-	title,
 	close,
-	content,
 	buttons
 };
 
 declare const __default_export__: {
 	dialog: typeof dialog;
 	header: typeof header;
-	title: typeof title;
 	close: typeof close;
-	content: typeof content;
 	buttons: typeof buttons;
 };
 export default __default_export__;

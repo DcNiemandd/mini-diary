@@ -1,18 +1,9 @@
 .dialog {
-    &::backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
     .header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .title {
-        margin: 0;
     }
 
     .close {
@@ -24,10 +15,6 @@
         align-items: center;
         justify-content: center;
         padding: 0;
-    }
-
-    .content {
-        margin-bottom: 1rem;
     }
 
     .buttons {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FC } from 'react';
-import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
 import style from './dialog.module.scss';
+import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
 
 interface DialogProps extends DialogOptions {
     onResult: (result: DialogResult) => void;
@@ -37,7 +37,7 @@ export const Dialog: FC<DialogProps> = ({
             dialogRef.current?.close();
             onResult(result);
         },
-        [onResult],
+        [onResult]
     );
 
     const handleCrossClick = useCallback(() => {
@@ -55,7 +55,7 @@ export const Dialog: FC<DialogProps> = ({
             }
             closeWith({ closedBy: 'button', button });
         },
-        [closeWith, openDialog],
+        [closeWith, openDialog]
     );
 
     return (
@@ -68,11 +68,11 @@ export const Dialog: FC<DialogProps> = ({
         >
             {(title || showClose) && (
                 <header className={style.header}>
-                    {title && <h2 className={style.title}>{title}</h2>}
+                    {title}
                     {showClose && (
                         <button
                             type="button"
-                            className={style.close}
+                            className={` ${style.close} dialog-close`}
                             onClick={handleCrossClick}
                             aria-label="Close"
                         >
@@ -81,7 +81,7 @@ export const Dialog: FC<DialogProps> = ({
                     )}
                 </header>
             )}
-            {content && <div className={style.content}>{content}</div>}
+            {content}
             {buttons.length > 0 && (
                 <div className={style.buttons}>
                     {buttons.map((button, i) => (
@@ -101,3 +101,4 @@ export const Dialog: FC<DialogProps> = ({
         </dialog>
     );
 };
+
