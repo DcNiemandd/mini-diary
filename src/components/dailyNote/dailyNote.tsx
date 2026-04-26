@@ -22,7 +22,12 @@ export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow 
                 >
                     {date.toLocaleString(DateTime.DATE_FULL)}
                 </time>
-                <span className={style['days-in-row']}>✧ {daysInRow}</span>
+                <span
+                    className={style['days-in-row']}
+                    title="Days in a row"
+                >
+                    ✧ {daysInRow}
+                </span>
             </header>
             {onChange ? (
                 <div

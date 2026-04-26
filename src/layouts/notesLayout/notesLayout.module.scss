@@ -1,3 +1,8 @@
+$top-bar-padding: 0.5rem;
+$top-bar-inside-height: 3rem;
+
+$top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
+
 .container {
     display: flex;
     flex-flow: column;
@@ -8,13 +13,19 @@
 }
 
 .top-bar {
-    flex: 0 0 50px;
+    flex: 0 0 $top-bar-height;
 
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     gap: 2rem;
-    padding: 0.5rem 2rem;
+    padding: $top-bar-padding 2rem;
+
+    @media (hover: hover) {
+        button:not(:hover) {
+            background: transparent;
+        }
+    }
 }
 @media (max-width: 600px) {
     .scroll-bottom-button {
@@ -25,7 +36,7 @@
 .content {
     flex: 1 1 auto;
 
-    max-height: calc(100% - 50px);
+    max-height: calc(100% - $top-bar-height);
     display: flex;
     justify-content: center;
     align-items: flex-end;

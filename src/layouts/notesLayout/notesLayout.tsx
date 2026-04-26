@@ -1,7 +1,7 @@
 import { useContext, useRef, type FC } from 'react';
+import { Popover } from '../../../lib/popover/index.ts';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
-import { Popover } from '../../../lib/popover/index.ts';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
@@ -9,7 +9,7 @@ import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery';
 import { useSplitEntries } from '../../hooks/useSplitEntries';
 import { useTodayNote } from '../../hooks/useTodayNote';
-import style from './notesLayout.module.css';
+import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     const { logout } = useContext(AuthContext);
