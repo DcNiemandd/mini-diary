@@ -10,7 +10,9 @@ export const Router = () => {
     const auth = useContext(AuthContext);
 
     useEffect(() => {
-        auth.tryToLogin('testtest');
+        if (import.meta.env.DEV) {
+            auth.tryToLogin('testtest');
+        }
     }, []);
 
     return (
