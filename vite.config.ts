@@ -26,6 +26,7 @@ export default defineConfig({
             includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', './assets/*'],
             manifest: {
                 name: 'Minimalistic diary',
+                id: 'com.mini-diary.app',
                 short_name: 'Mini diary',
                 theme_color: '#ffffff',
                 icons: [
