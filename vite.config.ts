@@ -1,58 +1,58 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
-import { patchCssModules } from 'vite-css-modules'
-import { VitePWA } from 'vite-plugin-pwa'
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import { patchCssModules } from 'vite-css-modules';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/mini-diary/',
-  build: {
-    cssCodeSplit: false
-  },
-  plugins: [
-    patchCssModules({
-      generateSourceTypes: true
-    }),
-    react({
-      babel: {
-        plugins: [['babel-plugin-react-compiler']],
-      },
-    }),
-    VitePWA({
-      devOptions: {
-        enabled: false
-      },
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', './assets/*'],
-      manifest: {
-        name: 'Vite PWA Project',
-        short_name: 'Vite PWA Project',
-        theme_color: '#ffffff',
-        icons: [
-          {
-            src: 'pwa-64x64.png',
-            sizes: '64x64',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: 'maskable-icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ],
-      },
-    })
-  ],
-})
+    base: '/mini-diary/',
+    build: {
+        cssCodeSplit: false,
+    },
+    plugins: [
+        patchCssModules({
+            generateSourceTypes: true,
+        }),
+        react({
+            babel: {
+                plugins: [['babel-plugin-react-compiler']],
+            },
+        }),
+        VitePWA({
+            devOptions: {
+                enabled: false,
+            },
+            registerType: 'autoUpdate',
+            includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', './assets/*'],
+            manifest: {
+                name: 'Minimalistic diary',
+                short_name: 'Mini diary',
+                theme_color: '#ffffff',
+                icons: [
+                    {
+                        src: 'pwa-64x64.png',
+                        sizes: '64x64',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'pwa-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                    },
+                    {
+                        src: 'pwa-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'any',
+                    },
+                    {
+                        src: 'maskable-icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'maskable',
+                    },
+                ],
+            },
+        }),
+    ],
+});
