@@ -13,7 +13,7 @@ export const useTodayNote = (
     // Populate textarea from loaded entry on first load
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTodayContent((prev) => prev ?? todayEntry?.content ?? '');
+        setTodayContent((prev) => prev || todayEntry?.content || '');
     }, [todayEntry]);
 
     // Debounced auto-save

@@ -32,8 +32,6 @@ export const useEntriesQuery = () => {
                     todayEntryIdRef.current = todayEntry.id;
                 }
             }
-
-            console.log('Today entry id ref:', todayEntryIdRef.current);
         },
         [query.data?.pages]
     );
@@ -55,13 +53,12 @@ export const useEntriesQuery = () => {
         },
     });
     return {
-        entries:
-            query.data?.pages
-                ?.slice()
-                .reverse()
-                .flatMap((page) => page.entries) ?? [],
+        entries: query.data?.pages.flatMap((page) => page.entries.reverse()) ?? [],
         isPending: query.isPending,
         isError: query.isError,
+        fetchNextPage: query.fetchNextPage,
+        hasNextPage: query.hasNextPage,
+        isFetchingNextPage: query.isFetchingNextPage,
         saveEntry: mutation.mutate,
         isSaving: mutation.isPending,
     };

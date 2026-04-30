@@ -10,7 +10,8 @@ import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     const { logout } = useContext(AuthContext);
-    const { entries, isPending, isError, saveEntry, isSaving } = useEntriesQuery();
+    const { entries, isPending, isError, saveEntry, isSaving, fetchNextPage, hasNextPage, isFetchingNextPage } =
+        useEntriesQuery();
     const { todayEntry, pastEntries, today } = useSplitEntries(entries);
     const { todayContent, setTodayContent, isSaved } = useTodayNote(todayEntry, saveEntry, isSaving);
 
@@ -60,6 +61,16 @@ export const NotesLayout: FC = () => {
                         <div>
                             {isPending && <p>Loading entries…</p>}
                             {isError && <p>Failed to decrypt entries.</p>}
+                            <button
+                                onClick={() => fetchNextPage()}
+                                disabled={!hasNextPage || isFetchingNextPage}
+                            >
+                                {isFetchingNextPage
+                                    ? 'Loading…'
+                                    : hasNextPage
+                                      ? 'Load older entries'
+                                      : 'All entries loaded'}
+                            </button>
                             {pastEntries.map((entry) => (
                                 <DailyNote
                                     key={entry.date.toISODate()}

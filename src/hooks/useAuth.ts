@@ -106,10 +106,6 @@ export function useAuth(): AuthState {
         return MyCrypto.decryptAESGCM(gibberish, databaseKey);
     };
 
-    useEffect(() => console.count('useAuth tryToLogin'), [tryToLogin]);
-    useEffect(() => console.count('useAuth userAuth'), [userAuth]);
-    useEffect(() => console.count('useAuth removeAccount'), [removeAccount]);
-
     return {
         isInitializing,
         isLoggedIn: Boolean(databaseKey),
