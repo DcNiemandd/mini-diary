@@ -1,11 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { clearEntries } from '../services/entriesStorageService';
+import { useEffect, useState } from 'react';
+import { type UserRecord } from '../services/db';
+import { migrateLocalStorageEntries, migrateLocalStorageUser } from '../services/migrateFromLocalStorage';
+import { deleteUserAndEntries, getCurrentUser, putUser } from '../services/usersService';
 import { MyCrypto } from '../utils/crypto';
-import { useLocalStorage } from './useStorage';
 
 export interface AuthState {
     isUser: boolean;
+    isInitializing: boolean;
     isLoggedIn: boolean;
     databaseKeyId: string | null;
     tryToLogin: (password: string) => Promise<boolean>;
@@ -15,21 +17,23 @@ export interface AuthState {
     removeAccount: () => void;
 }
 
-interface UserAuth {
-    /** encoded DB key */
-    databaseKey: string;
-    /** password key salt */
-    salt: string;
-    /** DB key hmac */
-    hmac: string;
-}
-
 export function useAuth() {
-    const [userAuth, setUserAuth] = useLocalStorage<UserAuth | null>('state-auth-user', null);
+    const [userAuth, setUserAuth] = useState<UserRecord | null>(null);
     const [databaseKey, setDatabaseKey] = useState<string | null>(null);
+    const [isInitializing, setIsInitializing] = useState(true);
     const queryClient = useQueryClient();
-    const isLoggedIn = Boolean(databaseKey);
-    const isUser = userAuth !== null;
+
+    useEffect(function userAuthLoad() {
+        const userAuthLoad = async () => {
+            // Mutation from local storage to V0
+            await migrateLocalStorageUser();
+            // Load user auth from IndexedDB
+            setUserAuth(await getCurrentUser());
+            setIsInitializing(false);
+        };
+
+        userAuthLoad();
+    });
 
     const tryToLogin = async (password: string): Promise<boolean> => {
         if (userAuth === null) {
@@ -40,12 +44,15 @@ export function useAuth() {
                 const encodedDatabaseKey = await MyCrypto.encryptAESGCM(databaseKey, encodedPassword);
                 const hmac = await MyCrypto.generateHMAC(databaseKey, encodedPassword);
 
-                setDatabaseKey(databaseKey);
-                setUserAuth({
+                const userAuth: UserRecord = {
                     databaseKey: encodedDatabaseKey,
                     salt,
                     hmac,
-                });
+                };
+                await putUser(userAuth);
+                setUserAuth(userAuth);
+                setDatabaseKey(databaseKey);
+
                 return true;
             } catch (e) {
                 console.error(`Error creating new account. ${e}`);
@@ -54,25 +61,31 @@ export function useAuth() {
         }
 
         const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
-        let databaseKey: string | null = null;
+        let plainKey: string | null = null;
         try {
-            databaseKey = await MyCrypto.decryptAESGCM(userAuth.databaseKey, encodedPassword);
+            plainKey = await MyCrypto.decryptAESGCM(userAuth.databaseKey, encodedPassword);
         } catch {
             console.error('Cannot decrypt database key');
             return false;
         }
 
-        if ((await MyCrypto.verifyKey(databaseKey, userAuth.hmac, encodedPassword)) === false) {
+        if ((await MyCrypto.verifyKey(plainKey, userAuth.hmac, encodedPassword)) === false) {
             console.error('HMAC verification failed');
             return false;
         }
 
-        setDatabaseKey(databaseKey);
+        setDatabaseKey(plainKey);
+
+        // Migration from local storage
+        await migrateLocalStorageEntries(userAuth.databaseKey, (data) => MyCrypto.encryptAESGCM(data, plainKey));
+
         return true;
     };
 
-    const removeAccount = () => {
-        clearEntries();
+    const removeAccount = async () => {
+        if (userAuth) {
+            await deleteUserAndEntries(userAuth.databaseKey);
+        }
         setUserAuth(null);
         setDatabaseKey(null);
         queryClient.clear();
@@ -94,11 +107,12 @@ export function useAuth() {
     };
 
     return {
-        isLoggedIn,
+        isInitializing,
+        isLoggedIn: Boolean(databaseKey),
         databaseKeyId: databaseKey,
         tryToLogin,
         logout,
-        isUser,
+        isUser: userAuth !== null,
         encryptData,
         decryptData,
         removeAccount,
