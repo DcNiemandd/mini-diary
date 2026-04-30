@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { useEffect, useMemo, useState } from 'react';
-import type { Entry } from '../services/entriesStorageService';
+import type { Entry } from '../services/entriesDbService';
 
 const startOfToday = () => DateTime.now().startOf('day');
 

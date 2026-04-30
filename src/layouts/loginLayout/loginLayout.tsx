@@ -6,13 +6,13 @@ import { AuthContext } from '../../contexts/authContext/authContext.ts';
 import style from './loginLayout.module.scss';
 
 export const LoginLayout: FC = () => {
-    const { isUser } = useContext(AuthContext);
+    const { isUser, isInitializing } = useContext(AuthContext);
 
     useEffect(() => {
-        if (!isUser) {
+        if (!isUser && !isInitializing) {
             openHelpDialog();
         }
-    }, [isUser]);
+    }, [isUser, isInitializing]);
 
     return (
         <div className={style['login-container']}>

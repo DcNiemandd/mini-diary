@@ -11,7 +11,7 @@ export const Router = () => {
 
     useEffect(() => {
         if (import.meta.env.DEV) {
-            auth.tryToLogin('testtest');
+            // auth.tryToLogin('testtest');
         }
     }, []);
 

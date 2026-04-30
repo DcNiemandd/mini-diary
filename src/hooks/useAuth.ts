@@ -9,7 +9,7 @@ export interface AuthState {
     isUser: boolean;
     isInitializing: boolean;
     isLoggedIn: boolean;
-    databaseKeyId: string | null;
+    userId: string | null;
     tryToLogin: (password: string) => Promise<boolean>;
     logout: () => void;
     encryptData: (data: string) => Promise<string>;
@@ -17,7 +17,7 @@ export interface AuthState {
     removeAccount: () => void;
 }
 
-export function useAuth() {
+export function useAuth(): AuthState {
     const [userAuth, setUserAuth] = useState<UserRecord | null>(null);
     const [databaseKey, setDatabaseKey] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState(true);
@@ -33,7 +33,7 @@ export function useAuth() {
         };
 
         userAuthLoad();
-    });
+    }, []);
 
     const tryToLogin = async (password: string): Promise<boolean> => {
         if (userAuth === null) {
@@ -106,10 +106,14 @@ export function useAuth() {
         return MyCrypto.decryptAESGCM(gibberish, databaseKey);
     };
 
+    useEffect(() => console.count('useAuth tryToLogin'), [tryToLogin]);
+    useEffect(() => console.count('useAuth userAuth'), [userAuth]);
+    useEffect(() => console.count('useAuth removeAccount'), [removeAccount]);
+
     return {
         isInitializing,
         isLoggedIn: Boolean(databaseKey),
-        databaseKeyId: databaseKey,
+        userId: userAuth?.databaseKey ?? null,
         tryToLogin,
         logout,
         isUser: userAuth !== null,

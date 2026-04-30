@@ -3,7 +3,7 @@ import { HelpContent } from './HelpContent.tsx';
 
 export const openHelpDialog = () =>
     openAppDialog({
-        title: <h3>About Mini Diary</h3>,
+        title: 'About Mini Diary',
         content: <HelpContent />,
         showClose: true,
     });

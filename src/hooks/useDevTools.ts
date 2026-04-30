@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
+import { ENTRIES_STORE, getDb, type EntryRecord } from '../services/db';
 import { readRawEntries } from '../services/entriesStorageService';
 
 const STORAGE_KEY = 'state-entries-data';
@@ -9,12 +10,13 @@ declare global {
     interface Window {
         devTools?: {
             seedEntries: (count?: number) => Promise<void>;
+            printEntries: () => Promise<void>;
         };
     }
 }
 
 export function useDevTools() {
-    const { encryptData } = useContext(AuthContext);
+    const { encryptData, decryptData, userId } = useContext(AuthContext);
 
     useEffect(() => {
         if (import.meta.env.DEV) {
@@ -36,11 +38,39 @@ export function useDevTools() {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(raw));
                     console.log(`Seeded ${count} entries. Reload the page to see them.`);
                 },
+                printEntries: async () => {
+                    const db = await getDb();
+                    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+                    const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
+                    const records: EntryRecord[] = [];
+                    let cursor = await idx.openCursor(range, 'next');
+                    while (cursor) {
+                        records.push(cursor.value);
+                        cursor = await cursor.continue();
+                    }
+                    const entries = await Promise.all(
+                        records.map(async (record) => ({
+                            id: record.id!,
+                            date: DateTime.fromISO(await decryptData(record.encryptedDate)),
+                            content: await decryptData(record.encryptedContent),
+                            inRow: Number(await decryptData(record.inRow)),
+                        }))
+                    );
+
+                    const tab = window.open('', '_blank');
+                    if (!tab) {
+                        console.error('Unable to open new tab for entries output.');
+                        return;
+                    }
+
+                    tab.document.write(`<pre>${JSON.stringify(entries, null, 2)}</pre>`);
+                    tab.document.close();
+                },
             };
             return () => {
                 delete window.devTools;
             };
         }
-    }, [encryptData]);
+    }, [decryptData, encryptData, userId]);
 }
 

@@ -21,7 +21,7 @@ export interface EntryRecord {
 
 const migrateToV1 = (db: IDBPDatabase): void => {
     // users: keyed by encoded databaseKey
-    db.createObjectStore(USERS_STORE, { keyPath: 'databaseKey' });
+    db.createObjectStore(USERS_STORE, { keyPath: 'databaseKey' satisfies keyof UserRecord });
 
     // entries: autoIncrement id + compound index for per-user cursor pagination
     const entries = db.createObjectStore(ENTRIES_STORE, {

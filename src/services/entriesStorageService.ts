@@ -1,10 +1,5 @@
 import { DateTime } from 'luxon';
-
-export interface Entry {
-    date: DateTime;
-    content: string;
-    inRow: number;
-}
+import type { Entry } from './entriesDbService';
 
 export type DbEntry = Omit<Entry, 'inRow'>;
 

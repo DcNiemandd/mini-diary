@@ -1,14 +1,4 @@
 import { createContext } from 'react';
+import type { AuthState } from '../../hooks/useAuth';
 
-export interface AuthContextValue {
-    isUser: boolean;
-    isLoggedIn: boolean;
-    databaseKeyId: string | null;
-    tryToLogin: (password: string) => Promise<boolean>;
-    logout: () => void;
-    removeAccount: () => void;
-    encryptData: (data: string) => Promise<string>;
-    decryptData: (data: string) => Promise<string>;
-}
-
-export const AuthContext = createContext<AuthContextValue>({} as AuthContextValue);
+export const AuthContext = createContext<AuthState>({} as AuthState);

@@ -1,24 +1,28 @@
 import { DateTime } from 'luxon';
-import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './db';
+import { ENTRIES_STORE, getDb } from './db';
 import type { Entry } from './entriesDbService';
+import { putUser } from './usersService';
 
 const LS_AUTH_KEY = 'state-auth-user';
 const LS_ENTRIES_KEY = 'state-entries-data';
+const AUTH_MIGRATED_FLAG = 'migration-auth-done';
+const ENTRIES_MIGRATED_FLAG = 'migration-entries-done';
 
 /**
  * Move state-auth-user from localStorage into the users store.
  * Idempotent. Safe to call on every app start.
  */
-export const migrateLocalStorageUser = async (): Promise<UserRecord | null> => {
+export const migrateLocalStorageUser = async (): Promise<void> => {
     const db = await getDb();
-    if (db.version < 1) {
+    if (db.version <= 1) {
         const oldUserAuth = localStorage.getItem(LS_AUTH_KEY);
-        if (!oldUserAuth) {
-            return null;
+        const alreadyMigrated = localStorage.getItem(AUTH_MIGRATED_FLAG);
+        if (!oldUserAuth || alreadyMigrated) {
+            return;
         }
-        await db.transaction(USERS_STORE, 'readwrite').store.add(JSON.parse(oldUserAuth));
+        await putUser(JSON.parse(oldUserAuth));
+        localStorage.setItem(AUTH_MIGRATED_FLAG, 'true');
     }
-    return null;
 };
 
 /**
@@ -35,11 +39,10 @@ export const migrateLocalStorageEntries = async (
     encryptData: (s: string) => Promise<string>
 ): Promise<void> => {
     const db = await getDb();
-    if (db.version < 1) {
-        const transaction = db.transaction(ENTRIES_STORE, 'readwrite');
-
+    if (db.version <= 1) {
         const oldEntries = localStorage.getItem(LS_ENTRIES_KEY);
-        if (oldEntries) {
+        const alreadyMigrated = localStorage.getItem(ENTRIES_MIGRATED_FLAG);
+        if (oldEntries && !alreadyMigrated) {
             const blob: Record<string, string> = JSON.parse(oldEntries);
             const sorted = Object.entries(blob)
                 .map(
@@ -58,17 +61,24 @@ export const migrateLocalStorageEntries = async (
                     return acc;
                 }, [] as Entry[]);
 
-            await Promise.all(
-                sorted.map(async (entry) => {
-                    transaction.objectStore(ENTRIES_STORE).add({
-                        userId,
-                        encryptedDate: await encryptData(entry.date.toISO()!),
-                        encryptedContent: entry.content,
-                        inRow: await encryptData(String(entry.inRow)),
-                    });
-                })
+            const entriesToAdd = await Promise.all(
+                sorted.map(async (entry) => ({
+                    userId,
+                    encryptedDate: await encryptData(entry.date.toISODate()!),
+                    encryptedContent: entry.content,
+                    inRow: await encryptData(String(entry.inRow)),
+                }))
             );
+
+            const transaction = db.transaction(ENTRIES_STORE, 'readwrite');
+            for (const entry of entriesToAdd) {
+                transaction.store.add(entry).catch((e) => {
+                    console.error('Error migrating entry', entry, e);
+                });
+            }
+            await transaction.done;
+
+            localStorage.setItem(ENTRIES_MIGRATED_FLAG, 'true');
         }
-        await transaction.done;
     }
 };

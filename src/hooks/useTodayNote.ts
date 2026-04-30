@@ -1,9 +1,12 @@
-import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
-import type { DbEntry, Entry } from '../services/entriesStorageService';
+import type { Entry } from '../services/entriesDbService';
 import { useDebounce } from './useDebounce';
 
-export const useTodayNote = (todayEntry: Entry | undefined, saveEntry: (entry: DbEntry) => void, isSaving: boolean) => {
+export const useTodayNote = (
+    todayEntry: Entry | undefined,
+    saveEntry: (entryContent: string) => void,
+    isSaving: boolean
+) => {
     const [todayContent, setTodayContent] = useState('');
     const debouncedContent = useDebounce(todayContent, 500);
 
@@ -16,7 +19,7 @@ export const useTodayNote = (todayEntry: Entry | undefined, saveEntry: (entry: D
     // Debounced auto-save
     useEffect(() => {
         if (debouncedContent) {
-            saveEntry({ date: DateTime.now(), content: debouncedContent });
+            saveEntry(debouncedContent);
         }
     }, [debouncedContent, saveEntry]);
 

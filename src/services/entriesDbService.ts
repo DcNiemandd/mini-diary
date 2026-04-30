@@ -96,13 +96,12 @@ export const getIdBounds = async (userId: string): Promise<{ min: number; max: n
  */
 export const createEntry = async (
     userId: string,
-    entry: Omit<Entry, 'inRow' | 'date'>,
+    entryText: string,
     encryptData: (s: string) => Promise<string>,
     decryptData: (s: string) => Promise<string>
 ): Promise<number> => {
     const db = await getDb();
-    const transaction = db.transaction(ENTRIES_STORE, 'readwrite');
-    const idx = transaction.store.index('userId_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
 
     // Calculate inRow
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
@@ -112,13 +111,13 @@ export const createEntry = async (
     const inRow =
         lastEntryRecord && lastEntryDate?.diff(today, 'days').days === 1
             ? Number(await decryptData(lastEntryRecord.inRow)) + 1
-            : 0;
+            : 1;
 
-    const entryWithInRow = { ...entry, inRow, date: today };
+    const entryWithInRow = { content: entryText, inRow, date: today };
 
-    const id = await transaction.store.add(await entryToEntryRecord(entryWithInRow, userId, encryptData));
+    const record = await entryToEntryRecord(entryWithInRow, userId, encryptData);
+    const id = await db.transaction(ENTRIES_STORE, 'readwrite').store.add(record);
 
-    await transaction.done;
     return id as number;
 };
 
