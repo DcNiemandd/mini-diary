@@ -119,7 +119,8 @@ Try to use modern browser features such as:
     - ~~settings/bottom/logout styling~~
     - expand settings with password change, ~~about/help~~
     - data export/import
-- saving notes to indexedDB
-- logout timeout
-- multiple users support
+    - logout timeout
+- ~~saving notes to indexedDB~~
+    - needs to refactor dataflow - extract todays note into own query/mutation
+    - multiple users support
 
