@@ -1,23 +1,33 @@
-import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
+import { openDB, type IDBPDatabase } from 'idb';
 
 const DB_NAME = 'mini-diary';
 const DB_VERSION = 1;
-export const STORE_NAME = 'entries';
+export const ENTRIES_STORE = 'entries';
+export const USERS_STORE = 'users';
+
+export interface UserRecord {
+    databaseKey: string; // encoded; primary key
+    salt: string;
+    hmac: string;
+}
 
 export interface EntryRecord {
     id?: number;
+    userId: string; // FK → users.databaseKey
     encryptedDate: string;
     encryptedContent: string;
 }
 
-type UpgradeTx = IDBPTransaction<unknown, string[], 'versionchange'>;
+const migrateToV1 = (db: IDBPDatabase): void => {
+    // users: keyed by encoded databaseKey
+    db.createObjectStore(USERS_STORE, { keyPath: 'databaseKey' });
 
-const migrateToV1 = (db: IDBPDatabase, _tx: UpgradeTx): void => {
-    // No indexes — every field except `id` is encrypted and opaque.
-    db.createObjectStore(STORE_NAME, {
+    // entries: autoIncrement id + compound index for per-user cursor pagination
+    const entries = db.createObjectStore(ENTRIES_STORE, {
         keyPath: 'id',
         autoIncrement: true,
     });
+    entries.createIndex('userId_id', ['userId', 'id']);
 };
 
 let _db: Promise<IDBPDatabase> | null = null;
@@ -25,10 +35,10 @@ let _db: Promise<IDBPDatabase> | null = null;
 export const getDb = (): Promise<IDBPDatabase> => {
     if (!_db) {
         _db = openDB(DB_NAME, DB_VERSION, {
-            upgrade(db, oldVersion, _newVersion, tx) {
+            upgrade(db, oldVersion) {
                 // Run migrations sequentially. Each `if` is a one-way step
                 // from oldVersion → next. New versions append a new branch.
-                if (oldVersion < 1) migrateToV1(db, tx);
+                if (oldVersion < 1) migrateToV1(db);
             },
             blocked(currentVersion, blockedVersion) {
                 // Older tab still holds the previous version open and ignored
@@ -62,3 +72,4 @@ export const closeDb = (): void => {
     _db = null;
     pending.then((db) => db.close()).catch(() => {});
 };
+
