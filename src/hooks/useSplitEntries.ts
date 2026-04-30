@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { useEffect, useMemo, useState } from 'react';
-import type { Entry } from '../services/entriesService';
+import type { Entry } from '../services/entriesStorageService';
 
 const startOfToday = () => DateTime.now().startOf('day');
 
@@ -14,15 +14,10 @@ export const useSplitEntries = (entries: Entry[]) => {
         return () => clearTimeout(timeout);
     }, [today]);
 
-    const todayEntry = useMemo(
-        () => entries.find((e) => e.date.hasSame(today, 'day')),
-        [entries, today],
-    );
+    const todayEntry = useMemo(() => entries.find((e) => e.date.hasSame(today, 'day')), [entries, today]);
 
-    const pastEntries = useMemo(
-        () => entries.filter((e) => !e.date.hasSame(today, 'day')),
-        [entries, today],
-    );
+    const pastEntries = useMemo(() => entries.filter((e) => !e.date.hasSame(today, 'day')), [entries, today]);
 
     return { todayEntry, pastEntries, today } as const;
 };
+

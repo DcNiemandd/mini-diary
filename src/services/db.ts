@@ -16,6 +16,7 @@ export interface EntryRecord {
     userId: string; // FK → users.databaseKey
     encryptedDate: string;
     encryptedContent: string;
+    inRow: string;
 }
 
 const migrateToV1 = (db: IDBPDatabase): void => {

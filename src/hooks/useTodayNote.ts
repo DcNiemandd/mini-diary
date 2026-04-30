@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
-import type { DbEntry, Entry } from '../services/entriesService';
+import type { DbEntry, Entry } from '../services/entriesStorageService';
 import { useDebounce } from './useDebounce';
 
 export const useTodayNote = (todayEntry: Entry | undefined, saveEntry: (entry: DbEntry) => void, isSaving: boolean) => {

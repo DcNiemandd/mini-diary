@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { clearEntries } from '../services/entriesService';
+import { clearEntries } from '../services/entriesStorageService';
 import { MyCrypto } from '../utils/crypto';
 import { useLocalStorage } from './useStorage';
 

@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
-import { readRawEntries } from '../services/entriesService';
+import { readRawEntries } from '../services/entriesStorageService';
 
 const STORAGE_KEY = 'state-entries-data';
 

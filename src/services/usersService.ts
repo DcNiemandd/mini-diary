@@ -1,4 +1,4 @@
-import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './entriesDb';
+import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './db';
 
 /** ONLY ONE USER FOR NOW */
 export const getCurrentUser = async (): Promise<UserRecord | null> => {
