@@ -116,9 +116,10 @@ Try to use modern browser features such as:
 - ~~login layout~~
     - ~~add about/help button with dialog~~
 - notes layout
-    - settings/~~bottom/logout~~ styling
-    - expand settings with password change, about/help
+    - ~~settings/bottom/logout styling~~
+    - expand settings with password change, ~~about/help~~
+    - data export/import
+- saving notes to indexedDB
 - logout timeout
-- data export/import
-- multiple users support & saving notes to indexedDB
+- multiple users support
 

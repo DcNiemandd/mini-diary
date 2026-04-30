@@ -3,19 +3,14 @@ import { useEffect, useState } from 'react';
 import type { DbEntry, Entry } from '../services/entriesService';
 import { useDebounce } from './useDebounce';
 
-export const useTodayNote = (
-    todayEntry: Entry | undefined,
-    saveEntry: (entry: DbEntry) => void,
-    isSaving: boolean,
-) => {
+export const useTodayNote = (todayEntry: Entry | undefined, saveEntry: (entry: DbEntry) => void, isSaving: boolean) => {
     const [todayContent, setTodayContent] = useState('');
     const debouncedContent = useDebounce(todayContent, 500);
 
     // Populate textarea from loaded entry on first load
     useEffect(() => {
-        if (todayEntry && !todayContent) {
-            setTodayContent(todayEntry.content);
-        }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTodayContent((prev) => prev ?? todayEntry?.content ?? '');
     }, [todayEntry]);
 
     // Debounced auto-save
@@ -23,7 +18,7 @@ export const useTodayNote = (
         if (debouncedContent) {
             saveEntry({ date: DateTime.now(), content: debouncedContent });
         }
-    }, [debouncedContent]);
+    }, [debouncedContent, saveEntry]);
 
     const isSaved = todayContent === debouncedContent && !isSaving;
 
@@ -41,3 +36,4 @@ export const useTodayNote = (
 
     return { todayContent, setTodayContent, isSaved };
 };
+

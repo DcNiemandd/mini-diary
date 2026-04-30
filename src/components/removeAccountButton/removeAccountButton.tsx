@@ -2,7 +2,10 @@ import type { FC } from 'react';
 import { openAppDialog } from '../appDialog/appDialog';
 import style from './removeAccountButton.module.scss';
 
-export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) => {
+export const RemoveAccountButton: FC<{ onReset: () => void } & React.ButtonHTMLAttributes<HTMLButtonElement>> = ({
+    onReset,
+    ...props
+}) => {
     const handleClick = async () => {
         const result = await openAppDialog({
             title: 'Remove account',
@@ -28,6 +31,7 @@ export const RemoveAccountButton: FC<{ onReset: () => void }> = ({ onReset }) =>
     return (
         <button
             type="button"
+            {...props}
             onClick={handleClick}
         >
             Remove account
