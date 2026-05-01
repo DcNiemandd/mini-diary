@@ -1,25 +1,18 @@
 import { useContext, useEffect, useRef, type FC } from 'react';
-import { DailyNote } from '../../components/dailyNote/dailyNote';
+import { OldNotes } from '../../components/oldNotes/oldNotes.tsx';
 import { SettingsPopover } from '../../components/settingsPopover/settingsPopover.tsx';
+import { TodayNote } from '../../components/todayNote/todayNote.tsx';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
-import { useEntriesQuery } from '../../hooks/useEntriesQuery';
-import { useTodayNote } from '../../hooks/useTodayNote';
+import { useTodayEntryQuery } from '../../hooks/useTodayEntryQuery.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
-    const { logout } = useContext(AuthContext);
-    const {
-        entries: pastEntries,
-        isPending,
-        isError,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-    } = useEntriesQuery();
-    const { todayNote, setTodayContent, isSaved } = useTodayNote();
-
     useDevTools();
+    const { logout } = useContext(AuthContext);
+
+    const isSaved = useTodayEntryQuery().mutation.isPending === false;
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollBottomRef = useRef<HTMLButtonElement>(null);
     const scrollBottom = () => {
@@ -61,33 +54,8 @@ export const NotesLayout: FC = () => {
                 <div className={style['content']}>
                     <div ref={scrollRef}>
                         <div>
-                            {isPending && <p>Loading entries…</p>}
-                            {isError && <p>Failed to decrypt entries.</p>}
-                            <button
-                                onClick={() => fetchNextPage()}
-                                disabled={!hasNextPage || isFetchingNextPage}
-                            >
-                                {isFetchingNextPage
-                                    ? 'Loading…'
-                                    : hasNextPage
-                                      ? 'Load older entries'
-                                      : 'All entries loaded'}
-                            </button>
-                            {pastEntries.map((entry) => (
-                                <DailyNote
-                                    key={entry.date.toISODate()}
-                                    note={entry.content}
-                                    date={entry.date}
-                                    daysInRow={entry.inRow}
-                                />
-                            ))}
-                            <DailyNote
-                                key="today-entry"
-                                note={todayNote.content}
-                                date={todayNote.date}
-                                onChange={setTodayContent}
-                                daysInRow={todayNote.inRow}
-                            />
+                            <OldNotes />
+                            <TodayNote />
                         </div>
                     </div>
                 </div>

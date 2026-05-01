@@ -20,6 +20,7 @@ export const useTodayEntryQuery = () => {
     });
 
     const mutation = useMutation({
+        mutationKey: queryKey,
         mutationFn: async (entryContent: string) => {
             const existingEntry = queryClient.getQueryData<(Entry & { id: number }) | null>(queryKey);
             if (existingEntry?.id) {
@@ -29,7 +30,6 @@ export const useTodayEntryQuery = () => {
             }
         },
         onSuccess: () => {
-            console.log('Entry saved successfully, invalidating query:', queryKey);
             queryClient.invalidateQueries({ queryKey });
         },
         onError: (error) => {
