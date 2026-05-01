@@ -3,18 +3,13 @@ import { useEntriesQuery } from '../../hooks/useEntriesQuery';
 import { DailyNote } from '../dailyNote/dailyNote';
 
 export const OldNotes: FC = () => {
-    const { isPending, isError, fetchNextPage, hasNextPage, isFetchingNextPage, entries } = useEntriesQuery();
+    const { isPending, isError, hasNextPage, entries } = useEntriesQuery();
 
     return (
         <>
             {isPending && <p>Loading entries…</p>}
             {isError && <p>Failed to decrypt entries.</p>}
-            <button
-                onClick={() => fetchNextPage()}
-                disabled={!hasNextPage || isFetchingNextPage}
-            >
-                {isFetchingNextPage ? 'Loading…' : hasNextPage ? 'Load older entries' : 'All entries loaded'}
-            </button>
+            {!isPending && !hasNextPage && entries.length > 0 && <p>All entries loaded</p>}
             {entries.map((entry) => (
                 <DailyNote
                     key={entry.date.toISODate()}

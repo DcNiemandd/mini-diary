@@ -12,7 +12,7 @@ export interface EntriesPage {
     nextCursor: number | null;
 }
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 15;
 
 const entryRecordToEntry = async (
     record: EntryRecord,
