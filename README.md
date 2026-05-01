@@ -117,10 +117,11 @@ Try to use modern browser features such as:
     - ~~add about/help button with dialog~~
 - notes layout
     - ~~settings/bottom/logout styling~~
+    - automatic loading when scrolling to the top
     - expand settings with password change, ~~about/help~~
     - data export/import
     - logout timeout
 - ~~saving notes to indexedDB~~
-    - needs to refactor dataflow - extract todays note into own query/mutation
+    - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - multiple users support
 
