@@ -1,29 +1,34 @@
+import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import type { Entry } from '../services/entriesDbService';
-import { useDebounce } from './useDebounce';
+import { useDebounceCall } from './useDebounceCall';
+import { useTodayEntryQuery } from './useTodayEntryQuery';
 
-export const useTodayNote = (
-    todayEntry: Entry | undefined,
-    saveEntry: (entryContent: string) => void,
-    isSaving: boolean
-) => {
+export const useTodayNote = () => {
+    const { query: todayEntryQuery, mutation: saveEntryMutation } = useTodayEntryQuery();
     const [todayContent, setTodayContent] = useState('');
-    const debouncedContent = useDebounce(todayContent, 500);
+    const debouncedMutation = useDebounceCall(saveEntryMutation.mutate, 500);
 
     // Populate textarea from loaded entry on first load
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTodayContent((prev) => prev || todayEntry?.content || '');
-    }, [todayEntry]);
+        setTodayContent((prev) => todayEntryQuery?.data?.content || prev || '');
+    }, [todayEntryQuery]);
 
     // Debounced auto-save
     useEffect(() => {
-        if (debouncedContent) {
-            saveEntry(debouncedContent);
-        }
-    }, [debouncedContent, saveEntry]);
+        debouncedMutation(todayContent);
+    }, [debouncedMutation, todayContent]);
 
-    const isSaved = todayContent === debouncedContent && !isSaving;
+    const isSaved = todayContent === (todayEntryQuery?.data?.content ?? '') && !saveEntryMutation.isPending;
+
+    // If there's not a today note, we show empty note.
+    // Today note is created on the first mutation.
+    const todayNote: Entry = {
+        content: todayContent,
+        date: todayEntryQuery?.data?.date ?? DateTime.now().startOf('day'),
+        inRow: todayEntryQuery?.data?.inRow ?? 1,
+    };
 
     // Block browser nav before save is done
     useEffect(() => {
@@ -37,6 +42,6 @@ export const useTodayNote = (
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [isSaved]);
 
-    return { todayContent, setTodayContent, isSaved };
+    return { todayNote, setTodayContent, isSaved };
 };
 

@@ -1,65 +1,31 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { DateTime } from 'luxon';
-import { useContext, useEffect, useRef } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useContext } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
-import { createEntry, fetchEntriesPage, updateEntry } from '../services/entriesDbService';
+import { fetchEntriesPage } from '../services/entriesDbService';
 
 export const useEntriesQuery = () => {
-    const { decryptData, encryptData, userId } = useContext(AuthContext);
-    const queryClient = useQueryClient();
-
-    const todayEntryIdRef = useRef<number | null>(null);
+    const { decryptData, userId } = useContext(AuthContext);
 
     const query = useInfiniteQuery({
         queryKey: queryKeys.entries(userId!),
-        queryFn: ({ pageParam }) => fetchEntriesPage(userId!, decryptData, pageParam),
+        queryFn: ({ pageParam }) =>
+            fetchEntriesPage(userId!, decryptData, pageParam).then((entriesPage) => ({
+                ...entriesPage,
+                entries: entriesPage.entries.filter((entry) => entry.date.diffNow('day').days !== 0),
+            })),
         initialPageParam: null as number | null,
         getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
         enabled: Boolean(userId),
         staleTime: Infinity,
     });
 
-    useEffect(
-        function findTodayEntry() {
-            // When the first page loads, check if today's entry is already present
-            // and record its id for subsequent saves.
-            const firstPage = query.data?.pages[0];
-            if (firstPage && todayEntryIdRef.current === null) {
-                const todayISO = DateTime.now().toISODate();
-                const todayEntry = firstPage.entries.find((e) => e.date.toISODate() === todayISO);
-                if (todayEntry) {
-                    todayEntryIdRef.current = todayEntry.id;
-                }
-            }
-        },
-        [query.data?.pages]
-    );
-
-    const mutation = useMutation({
-        mutationFn: async (entryContent: string) => {
-            if (todayEntryIdRef.current !== null) {
-                await updateEntry(userId!, todayEntryIdRef.current, entryContent, encryptData);
-            } else {
-                const newId = await createEntry(userId!, entryContent, encryptData, decryptData);
-                todayEntryIdRef.current = newId;
-            }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.entries(userId!) });
-        },
-        onError: (error) => {
-            console.error('Error saving entry:', error);
-        },
-    });
     return {
-        entries: query.data?.pages.flatMap((page) => page.entries.reverse()) ?? [],
+        entries: query.data?.pages.flatMap((page) => page.entries).reverse() ?? [],
         isPending: query.isPending,
         isError: query.isError,
         fetchNextPage: query.fetchNextPage,
         hasNextPage: query.hasNextPage,
         isFetchingNextPage: query.isFetchingNextPage,
-        saveEntry: mutation.mutate,
-        isSaving: mutation.isPending,
     };
 };

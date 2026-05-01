@@ -89,6 +89,27 @@ export const getIdBounds = async (userId: string): Promise<{ min: number; max: n
     return { min: first.value.id!, max: last.value.id! };
 };
 
+export const fetchTodayEntry = async (
+    userId: string,
+    decryptData: (s: string) => Promise<string>
+): Promise<(Entry & { id: number }) | null> => {
+    const db = await getDb();
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+
+    const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
+    const idbCursor = await idx.openCursor(range, 'prev');
+
+    if (!idbCursor) return null; // No entries at all for this user
+    const latesEntry = await entryRecordToEntry(idbCursor.value, decryptData);
+
+    if (latesEntry.date.diffNow('days').days !== 0) {
+        // Latest is not today
+        return null;
+    }
+
+    return { ...latesEntry, id: latesEntry.id! };
+};
+
 /**
  * Create a new entry from a content.
  * Date is current day.

@@ -4,16 +4,20 @@ import { SettingsPopover } from '../../components/settingsPopover/settingsPopove
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery';
-import { useSplitEntries } from '../../hooks/useSplitEntries';
 import { useTodayNote } from '../../hooks/useTodayNote';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     const { logout } = useContext(AuthContext);
-    const { entries, isPending, isError, saveEntry, isSaving, fetchNextPage, hasNextPage, isFetchingNextPage } =
-        useEntriesQuery();
-    const { todayEntry, pastEntries, today } = useSplitEntries(entries);
-    const { todayContent, setTodayContent, isSaved } = useTodayNote(todayEntry, saveEntry, isSaving);
+    const {
+        entries: pastEntries,
+        isPending,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useEntriesQuery();
+    const { todayNote, setTodayContent, isSaved } = useTodayNote();
 
     useDevTools();
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -46,12 +50,10 @@ export const NotesLayout: FC = () => {
                     <button
                         onClick={(e) => {
                             e.preventDefault();
-                            if (isSaved) {
-                                logout();
-                            } else {
-                                alert('Please wait until your changes are saved before logging out.');
-                            }
+                            logout();
                         }}
+                        disabled={!isSaved}
+                        title={isSaved ? 'Log out' : 'Please wait until your changes are saved'}
                     >
                         Log out
                     </button>
@@ -81,10 +83,10 @@ export const NotesLayout: FC = () => {
                             ))}
                             <DailyNote
                                 key="today-entry"
-                                note={todayContent}
-                                date={today}
+                                note={todayNote.content}
+                                date={todayNote.date}
                                 onChange={setTodayContent}
-                                daysInRow={todayEntry?.inRow}
+                                daysInRow={todayNote.inRow}
                             />
                         </div>
                     </div>

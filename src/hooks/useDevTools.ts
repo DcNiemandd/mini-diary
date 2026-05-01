@@ -11,6 +11,7 @@ declare global {
         devTools?: {
             seedEntries: (count?: number) => Promise<void>;
             printEntries: () => Promise<void>;
+            removeEntries: (fromId?: number, toId?: number) => Promise<void>;
         };
     }
 }
@@ -65,6 +66,17 @@ export function useDevTools() {
 
                     tab.document.write(`<pre>${JSON.stringify(entries, null, 2)}</pre>`);
                     tab.document.close();
+                },
+                removeEntries: async (fromId?: number, toId?: number) => {
+                    const db = await getDb();
+                    const idx = db.transaction(ENTRIES_STORE, 'readwrite').store.index('userId_id');
+                    const range = IDBKeyRange.bound([userId, fromId ?? -Infinity], [userId, toId ?? Infinity]);
+                    let cursor = await idx.openCursor(range, 'next');
+                    while (cursor) {
+                        await cursor.delete();
+                        cursor = await cursor.continue();
+                    }
+                    console.log(`Removed entries with IDs from ${fromId ?? '-Infinity'} to ${toId ?? 'Infinity'}.`);
                 },
             };
             return () => {

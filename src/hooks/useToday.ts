@@ -1,10 +1,10 @@
 import { DateTime } from 'luxon';
-import { useEffect, useMemo, useState } from 'react';
-import type { Entry } from '../services/entriesDbService';
+import { useEffect, useState } from 'react';
 
 const startOfToday = () => DateTime.now().startOf('day');
 
-export const useSplitEntries = (entries: Entry[]) => {
+/** Returns reactive today's date */
+export const useToday = (): DateTime => {
     const [today, setToday] = useState(startOfToday);
 
     // Re-arm a timer at each midnight rollover
@@ -14,10 +14,5 @@ export const useSplitEntries = (entries: Entry[]) => {
         return () => clearTimeout(timeout);
     }, [today]);
 
-    const todayEntry = useMemo(() => entries.find((e) => e.date.hasSame(today, 'day')), [entries, today]);
-
-    const pastEntries = useMemo(() => entries.filter((e) => !e.date.hasSame(today, 'day')), [entries, today]);
-
-    return { todayEntry, pastEntries, today } as const;
+    return today;
 };
-
