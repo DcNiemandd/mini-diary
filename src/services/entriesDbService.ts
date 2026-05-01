@@ -100,14 +100,14 @@ export const fetchTodayEntry = async (
     const idbCursor = await idx.openCursor(range, 'prev');
 
     if (!idbCursor) return null; // No entries at all for this user
-    const latesEntry = await entryRecordToEntry(idbCursor.value, decryptData);
+    const latestEntry = await entryRecordToEntry(idbCursor.value, decryptData);
 
-    if (latesEntry.date.diffNow('days').days !== 0) {
+    if (!latestEntry.date.startOf('day').equals(DateTime.now().startOf('day'))) {
         // Latest is not today
         return null;
     }
 
-    return { ...latesEntry, id: latesEntry.id! };
+    return latestEntry;
 };
 
 /**
