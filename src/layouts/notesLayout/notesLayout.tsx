@@ -22,7 +22,17 @@ export const NotesLayout: FC = () => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
     };
 
-    const loadOnScroll = useEffectEvent((scrollRefCurrent: HTMLDivElement) => {
+    const loadOnScroll = useEffectEvent(() => {
+        const scrollRefCurrent = scrollRef.current;
+        if (!scrollRefCurrent) return;
+
+        // Show bottom scroll button
+        if (scrollBottomRef.current) {
+            const isAtBottom = scrollRefCurrent.scrollTop > -50;
+            scrollBottomRef.current.style.display = isAtBottom ? 'none' : 'block';
+        }
+
+        // Load new notes
         const { scrollTop, scrollHeight, clientHeight } = scrollRefCurrent;
         const scrollableDistance = scrollHeight - clientHeight;
         if (scrollableDistance > 0 && Math.abs(scrollTop) >= scrollableDistance * 0.8) {
@@ -34,21 +44,11 @@ export const NotesLayout: FC = () => {
 
     useEffect(function scrollHandler() {
         const scrollRefCurrent = scrollRef.current;
-        const handleScroll = () => {
-            if (!scrollRefCurrent) return;
 
-            if (scrollBottomRef.current) {
-                const isAtBottom = scrollRefCurrent.scrollTop > -50;
-                scrollBottomRef.current.style.display = isAtBottom ? 'none' : 'block';
-            }
-
-            loadOnScroll(scrollRefCurrent);
-        };
-
-        scrollRefCurrent?.addEventListener('scroll', handleScroll);
+        scrollRefCurrent?.addEventListener('scroll', loadOnScroll);
 
         return () => {
-            scrollRefCurrent?.removeEventListener('scroll', handleScroll);
+            scrollRefCurrent?.removeEventListener('scroll', loadOnScroll);
         };
     }, []);
 
