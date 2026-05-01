@@ -1,26 +1,25 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import type { Entry } from '../services/entriesDbService';
 import { useDebounceCall } from './useDebounceCall';
 import { useTodayEntryQuery } from './useTodayEntryQuery';
 
 export const useTodayNote = () => {
-    const { query: todayEntryQuery, mutation: saveEntryMutation } = useTodayEntryQuery();
-    const [todayContent, setTodayContent] = useState('');
+    const queryClient = useQueryClient();
+    const { query: todayEntryQuery, mutation: saveEntryMutation, queryKey } = useTodayEntryQuery();
     const debouncedMutation = useDebounceCall(saveEntryMutation.mutate, 500);
 
-    // Populate textarea from loaded entry on first load
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTodayContent((prev) => todayEntryQuery?.data?.content || prev || '');
-    }, [todayEntryQuery]);
+    const setTodayContent = (content: string) => {
+        queryClient.setQueryData(queryKey, (oldData: Entry | null) => ({
+            ...oldData,
+            content,
+        }));
+        debouncedMutation(content);
+    };
 
-    // Debounced auto-save
-    useEffect(() => {
-        debouncedMutation(todayContent);
-    }, [debouncedMutation, todayContent]);
-
-    const isSaved = todayContent === (todayEntryQuery?.data?.content ?? '') && !saveEntryMutation.isPending;
+    const todayContent = todayEntryQuery?.data?.content ?? '';
+    const isSaved = !saveEntryMutation.isPending;
 
     // If there's not a today note, we show empty note.
     // Today note is created on the first mutation.

@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { DateTime } from 'luxon';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
@@ -12,7 +13,9 @@ export const useEntriesQuery = () => {
         queryFn: ({ pageParam }) =>
             fetchEntriesPage(userId!, decryptData, pageParam).then((entriesPage) => ({
                 ...entriesPage,
-                entries: entriesPage.entries.filter((entry) => entry.date.diffNow('day').days !== 0),
+                entries: entriesPage.entries.filter(
+                    (entry) => entry.date.diff(DateTime.now().startOf('day'), 'days').days !== 0
+                ),
             })),
         initialPageParam: null as number | null,
         getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,

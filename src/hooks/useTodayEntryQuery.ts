@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
 import { createEntry, fetchTodayEntry, updateEntry, type Entry } from '../services/entriesDbService';
@@ -19,20 +19,17 @@ export const useTodayEntryQuery = () => {
         staleTime: Infinity,
     });
 
-    useEffect(() => {
-        console.log('Today entry query - enabled:', Boolean(userId), 'data:', query.data);
-    }, [userId, query.data]);
-
     const mutation = useMutation({
         mutationFn: async (entryContent: string) => {
             const existingEntry = queryClient.getQueryData<(Entry & { id: number }) | null>(queryKey);
-            if (existingEntry) {
+            if (existingEntry?.id) {
                 await updateEntry(userId!, existingEntry.id, entryContent, encryptData);
             } else {
                 await createEntry(userId!, entryContent, encryptData, decryptData);
             }
         },
         onSuccess: () => {
+            console.log('Entry saved successfully, invalidating query:', queryKey);
             queryClient.invalidateQueries({ queryKey });
         },
         onError: (error) => {
