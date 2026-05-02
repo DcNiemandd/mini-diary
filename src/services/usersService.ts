@@ -12,14 +12,14 @@ export const putUser = async (user: UserRecord): Promise<void> => {
     await db.put(USERS_STORE, user);
 };
 
-export const deleteUserAndEntries = async (databaseKey: string): Promise<void> => {
+export const deleteUserAndEntries = async (userId: string): Promise<void> => {
     const db = await getDb();
     const tx = db.transaction([USERS_STORE, ENTRIES_STORE], 'readwrite');
 
-    await tx.objectStore(USERS_STORE).delete(databaseKey);
+    await tx.objectStore(USERS_STORE).delete(userId);
 
     const idx = tx.objectStore(ENTRIES_STORE).index('userId_id');
-    const range = IDBKeyRange.bound([databaseKey, -Infinity], [databaseKey, Infinity]);
+    const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     let cursor = await idx.openCursor(range);
     while (cursor) {
         await cursor.delete();
