@@ -2,7 +2,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { type UserRecord } from '../services/db';
 import { migrateLocalStorageEntries, migrateLocalStorageUser } from '../services/migrateFromLocalStorage';
-import { deleteUserAndEntries, getCurrentUser, putUser } from '../services/usersService';
+import {
+    changeUserPassword,
+    deleteUserAndEntries,
+    generateUser,
+    getCurrentUser,
+    putUser,
+    tryLogin,
+} from '../services/usersService';
 import { MyCrypto } from '../utils/crypto';
 
 export interface AuthState {
@@ -15,6 +22,7 @@ export interface AuthState {
     encryptData: (data: string) => Promise<string>;
     decryptData: (gibberish: string) => Promise<string>;
     removeAccount: () => void;
+    changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>;
 }
 
 export function useAuth(): AuthState {
@@ -38,18 +46,11 @@ export function useAuth(): AuthState {
     const tryToLogin = async (password: string): Promise<boolean> => {
         if (userAuth === null) {
             try {
-                const salt = MyCrypto.generaRandomString();
-                const encodedPassword = await MyCrypto.encodePassword(password, salt);
                 const userId = MyCrypto.generaRandomString();
-                const encodedUserId = await MyCrypto.encryptAESGCM(userId, encodedPassword);
-                const hmac = await MyCrypto.generateHMAC(userId, encodedPassword);
+                const userAuth = await generateUser(userId, password);
 
-                const userAuth: UserRecord = {
-                    userId: encodedUserId,
-                    salt,
-                    hmac,
-                };
                 await putUser(userAuth);
+
                 setUserAuth(userAuth);
                 setDatabaseKey(userId);
 
@@ -60,17 +61,10 @@ export function useAuth(): AuthState {
             }
         }
 
-        const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
         let userKey: string | null = null;
         try {
-            userKey = await MyCrypto.decryptAESGCM(userAuth.userId, encodedPassword);
+            userKey = await tryLogin(userAuth, password);
         } catch {
-            console.error('Cannot decrypt database key');
-            return false;
-        }
-
-        if ((await MyCrypto.verifyKey(userKey, userAuth.hmac, encodedPassword)) === false) {
-            console.error('HMAC verification failed');
             return false;
         }
 
@@ -80,6 +74,19 @@ export function useAuth(): AuthState {
         await migrateLocalStorageEntries(userAuth.userId, (data) => MyCrypto.encryptAESGCM(data, userKey));
 
         return true;
+    };
+
+    const changePassword = async (oldPassword: string, newPassword: string): Promise<boolean> => {
+        if (!userAuth) return false;
+        try {
+            const newUser = await changeUserPassword(oldPassword, newPassword);
+            setUserAuth(newUser);
+            // databaseKey (userKey) stays valid — re-wrap preserved it
+            return true;
+        } catch (e) {
+            console.error(`Password change failed. ${e}`);
+            return false;
+        }
     };
 
     const removeAccount = async () => {
@@ -102,7 +109,7 @@ export function useAuth(): AuthState {
     };
 
     const decryptData = async (gibberish: string): Promise<string> => {
-        if (!databaseKey) throw new Error('No user auth available for encryption');
+        if (!databaseKey) throw new Error('No user auth available for decryption');
         return MyCrypto.decryptAESGCM(gibberish, databaseKey);
     };
 
@@ -115,6 +122,7 @@ export function useAuth(): AuthState {
         isUser: userAuth !== null,
         encryptData,
         decryptData,
+        changePassword,
         removeAccount,
     };
 }
