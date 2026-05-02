@@ -81,8 +81,9 @@ export const Popover: FC<PopoverProps> & {
     const id = useId();
     const triggerId: CssName = `--popover-trigger${id}`;
     const contentId: CssName = `--popover-content${id}`;
+    const contextValue: PopoverContextValue = { triggerId, contentId };
 
-    return <PopoverContext.Provider value={{ triggerId, contentId }}>{children}</PopoverContext.Provider>;
+    return <PopoverContext.Provider value={contextValue}>{children}</PopoverContext.Provider>;
 };
 
 Popover.Trigger = Trigger;
