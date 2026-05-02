@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 import style from './dialog.module.scss';
 import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
 
@@ -25,38 +25,32 @@ export const Dialog: FC<DialogProps> = ({
         dialogRef.current?.showModal();
     }, []);
 
-    const handleClose = useCallback(() => {
+    const handleClose = () => {
         if (closedViaApi.current) return;
         // Native close without our API = backdrop click or escape
         onResult({ closedBy: 'backdrop' });
-    }, [onResult]);
+    };
 
-    const closeWith = useCallback(
-        (result: DialogResult) => {
-            closedViaApi.current = true;
-            dialogRef.current?.close();
-            onResult(result);
-        },
-        [onResult]
-    );
+    const closeWith = (result: DialogResult) => {
+        closedViaApi.current = true;
+        dialogRef.current?.close();
+        onResult(result);
+    };
 
-    const handleCrossClick = useCallback(() => {
+    const handleCrossClick = () => {
         closeWith({ closedBy: 'cross' });
-    }, [closeWith]);
+    };
 
-    const handleButtonClick = useCallback(
-        async (button: DialogButton) => {
-            if (button.onClick) {
-                const result = await button.onClick({
-                    disableButtons: setButtonsDisabled,
-                    openDialog,
-                });
-                if (result === false) return; // interrupted
-            }
-            closeWith({ closedBy: 'button', button });
-        },
-        [closeWith, openDialog]
-    );
+    const handleButtonClick = async (button: DialogButton) => {
+        if (button.onClick) {
+            const result = await button.onClick({
+                disableButtons: setButtonsDisabled,
+                openDialog,
+            });
+            if (result === false) return; // interrupted
+        }
+        closeWith({ closedBy: 'button', button });
+    };
 
     return (
         <dialog
