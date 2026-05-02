@@ -3,6 +3,12 @@ import { ENTRIES_STORE, getDb } from './db';
 import type { Entry } from './entriesDbService';
 import { putUser } from './usersService';
 
+interface LocalStorageUser {
+    databaseKey: string;
+    salt: string;
+    hmac: string;
+}
+
 const LS_AUTH_KEY = 'state-auth-user';
 const LS_ENTRIES_KEY = 'state-entries-data';
 const AUTH_MIGRATED_FLAG = 'migration-auth-done';
@@ -20,7 +26,13 @@ export const migrateLocalStorageUser = async (): Promise<void> => {
         if (!oldUserAuth || alreadyMigrated) {
             return;
         }
-        await putUser(JSON.parse(oldUserAuth));
+        const oldUser: LocalStorageUser = JSON.parse(oldUserAuth);
+
+        await putUser({
+            hmac: oldUser.hmac,
+            salt: oldUser.salt,
+            userId: oldUser.databaseKey,
+        });
         localStorage.setItem(AUTH_MIGRATED_FLAG, 'true');
     }
 };

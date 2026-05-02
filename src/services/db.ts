@@ -6,7 +6,7 @@ export const ENTRIES_STORE = 'entries';
 export const USERS_STORE = 'users';
 
 export interface UserRecord {
-    databaseKey: string; // encoded; primary key
+    userId: string; // encoded; primary key
     salt: string;
     hmac: string;
 }
@@ -21,7 +21,7 @@ export interface EntryRecord {
 
 const migrateToV1 = (db: IDBPDatabase): void => {
     // users: keyed by encoded databaseKey
-    db.createObjectStore(USERS_STORE, { keyPath: 'databaseKey' satisfies keyof UserRecord });
+    db.createObjectStore(USERS_STORE, { keyPath: 'userId' satisfies keyof UserRecord });
 
     // entries: autoIncrement id + compound index for per-user cursor pagination
     const entries = db.createObjectStore(ENTRIES_STORE, {

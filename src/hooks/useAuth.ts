@@ -40,18 +40,18 @@ export function useAuth(): AuthState {
             try {
                 const salt = MyCrypto.generaRandomString();
                 const encodedPassword = await MyCrypto.encodePassword(password, salt);
-                const databaseKey = MyCrypto.generaRandomString();
-                const encodedDatabaseKey = await MyCrypto.encryptAESGCM(databaseKey, encodedPassword);
-                const hmac = await MyCrypto.generateHMAC(databaseKey, encodedPassword);
+                const userId = MyCrypto.generaRandomString();
+                const encodedUserId = await MyCrypto.encryptAESGCM(userId, encodedPassword);
+                const hmac = await MyCrypto.generateHMAC(userId, encodedPassword);
 
                 const userAuth: UserRecord = {
-                    databaseKey: encodedDatabaseKey,
+                    userId: encodedUserId,
                     salt,
                     hmac,
                 };
                 await putUser(userAuth);
                 setUserAuth(userAuth);
-                setDatabaseKey(databaseKey);
+                setDatabaseKey(userId);
 
                 return true;
             } catch (e) {
@@ -61,30 +61,30 @@ export function useAuth(): AuthState {
         }
 
         const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
-        let plainKey: string | null = null;
+        let userKey: string | null = null;
         try {
-            plainKey = await MyCrypto.decryptAESGCM(userAuth.databaseKey, encodedPassword);
+            userKey = await MyCrypto.decryptAESGCM(userAuth.userId, encodedPassword);
         } catch {
             console.error('Cannot decrypt database key');
             return false;
         }
 
-        if ((await MyCrypto.verifyKey(plainKey, userAuth.hmac, encodedPassword)) === false) {
+        if ((await MyCrypto.verifyKey(userKey, userAuth.hmac, encodedPassword)) === false) {
             console.error('HMAC verification failed');
             return false;
         }
 
-        setDatabaseKey(plainKey);
+        setDatabaseKey(userKey);
 
         // Migration from local storage
-        await migrateLocalStorageEntries(userAuth.databaseKey, (data) => MyCrypto.encryptAESGCM(data, plainKey));
+        await migrateLocalStorageEntries(userAuth.userId, (data) => MyCrypto.encryptAESGCM(data, userKey));
 
         return true;
     };
 
     const removeAccount = async () => {
         if (userAuth) {
-            await deleteUserAndEntries(userAuth.databaseKey);
+            await deleteUserAndEntries(userAuth.userId);
         }
         setUserAuth(null);
         setDatabaseKey(null);
@@ -109,7 +109,7 @@ export function useAuth(): AuthState {
     return {
         isInitializing,
         isLoggedIn: Boolean(databaseKey),
-        userId: userAuth?.databaseKey ?? null,
+        userId: userAuth?.userId ?? null,
         tryToLogin,
         logout,
         isUser: userAuth !== null,
