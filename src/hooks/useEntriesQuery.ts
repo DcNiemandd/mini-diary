@@ -4,12 +4,14 @@ import { useContext } from 'react';
 import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
 import { fetchEntriesPage } from '../services/entriesDbService';
+import { useToday } from './useToday';
 
 export const useEntriesQuery = () => {
     const { decryptData, userId } = useContext(AuthContext);
+    const today = useToday();
 
     const query = useInfiniteQuery({
-        queryKey: queryKeys.entries(userId!),
+        queryKey: [...queryKeys.entries(userId!), today.toISODate()] as const,
         queryFn: ({ pageParam }) =>
             fetchEntriesPage(userId!, decryptData, pageParam).then((entriesPage) => ({
                 ...entriesPage,
