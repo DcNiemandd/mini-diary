@@ -123,6 +123,6 @@ Try to use modern browser features such as:
     - logout timeout
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
-    - **rename databaseKey to a userId**
+    - ~~rename databaseKey to a userId~~
     - multiple users support
 
