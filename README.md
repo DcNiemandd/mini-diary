@@ -118,8 +118,8 @@ Try to use modern browser features such as:
 - notes layout
     - ~~settings/bottom/logout styling~~
     - ~~automatic loading when scrolling to the top~~
-    - **change DB - autoincrement id for user - no need to remap entries**
-    - expand settings with password change, ~~about/help~~
+    - ~~change DB - autoincrement id for user - no need to remap entries~~
+    - ~~expand settings with password change~~, ~~about/help~~
     - data export/import
     - logout timeout
 - ~~saving notes to indexedDB~~
