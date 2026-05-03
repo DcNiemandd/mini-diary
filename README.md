@@ -130,4 +130,8 @@ Try to use modern browser features such as:
 
 - redo
     - change useAuth as hook to use instead of useContext(AuthContext);
+- bug
+    - isSaving in notesLayout is not working but in useTodayNote it does
+    - mutating while the previouse mutation is running is not correctly working
+    - remake useTodayNote - use query as init and local state for input, combine comparision with ispending for isSaved
 

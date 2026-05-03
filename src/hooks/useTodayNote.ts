@@ -21,6 +21,8 @@ export const useTodayNote = () => {
     const todayContent = todayEntryQuery?.data?.content ?? '';
     const isSaved = !saveEntryMutation.isPending;
 
+    useEffect(() => console.log(`isSaved inHook: ${isSaved}`), [isSaved]);
+
     // If there's not a today note, we show empty note.
     // Today note is created on the first mutation.
     const todayNote: Entry = {

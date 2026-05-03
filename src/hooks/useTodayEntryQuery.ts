@@ -5,6 +5,7 @@ import { queryKeys } from '../queryKeys';
 import { createEntry, fetchTodayEntry, updateEntry, type Entry } from '../services/entriesDbService';
 import { useToday } from './useToday';
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const useTodayEntryQuery = () => {
     const { userId, decryptData, encryptData } = useContext(AuthContext);
     const queryClient = useQueryClient();
@@ -22,6 +23,7 @@ export const useTodayEntryQuery = () => {
     const mutation = useMutation({
         mutationKey: queryKey,
         mutationFn: async (entryContent: string) => {
+            await delay(5000);
             const existingEntry = queryClient.getQueryData<(Entry & { id: number }) | null>(queryKey);
             if (existingEntry?.id) {
                 await updateEntry(userId!, existingEntry.id, entryContent, encryptData);

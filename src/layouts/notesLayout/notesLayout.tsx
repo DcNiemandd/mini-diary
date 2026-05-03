@@ -14,7 +14,9 @@ export const NotesLayout: FC = () => {
     useIdleLogout();
     const { logout } = useContext(AuthContext);
 
-    const isSaved = useTodayEntryQuery().mutation.isPending === false;
+    const { isSaved } = useTodayNote();
+    // FIXME: Not reacting
+    useEffect(() => console.log(`isSaved layout: ${isSaved}`), [isSaved]);
 
     const { fetchNextPage, hasNextPage, isFetchingNextPage } = useEntriesQuery();
 
