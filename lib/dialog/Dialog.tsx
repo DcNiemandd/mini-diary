@@ -1,9 +1,11 @@
-import { useEffect, useRef, type FC } from 'react';
+import { useEffect, useRef, useState, type FC } from 'react';
 import style from './dialog.module.scss';
-import type { DialogButton, DialogOptions, DialogResult } from './types.ts';
+import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
+import { DialogContext, type DialogButtonHandler, type DialogControl } from './useDialog.ts';
 
 interface DialogProps extends DialogOptions {
     onResult: (result: DialogResult) => void;
+    openDialog: OpenDialogFn;
 }
 
 export const Dialog: FC<DialogProps> = ({
@@ -14,9 +16,12 @@ export const Dialog: FC<DialogProps> = ({
     style: customStyle,
     showClose = true,
     onResult,
+    openDialog,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const closedViaApi = useRef(false);
+    const handlersRef = useRef<Record<string, DialogButtonHandler>>({});
+    const [buttonsDisabled, setButtonsDisabled] = useState(false);
 
     useEffect(() => {
         dialogRef.current?.showModal();
@@ -37,8 +42,22 @@ export const Dialog: FC<DialogProps> = ({
         closeWith({ closedBy: 'cross' });
     };
 
-    const handleButtonClick = (button: DialogButton) => {
+    const handleButtonClick = async (button: DialogButton) => {
+        const handler = handlersRef.current[button.type];
+        if (handler) {
+            const intercept = await handler();
+            if (intercept) return;
+        }
         closeWith({ closedBy: 'button', button });
+    };
+
+    const control: DialogControl = {
+        onButtonClick: (type, handler) => {
+            handlersRef.current[type] = handler;
+        },
+        disableButtons: setButtonsDisabled,
+        close: () => closeWith({ closedBy: 'cross' }),
+        openDialog,
     };
 
     return (
@@ -64,7 +83,7 @@ export const Dialog: FC<DialogProps> = ({
                     )}
                 </header>
             )}
-            {content}
+            <DialogContext.Provider value={control}>{content}</DialogContext.Provider>
             {buttons.length > 0 && (
                 <div className={style.buttons}>
                     {buttons.map((button, i) => (
@@ -73,7 +92,7 @@ export const Dialog: FC<DialogProps> = ({
                             type="button"
                             className={button.className}
                             style={button.style}
-                            disabled={button.disabled}
+                            disabled={buttonsDisabled || button.disabled}
                             onClick={() => handleButtonClick(button)}
                         >
                             {button.label}
