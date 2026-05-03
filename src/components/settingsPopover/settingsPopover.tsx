@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Popover } from '../../../lib/popover';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
+import { ChangePasswordButton } from '../changePasswordDialog/changePasswordButton';
 import { ColorPicker } from '../colorPicker/colorPicker';
 import { openHelpDialog } from '../helpDialog/helpDialog';
 import { ThemeSwitcher } from '../themeSwitcher/themeSwitcher';
@@ -36,7 +37,7 @@ export const SettingsPopover = () => {
                     />
 
                     <br />
-                    {/* <button onClick={()=> }>Change password</button> */}
+                    <ChangePasswordButton />
                     <button onClick={() => openHelpDialog()}>Help</button>
                 </div>
             </Popover.Content>

@@ -6,9 +6,15 @@
  * https://npmjs.com/vite-css-modules
  */
 
-declare const removeAccountButtonYes: string;
+declare const content: string;
+declare const twoColumns: string;
+
+export {
+	content
+};
 
 declare const __default_export__: {
-	"remove-account-button-yes": typeof removeAccountButtonYes;
+	content: typeof content;
+	"two-columns": typeof twoColumns;
 };
 export default __default_export__;

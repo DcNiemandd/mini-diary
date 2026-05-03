@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { openAppDialog } from '../appDialog/appDialog';
-import style from './removeAccountButton.module.scss';
 
 export const RemoveAccountButton: FC<{ onReset: () => void } & React.ButtonHTMLAttributes<HTMLButtonElement>> = ({
     onReset,
@@ -14,7 +13,7 @@ export const RemoveAccountButton: FC<{ onReset: () => void } & React.ButtonHTMLA
                 {
                     type: 'confirm',
                     label: 'Yes, remove my account',
-                    className: style['remove-account-button-yes'],
+                    className: 'button-danger',
                 },
                 {
                     type: 'cancel',

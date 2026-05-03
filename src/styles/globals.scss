@@ -45,6 +45,26 @@ button {
         cursor: not-allowed;
         opacity: 0.6;
     }
+
+    &.button-danger {
+        background-color: var(--danger);
+        color: var(--highlight);
+
+        &:hover {
+            background-image: linear-gradient(rgba(0, 0, 0, 10%));
+            color: var(--text-muted);
+        }
+    }
+
+    &.button-success {
+        background-color: var(--success);
+        color: var(--highlight);
+
+        &:hover {
+            background-image: linear-gradient(rgba(0, 0, 0, 10%));
+            color: var(--text-muted);
+        }
+    }
 }
 
 h1 {

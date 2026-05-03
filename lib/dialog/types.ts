@@ -31,3 +31,4 @@ export interface DialogResult {
 }
 
 export type OpenDialogFn = (options: DialogOptions) => Promise<DialogResult>;
+

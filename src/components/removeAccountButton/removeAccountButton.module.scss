@@ -1,9 +1,0 @@
-.remove-account-button-yes {
-    background-color: var(--danger);
-    color: var(--highlight);
-
-    &:hover {
-        background-image: linear-gradient(rgba(0, 0, 0, 10%));
-        color: var(--text-muted);
-    }
-}

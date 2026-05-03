@@ -19,6 +19,7 @@ export const putUser = async (user: UserRecord): Promise<Required<UserRecord>> =
  * @throws HMAC failed
  */
 export const tryLogin = async (userAuth: UserRecord, password: string) => {
+    console.log({ userAuth, password });
     const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
     let userKey: string | null = null;
     try {
