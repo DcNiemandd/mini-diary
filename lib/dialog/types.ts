@@ -2,33 +2,33 @@ import type { CSSProperties, ReactNode } from 'react';
 
 export type CloseReason = 'backdrop' | 'cross' | 'button';
 
-export interface DialogButton {
-    type: string;
+export interface DialogButton<T extends string = string> {
+    type: T;
     label: ReactNode;
     className?: string;
     style?: CSSProperties;
     disabled?: boolean;
-    onClick?: (ctx: DialogButtonContext) => void | false | Promise<void | false>;
 }
 
-export interface DialogButtonContext {
-    disableButtons: (disabled: boolean) => void;
-    openDialog: OpenDialogFn;
-}
-
-export interface DialogOptions {
+export interface DialogOptions<T extends string = string> {
     title?: ReactNode;
     content?: ReactNode;
-    buttons?: DialogButton[];
+    buttons?: readonly DialogButton<T>[];
     className?: string;
     style?: CSSProperties;
     showClose?: boolean;
 }
 
-export interface DialogResult {
-    closedBy: CloseReason;
-    button?: DialogButton;
-}
+export type DialogResult<T extends string = string> =
+    | { closedBy: 'backdrop' | 'cross' }
+    | { closedBy: 'button'; button: DialogButton<T> };
 
-export type OpenDialogFn = (options: DialogOptions) => Promise<DialogResult>;
+export type DialogButtonTypes<O> = O extends { buttons: readonly (infer B)[] }
+    ? B extends { type: infer T extends string }
+        ? T
+        : never
+    : never;
 
+export type OpenDialogFn = <const O extends DialogOptions>(
+    options: O,
+) => Promise<DialogResult<DialogButtonTypes<O>>>;

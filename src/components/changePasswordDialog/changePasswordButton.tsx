@@ -26,7 +26,7 @@ export const ChangePasswordButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> =
             buttons: [
                 { label: 'Confirm', type: 'confirm', className: 'button-success' },
                 { label: 'Cancel', type: 'cancel' },
-            ],
+            ] as const,
         });
 
         if (result.closedBy === 'button' && result.button?.type === 'confirm') {

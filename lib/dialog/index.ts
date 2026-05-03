@@ -2,7 +2,7 @@ export { openDialog } from './openDialog.ts';
 export type {
     CloseReason,
     DialogButton,
-    DialogButtonContext,
+    DialogButtonTypes,
     DialogOptions,
     DialogResult,
     OpenDialogFn,

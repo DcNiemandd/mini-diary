@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState, type FC } from 'react';
+import { useEffect, useRef, type FC } from 'react';
 import style from './dialog.module.scss';
-import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
+import type { DialogButton, DialogOptions, DialogResult } from './types.ts';
 
 interface DialogProps extends DialogOptions {
     onResult: (result: DialogResult) => void;
-    openDialog: OpenDialogFn;
 }
 
 export const Dialog: FC<DialogProps> = ({
@@ -15,10 +14,8 @@ export const Dialog: FC<DialogProps> = ({
     style: customStyle,
     showClose = true,
     onResult,
-    openDialog,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
-    const [buttonsDisabled, setButtonsDisabled] = useState(false);
     const closedViaApi = useRef(false);
 
     useEffect(() => {
@@ -27,7 +24,6 @@ export const Dialog: FC<DialogProps> = ({
 
     const handleClose = () => {
         if (closedViaApi.current) return;
-        // Native close without our API = backdrop click or escape
         onResult({ closedBy: 'backdrop' });
     };
 
@@ -41,14 +37,7 @@ export const Dialog: FC<DialogProps> = ({
         closeWith({ closedBy: 'cross' });
     };
 
-    const handleButtonClick = async (button: DialogButton) => {
-        if (button.onClick) {
-            const result = await button.onClick({
-                disableButtons: setButtonsDisabled,
-                openDialog,
-            });
-            if (result === false) return; // interrupted
-        }
+    const handleButtonClick = (button: DialogButton) => {
         closeWith({ closedBy: 'button', button });
     };
 
@@ -84,7 +73,7 @@ export const Dialog: FC<DialogProps> = ({
                             type="button"
                             className={button.className}
                             style={button.style}
-                            disabled={buttonsDisabled || button.disabled}
+                            disabled={button.disabled}
                             onClick={() => handleButtonClick(button)}
                         >
                             {button.label}
@@ -95,4 +84,3 @@ export const Dialog: FC<DialogProps> = ({
         </dialog>
     );
 };
-
