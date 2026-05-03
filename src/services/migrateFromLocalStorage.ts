@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ENTRIES_STORE, getDb } from './db';
+import { ENTRIES_STORE, getDb, USERS_STORE, type EntryRecord, type UserRecord } from './db';
 import type { Entry } from './entriesDbService';
 import { putUser } from './usersService';
 
@@ -31,7 +31,7 @@ export const migrateLocalStorageUser = async (): Promise<void> => {
         await putUser({
             hmac: oldUser.hmac,
             salt: oldUser.salt,
-            userId: oldUser.databaseKey,
+            encryptedUserKey: oldUser.databaseKey,
         });
         localStorage.setItem(AUTH_MIGRATED_FLAG, 'true');
     }
@@ -47,7 +47,7 @@ export const migrateLocalStorageUser = async (): Promise<void> => {
  * The content was already encrypted with the same key and is reused as-is.
  */
 export const migrateLocalStorageEntries = async (
-    userId: string,
+    encryptedUserKey: string,
     encryptData: (s: string) => Promise<string>
 ): Promise<void> => {
     const db = await getDb();
@@ -73,9 +73,15 @@ export const migrateLocalStorageEntries = async (
                     return acc;
                 }, [] as Entry[]);
 
-            const entriesToAdd = await Promise.all(
+            const user: UserRecord | undefined = (await db.getAll(USERS_STORE)).at(-1);
+
+            if (!user || encryptedUserKey !== user.encryptedUserKey || user.id === undefined) {
+                throw new Error('User: userId different than in db');
+            }
+
+            const entriesToAdd: EntryRecord[] = await Promise.all(
                 sorted.map(async (entry) => ({
-                    userId,
+                    userPk: user.id!,
                     encryptedDate: await encryptData(entry.date.toISODate()!),
                     encryptedContent: entry.content,
                     inRow: await encryptData(String(entry.inRow)),
@@ -84,7 +90,7 @@ export const migrateLocalStorageEntries = async (
 
             const transaction = db.transaction(ENTRIES_STORE, 'readwrite');
             for (const entry of entriesToAdd) {
-                transaction.store.add(entry).catch((e) => {
+                await transaction.store.add(entry).catch((e) => {
                     console.error('Error migrating entry', entry, e);
                 });
             }

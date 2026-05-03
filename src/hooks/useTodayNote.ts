@@ -29,17 +29,19 @@ export const useTodayNote = () => {
         inRow: todayEntryQuery?.data?.inRow ?? 1,
     };
 
-    // Block browser nav before save is done
-    useEffect(() => {
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            e.preventDefault();
-            e.returnValue = '';
-        };
-        if (!isSaved) {
-            window.addEventListener('beforeunload', handleBeforeUnload);
-        }
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [isSaved]);
+    useEffect(
+        function blockNavigationBeforeSave() {
+            const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+                e.preventDefault();
+                e.returnValue = '';
+            };
+            if (!isSaved) {
+                window.addEventListener('beforeunload', handleBeforeUnload);
+            }
+            return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+        },
+        [isSaved]
+    );
 
     return { todayNote, setTodayContent, isSaved };
 };

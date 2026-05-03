@@ -41,7 +41,7 @@ export function useDevTools() {
                 },
                 printEntries: async () => {
                     const db = await getDb();
-                    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+                    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
                     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
                     const records: EntryRecord[] = [];
                     let cursor = await idx.openCursor(range, 'next');
@@ -69,7 +69,7 @@ export function useDevTools() {
                 },
                 removeEntries: async (fromId?: number, toId?: number) => {
                     const db = await getDb();
-                    const idx = db.transaction(ENTRIES_STORE, 'readwrite').store.index('userId_id');
+                    const idx = db.transaction(ENTRIES_STORE, 'readwrite').store.index('userPk_id');
                     const range = IDBKeyRange.bound([userId, fromId ?? -Infinity], [userId, toId ?? Infinity]);
                     let cursor = await idx.openCursor(range, 'next');
                     while (cursor) {

@@ -6,14 +6,15 @@ export const ENTRIES_STORE = 'entries';
 export const USERS_STORE = 'users';
 
 export interface UserRecord {
-    userId: string; // encoded; primary key
+    id?: number;
+    encryptedUserKey: string;
     salt: string;
     hmac: string;
 }
 
 export interface EntryRecord {
     id?: number;
-    userId: string; // FK → users.databaseKey
+    userPk: number; // FK → users.id
     encryptedDate: string;
     encryptedContent: string;
     inRow: string;
@@ -21,14 +22,14 @@ export interface EntryRecord {
 
 const migrateToV1 = (db: IDBPDatabase): void => {
     // users: keyed by encoded databaseKey
-    db.createObjectStore(USERS_STORE, { keyPath: 'userId' satisfies keyof UserRecord });
+    db.createObjectStore(USERS_STORE, { keyPath: 'id' satisfies keyof UserRecord, autoIncrement: true });
 
     // entries: autoIncrement id + compound index for per-user cursor pagination
     const entries = db.createObjectStore(ENTRIES_STORE, {
-        keyPath: 'id',
+        keyPath: 'id' satisfies keyof EntryRecord,
         autoIncrement: true,
     });
-    entries.createIndex('userId_id', ['userId', 'id']);
+    entries.createIndex('userPk_id', ['userPk', 'id']);
 };
 
 let _db: Promise<IDBPDatabase> | null = null;
@@ -73,4 +74,3 @@ export const closeDb = (): void => {
     _db = null;
     pending.then((db) => db.close()).catch(() => {});
 };
-

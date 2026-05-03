@@ -1,5 +1,5 @@
-import { useEffect, type CSSProperties, type Dispatch } from "react";
-import { useLocalStorage } from "./useStorage";
+import { useEffect, type CSSProperties, type Dispatch } from 'react';
+import { useLocalStorage } from './useStorage';
 
 export type Theme = 'light' | 'dark' | 'system';
 export type Color = CSSProperties['color'] | undefined;
@@ -13,37 +13,42 @@ export interface ThemeSettings {
     setUseCustomColor: Dispatch<boolean>;
 }
 
-
-
 export const useColorTheme = (): ThemeSettings => {
     const [theme, setTheme] = useLocalStorage<Theme>('state-theme-theme', 'system');
-    const [customColor, setCustomColor] = useLocalStorage<CSSProperties['color'] | undefined>('state-theme-custom-color', 'oklch(0.76 0.2 20)');
+    const [customColor, setCustomColor] = useLocalStorage<CSSProperties['color'] | undefined>(
+        'state-theme-custom-color',
+        'oklch(0.76 0.2 20)'
+    );
     const [useCustomColor, setUseCustomColor] = useLocalStorage<boolean>('state-theme-use-custom-color', false);
 
     const root = window.document.documentElement;
 
-    // Apply the color scheme to the document root
-    useEffect(() => {
-        switch (theme) {
-            case 'light':
-                root.style.colorScheme = 'light';
-                break;
-            case 'dark':
-                root.style.colorScheme = 'dark';
-                break;
-            case 'system':
-                root.style.colorScheme = 'dark light';
-        };
+    useEffect(
+        function updateThemeOnRoot() {
+            switch (theme) {
+                case 'light':
+                    root.style.colorScheme = 'light';
+                    break;
+                case 'dark':
+                    root.style.colorScheme = 'dark';
+                    break;
+                case 'system':
+                    root.style.colorScheme = 'dark light';
+            }
+        },
+        [theme, root]
+    );
 
-    }, [theme, root]);
-
-    useEffect(() => {
-        if (customColor && useCustomColor) {
-            root.style.setProperty('--custom-color', customColor);
-        } else {
-            root.style.removeProperty('--custom-color');
-        }
-    }, [customColor, root.style, useCustomColor])
+    useEffect(
+        function updateCustomColorOnRoo() {
+            if (customColor && useCustomColor) {
+                root.style.setProperty('--custom-color', customColor);
+            } else {
+                root.style.removeProperty('--custom-color');
+            }
+        },
+        [customColor, root.style, useCustomColor]
+    );
 
     return {
         colorScheme: theme,
@@ -51,6 +56,6 @@ export const useColorTheme = (): ThemeSettings => {
         customColor,
         setCustomColor,
         useCustomColor,
-        setUseCustomColor
+        setUseCustomColor,
     };
-}
+};

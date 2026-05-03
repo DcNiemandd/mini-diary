@@ -2,15 +2,16 @@ import { MyCrypto } from '../utils/crypto';
 import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './db';
 
 /** ONLY ONE USER FOR NOW */
-export const getCurrentUser = async (): Promise<UserRecord | null> => {
+export const getCurrentUser = async (): Promise<Required<UserRecord> | null> => {
     const db = await getDb();
     const all = await db.getAll(USERS_STORE);
     return all[0] ?? null;
 };
 
-export const putUser = async (user: UserRecord): Promise<void> => {
+export const putUser = async (user: UserRecord): Promise<Required<UserRecord>> => {
     const db = await getDb();
-    await db.put(USERS_STORE, user);
+    const id = await db.put(USERS_STORE, user);
+    return { ...user, id: id as number };
 };
 
 /**
@@ -21,7 +22,7 @@ export const tryLogin = async (userAuth: UserRecord, password: string) => {
     const encodedPassword = await MyCrypto.encodePassword(password, userAuth.salt);
     let userKey: string | null = null;
     try {
-        userKey = await MyCrypto.decryptAESGCM(userAuth.userId, encodedPassword);
+        userKey = await MyCrypto.decryptAESGCM(userAuth.encryptedUserKey, encodedPassword);
     } catch {
         throw new Error('Wrong password');
     }
@@ -33,14 +34,14 @@ export const tryLogin = async (userAuth: UserRecord, password: string) => {
     return userKey;
 };
 
-export const generateUser = async (userId: string, password: string) => {
+export const generateUser = async (userKey: string, password: string) => {
     const salt = MyCrypto.generaRandomString();
     const encodedPassword = await MyCrypto.encodePassword(password, salt);
-    const encodedUserId = await MyCrypto.encryptAESGCM(userId, encodedPassword);
-    const hmac = await MyCrypto.generateHMAC(userId, encodedPassword);
+    const encodedUserKey = await MyCrypto.encryptAESGCM(userKey, encodedPassword);
+    const hmac = await MyCrypto.generateHMAC(userKey, encodedPassword);
 
     const userAuth: UserRecord = {
-        userId: encodedUserId,
+        encryptedUserKey: encodedUserKey,
         salt,
         hmac,
     };
@@ -50,6 +51,7 @@ export const generateUser = async (userId: string, password: string) => {
 
 /**
  * @throws No user
+ * @throws Incorrect password
  */
 export const changeUserPassword = async (oldPassword: string, newPassword: string): Promise<UserRecord> => {
     const db = await getDb();
@@ -65,30 +67,20 @@ export const changeUserPassword = async (oldPassword: string, newPassword: strin
     }
 
     const newUser = await generateUser(userKey, newPassword);
+    newUser.id = oldUser.id;
 
-    const transaction = db.transaction([USERS_STORE, ENTRIES_STORE], 'readwrite');
-    await transaction.objectStore(USERS_STORE).delete(oldUser.userId);
-    await transaction.objectStore(USERS_STORE).add(newUser);
-
-    const idx = transaction.objectStore(ENTRIES_STORE).index('userId_id');
-    const range = IDBKeyRange.bound([oldUser.userId, -Infinity], [oldUser.userId, Infinity]);
-    let cursor = await idx.openCursor(range);
-    while (cursor) {
-        await cursor.update({ ...cursor.value, userId: newUser.userId });
-        cursor = await cursor.continue();
-    }
-    await transaction.done;
+    await db.put(USERS_STORE, newUser);
 
     return newUser;
 };
 
-export const deleteUserAndEntries = async (userId: string): Promise<void> => {
+export const deleteUserAndEntries = async (userId: number): Promise<void> => {
     const db = await getDb();
     const tx = db.transaction([USERS_STORE, ENTRIES_STORE], 'readwrite');
 
     await tx.objectStore(USERS_STORE).delete(userId);
 
-    const idx = tx.objectStore(ENTRIES_STORE).index('userId_id');
+    const idx = tx.objectStore(ENTRIES_STORE).index('userPk_id');
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     let cursor = await idx.openCursor(range);
     while (cursor) {

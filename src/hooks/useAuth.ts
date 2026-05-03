@@ -16,7 +16,7 @@ export interface AuthState {
     isUser: boolean;
     isInitializing: boolean;
     isLoggedIn: boolean;
-    userId: string | null;
+    userId: number | null;
     tryToLogin: (password: string) => Promise<boolean>;
     logout: () => void;
     encryptData: (data: string) => Promise<string>;
@@ -27,7 +27,7 @@ export interface AuthState {
 
 export function useAuth(): AuthState {
     const [userAuth, setUserAuth] = useState<UserRecord | null>(null);
-    const [databaseKey, setDatabaseKey] = useState<string | null>(null);
+    const [userKey, setUserKey] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState(true);
     const queryClient = useQueryClient();
 
@@ -46,13 +46,13 @@ export function useAuth(): AuthState {
     const tryToLogin = async (password: string): Promise<boolean> => {
         if (userAuth === null) {
             try {
-                const userId = MyCrypto.generaRandomString();
-                const userAuth = await generateUser(userId, password);
+                const userKey = MyCrypto.generaRandomString();
+                const userAuth = await generateUser(userKey, password);
 
                 await putUser(userAuth);
 
                 setUserAuth(userAuth);
-                setDatabaseKey(userId);
+                setUserKey(userKey);
 
                 return true;
             } catch (e) {
@@ -68,10 +68,10 @@ export function useAuth(): AuthState {
             return false;
         }
 
-        setDatabaseKey(userKey);
+        setUserKey(userKey);
 
         // Migration from local storage
-        await migrateLocalStorageEntries(userAuth.userId, (data) => MyCrypto.encryptAESGCM(data, userKey));
+        await migrateLocalStorageEntries(userAuth.encryptedUserKey, (data) => MyCrypto.encryptAESGCM(data, userKey));
 
         return true;
     };
@@ -91,32 +91,32 @@ export function useAuth(): AuthState {
 
     const removeAccount = async () => {
         if (userAuth) {
-            await deleteUserAndEntries(userAuth.userId);
+            await deleteUserAndEntries(userAuth.id!);
         }
         setUserAuth(null);
-        setDatabaseKey(null);
+        setUserKey(null);
         queryClient.clear();
     };
 
     const logout = () => {
-        setDatabaseKey(null);
+        setUserKey(null);
         queryClient.clear();
     };
 
     const encryptData = async (data: string): Promise<string> => {
-        if (!databaseKey) throw new Error('No user auth available for encryption');
-        return MyCrypto.encryptAESGCM(data, databaseKey);
+        if (!userKey) throw new Error('No user auth available for encryption');
+        return MyCrypto.encryptAESGCM(data, userKey);
     };
 
     const decryptData = async (gibberish: string): Promise<string> => {
-        if (!databaseKey) throw new Error('No user auth available for decryption');
-        return MyCrypto.decryptAESGCM(gibberish, databaseKey);
+        if (!userKey) throw new Error('No user auth available for decryption');
+        return MyCrypto.decryptAESGCM(gibberish, userKey);
     };
 
     return {
         isInitializing,
-        isLoggedIn: Boolean(databaseKey),
-        userId: userAuth?.userId ?? null,
+        isLoggedIn: Boolean(userKey),
+        userId: userAuth?.id ?? null,
         tryToLogin,
         logout,
         isUser: userAuth !== null,

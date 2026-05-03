@@ -26,22 +26,22 @@ const entryRecordToEntry = async (
 
 const entryToEntryRecord = async (
     entry: Entry,
-    userId: string,
+    userId: number,
     encryptData: (s: string) => Promise<string>
 ): Promise<EntryRecord> => ({
-    userId,
+    userPk: userId,
     encryptedDate: await encryptData(entry.date.toISODate()!),
     encryptedContent: await encryptData(entry.content),
     inRow: await encryptData(entry.inRow.toString()),
 });
 
 export const fetchEntriesPage = async (
-    userId: string,
+    userId: number,
     decryptData: (s: string) => Promise<string>,
     cursor: number | null // null = start from the newest
 ): Promise<EntriesPage> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
 
     const upperId = cursor !== null ? cursor - 1 : Infinity;
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, upperId]);
@@ -63,13 +63,13 @@ export const fetchEntriesPage = async (
 };
 
 export const fetchEntryById = async (
-    userId: string,
+    userId: number,
     id: number,
     decryptData: (s: string) => Promise<string>
 ): Promise<(Entry & { id: number }) | null> => {
     const db = await getDb();
     const record: EntryRecord | undefined = await db.get(ENTRIES_STORE, id);
-    if (!record || record.userId !== userId) return null;
+    if (!record || record.userPk !== userId) return null;
     return {
         id: record.id!,
         date: DateTime.fromISO(await decryptData(record.encryptedDate)),
@@ -79,9 +79,9 @@ export const fetchEntryById = async (
 };
 
 /** For searching for a specific date */
-export const getIdBounds = async (userId: string): Promise<{ min: number; max: number } | null> => {
+export const getIdBounds = async (userId: number): Promise<{ min: number; max: number } | null> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     const first = await idx.openCursor(range, 'next');
     const last = await idx.openCursor(range, 'prev');
@@ -90,11 +90,11 @@ export const getIdBounds = async (userId: string): Promise<{ min: number; max: n
 };
 
 export const fetchTodayEntry = async (
-    userId: string,
+    userId: number,
     decryptData: (s: string) => Promise<string>
 ): Promise<(Entry & { id: number }) | null> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
 
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     const idbCursor = await idx.openCursor(range, 'prev');
@@ -116,13 +116,13 @@ export const fetchTodayEntry = async (
  * inRow is calculated based on the previous entry.
  */
 export const createEntry = async (
-    userId: string,
+    userId: number,
     entryText: string,
     encryptData: (s: string) => Promise<string>,
     decryptData: (s: string) => Promise<string>
 ): Promise<number> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userId_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
 
     // Calculate inRow
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
@@ -146,7 +146,7 @@ export const createEntry = async (
  * Update an existing entry. Only the content is editable; the date is fixed at creation.
  */
 export const updateEntry = async (
-    userId: string,
+    userId: number,
     id: number,
     entryText: string,
     encryptData: (s: string) => Promise<string>
