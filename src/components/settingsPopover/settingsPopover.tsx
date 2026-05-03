@@ -36,6 +36,7 @@ export const SettingsPopover = () => {
                     />
 
                     <br />
+                    {/* <button onClick={()=> }>Change password</button> */}
                     <button onClick={() => openHelpDialog()}>Help</button>
                 </div>
             </Popover.Content>
