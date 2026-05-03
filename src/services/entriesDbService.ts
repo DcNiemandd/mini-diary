@@ -153,7 +153,7 @@ export const updateEntry = async (
 ): Promise<void> => {
     const db = await getDb();
     const record = await db.get(ENTRIES_STORE, id);
-    if (!record || record.userId !== userId) throw new Error('Entry not found');
+    if (!record || record.userPk !== userId) throw new Error('Entry not found');
 
     const encryptedContent = await encryptData(entryText);
     await db.put(ENTRIES_STORE, { ...record, encryptedContent });

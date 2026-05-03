@@ -5,11 +5,13 @@ import { TodayNote } from '../../components/todayNote/todayNote.tsx';
 import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
-import { useTodayEntryQuery } from '../../hooks/useTodayEntryQuery.ts';
+import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
+import { useTodayNote } from '../../hooks/useTodayNote.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     useDevTools();
+    useIdleLogout();
     const { logout } = useContext(AuthContext);
 
     const isSaved = useTodayEntryQuery().mutation.isPending === false;

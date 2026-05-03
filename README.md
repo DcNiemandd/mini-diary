@@ -121,11 +121,13 @@ Try to use modern browser features such as:
     - ~~change DB - autoincrement id for user - no need to remap entries~~
     - ~~expand settings with password change~~, ~~about/help~~
     - data export/import
-    - logout timeout
+    - ~~logout timeout~~, enable user to select time
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
     - multiple users support
+
+
 - redo
     - change useAuth as hook to use instead of useContext(AuthContext);
 

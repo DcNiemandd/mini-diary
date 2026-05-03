@@ -26,11 +26,9 @@ export const useTodayEntryQuery = () => {
             if (existingEntry?.id) {
                 await updateEntry(userId!, existingEntry.id, entryContent, encryptData);
             } else {
-                await createEntry(userId!, entryContent, encryptData, decryptData);
+                const id = await createEntry(userId!, entryContent, encryptData, decryptData);
+                queryClient.setQueryData(queryKey, { ...existingEntry, id });
             }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey });
         },
         onError: (error) => {
             console.error('Error saving entry:', error);
