@@ -44,6 +44,7 @@ export const LoginForm: FC = () => {
                 placeholder="Password"
                 required
                 minLength={6}
+                autoFocus
                 onInput={() => {
                     passwordRef.current?.setCustomValidity('');
                 }}
