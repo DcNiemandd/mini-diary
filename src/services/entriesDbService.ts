@@ -172,10 +172,12 @@ export const createEntry = async (
     // Calculate inRow
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     const lastEntryRecord: EntryRecord | undefined = (await idx.openCursor(range, 'prev'))?.value;
-    const lastEntryDate = lastEntryRecord ? DateTime.fromISO(await decryptData(lastEntryRecord.encryptedDate)) : null;
+    const lastEntryDate = lastEntryRecord
+        ? DateTime.fromISO(await decryptData(lastEntryRecord.encryptedDate)).startOf('day')
+        : null;
     const today = DateTime.now().startOf('day');
     const inRow =
-        lastEntryRecord && lastEntryDate?.diff(today, 'days').days === 1
+        lastEntryRecord && today.diff(lastEntryDate!, 'days').days === 1
             ? Number(await decryptData(lastEntryRecord.inRow)) + 1
             : 1;
 
