@@ -120,7 +120,7 @@ export const createEntry = async (
     entryText: string,
     encryptData: (s: string) => Promise<string>,
     decryptData: (s: string) => Promise<string>
-): Promise<number> => {
+): Promise<Entry & { id: number }> => {
     const db = await getDb();
     const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
 
@@ -134,12 +134,12 @@ export const createEntry = async (
             ? Number(await decryptData(lastEntryRecord.inRow)) + 1
             : 1;
 
-    const entryWithInRow = { content: entryText, inRow, date: today };
+    const entryWithInRow: Entry = { content: entryText, inRow, date: today };
 
     const record = await entryToEntryRecord(entryWithInRow, userId, encryptData);
-    const id = await db.transaction(ENTRIES_STORE, 'readwrite').store.add(record);
+    const id = (await db.transaction(ENTRIES_STORE, 'readwrite').store.add(record)) as number;
 
-    return id as number;
+    return { id, ...entryWithInRow };
 };
 
 /**

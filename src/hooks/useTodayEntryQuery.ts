@@ -28,8 +28,8 @@ export const useTodayEntryQuery = () => {
             if (existingEntry?.id) {
                 await updateEntry(userId!, existingEntry.id, entryContent, encryptData);
             } else {
-                const id = await createEntry(userId!, entryContent, encryptData, decryptData);
-                queryClient.setQueryData(queryKey, { ...existingEntry, id });
+                const created = await createEntry(userId!, entryContent, encryptData, decryptData);
+                queryClient.setQueryData(queryKey, created);
             }
         },
         onError: (error) => {
