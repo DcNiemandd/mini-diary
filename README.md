@@ -128,3 +128,6 @@ Try to use modern browser features such as:
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
     - multiple users support
+
+-big
+    - resposivity - check max size of a dialog

@@ -21,7 +21,8 @@ export const Dialog: FC<DialogProps> = ({
     const dialogRef = useRef<HTMLDialogElement>(null);
     const closedViaApi = useRef(false);
     const handlersRef = useRef<Record<string, DialogButtonHandler>>({});
-    const [buttonsDisabled, setButtonsDisabled] = useState(false);
+    const [allDisabled, setAllDisabled] = useState(false);
+    const [perTypeDisabled, setPerTypeDisabled] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         dialogRef.current?.showModal();
@@ -55,7 +56,15 @@ export const Dialog: FC<DialogProps> = ({
         onButtonClick: (type, handler) => {
             handlersRef.current[type] = handler;
         },
-        disableButtons: setButtonsDisabled,
+        disableButtons: (disabled, type) => {
+            if (type === undefined) {
+                setAllDisabled(disabled);
+            } else {
+                setPerTypeDisabled((prev) =>
+                    prev[type] === disabled ? prev : { ...prev, [type]: disabled },
+                );
+            }
+        },
         close: () => closeWith({ closedBy: 'cross' }),
         openDialog,
     };
@@ -92,7 +101,7 @@ export const Dialog: FC<DialogProps> = ({
                             type="button"
                             className={button.className}
                             style={button.style}
-                            disabled={buttonsDisabled || button.disabled}
+                            disabled={allDisabled || perTypeDisabled[button.type] || button.disabled}
                             onClick={() => handleButtonClick(button)}
                         >
                             {button.label}

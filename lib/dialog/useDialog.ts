@@ -5,7 +5,7 @@ export type DialogButtonHandler = () => boolean | void | Promise<boolean | void>
 
 export interface DialogControl<T extends string = string> {
     onButtonClick: (type: T, handler: DialogButtonHandler) => void;
-    disableButtons: (disabled: boolean) => void;
+    disableButtons: (disabled: boolean, type?: T) => void;
     close: () => void;
     openDialog: OpenDialogFn;
 }
