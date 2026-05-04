@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ENTRIES_STORE, getDb, USERS_STORE, type EntryRecord } from './db';
 
 const EXPORT_VERSION = 1;
 
@@ -43,3 +44,60 @@ export type EncryptedExport = z.infer<typeof encryptedExportSchema>;
 export type DiaryExport = z.infer<typeof exportSchema>;
 
 export const isEncryptedExport = (e: DiaryExport): e is EncryptedExport => 'user' in e;
+
+export const exportRawEntries = async (
+    userId: number,
+    decryptData: (s: string) => Promise<string>
+): Promise<RawExport> => {
+    const db = await getDb();
+    const transaction = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+
+    const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
+    let cursor = await transaction.openCursor(range, 'next');
+    const records: EntryRecord[] = [];
+
+    while (cursor) {
+        records.push(cursor.value);
+        cursor = await cursor.continue();
+    }
+
+    const entries = await Promise.all(
+        records.map(
+            async (r): Promise<RawExport['entries'][number]> => ({
+                date: await decryptData(r.encryptedDate),
+                content: await decryptData(r.encryptedContent),
+                inRow: Number(await decryptData(r.inRow)),
+            })
+        )
+    );
+
+    return {
+        version: EXPORT_VERSION,
+        exportedAt: new Date().toISOString(),
+        entries,
+    };
+};
+
+export const exportEncryptedEntries = async (userId: number): Promise<EncryptedExport> => {
+    const db = await getDb();
+    const transaction = db.transaction([ENTRIES_STORE, USERS_STORE], 'readonly');
+
+    const user = await transaction.objectStore(USERS_STORE).get(userId);
+
+    const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
+    let cursor = await transaction.objectStore(ENTRIES_STORE).openCursor(range, 'next');
+    const records: EntryRecord[] = [];
+
+    while (cursor) {
+        records.push(cursor.value);
+        cursor = await cursor.continue();
+    }
+
+    return {
+        version: EXPORT_VERSION,
+        exportedAt: new Date().toISOString(),
+        user,
+        entries: records,
+    };
+};
+

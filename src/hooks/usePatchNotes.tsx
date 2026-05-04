@@ -20,9 +20,20 @@ const PATCH_NOTES: Record<number, ReactNode> = {
             <li>fixed bugs introduced by the changes mentioned before</li>
         </ul>
     ),
+    2: (
+        <ul>
+            <li>introduced import and export</li>
+            <li>
+                fixes
+                <ul>
+                    <li>change password dialog styling</li>
+                </ul>
+            </li>
+        </ul>
+    ),
 };
 
-const VERSION = Object.keys(PATCH_NOTES).length;
+const VERSION = 1; //Object.keys(PATCH_NOTES).length;
 
 const openPatchNotesDialog = async (version: keyof typeof PATCH_NOTES) =>
     await openAppDialog({

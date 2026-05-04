@@ -4,6 +4,7 @@ import { SettingsContext } from '../../contexts/settingsContext/settingsContext'
 import { openLatestPatchNotesDialog } from '../../hooks/usePatchNotes';
 import { ChangePasswordButton } from '../changePasswordDialog/changePasswordButton';
 import { ColorPicker } from '../colorPicker/colorPicker';
+import { ExportImportButtons } from '../exportImportButtons/exportImportButtons';
 import { openHelpDialog } from '../helpDialog/helpDialog';
 import { ThemeSwitcher } from '../themeSwitcher/themeSwitcher';
 import styles from './settingsPopover.module.scss';
@@ -39,6 +40,10 @@ export const SettingsPopover = () => {
 
                     <br />
                     <ChangePasswordButton />
+
+                    <div className={`${styles['two-columns']} ${styles['same-width']}`}>
+                        <ExportImportButtons />
+                    </div>
 
                     <div className={`${styles['two-columns']} ${styles['same-width']}`}>
                         <button onClick={() => openLatestPatchNotesDialog()}>Patch notes</button>
