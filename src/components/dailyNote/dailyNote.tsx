@@ -35,7 +35,6 @@ export const DailyNote: FC<DailyNoteProps> = ({ date, note, onChange, daysInRow 
                     data-replicated-value={note}
                 >
                     <textarea
-                        autoFocus
                         className="note-content"
                         value={note}
                         onChange={(e) => onChange(e.target.value)}
