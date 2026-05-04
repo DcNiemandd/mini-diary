@@ -15,6 +15,7 @@ const encryptedEntrySchema = z.object({
     encryptedDate: z.string().min(1),
     encryptedContent: z.string(),
     inRow: z.string().min(1),
+    order: z.number().int().nonnegative(),
 });
 
 const encryptedUserSchema = z.object({
@@ -79,13 +80,14 @@ export const exportRawEntries = async (
 };
 
 export const exportEncryptedEntries = async (userId: number): Promise<EncryptedExport> => {
+    console.log(`user ${userId}`);
     const db = await getDb();
     const transaction = db.transaction([ENTRIES_STORE, USERS_STORE], 'readonly');
 
     const user = await transaction.objectStore(USERS_STORE).get(userId);
 
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
-    let cursor = await transaction.objectStore(ENTRIES_STORE).openCursor(range, 'next');
+    let cursor = await transaction.objectStore(ENTRIES_STORE).index('userPk_id').openCursor(range, 'next');
     const records: EntryRecord[] = [];
 
     while (cursor) {
@@ -93,11 +95,20 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
         cursor = await cursor.continue();
     }
 
+    const entries = records.map((r: EntryRecord, index): EncryptedExport['entries'][number] => ({
+        encryptedContent: r.encryptedContent,
+        encryptedDate: r.encryptedDate,
+        inRow: r.inRow,
+        order: index,
+    }));
+
+    await transaction.done;
+
     return {
         version: EXPORT_VERSION,
         exportedAt: new Date().toISOString(),
         user,
-        entries: records,
+        entries,
     };
 };
 

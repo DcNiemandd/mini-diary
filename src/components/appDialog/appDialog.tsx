@@ -15,7 +15,7 @@ export const openAppDialog = <const O extends DialogOptions>(
                   ...btn,
                   className: `${style.button} ${btn.className ?? ''}`,
               }))
-            : [{ label: 'Ok', type: 'cancel' as const }],
+            : [{ label: 'Cancel', type: 'cancel' as const }],
         title: options.title && <h2>{options.title}</h2>,
         content: <div className={style.content}>{options.content}</div>,
     }) as Promise<DialogResult<AppDialogButtonTypes<O>>>;
