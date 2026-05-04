@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState, type FC } from 'react';
 import style from './dialog.module.scss';
-import type { DialogButton, DialogOptions, DialogResult, OpenDialogFn } from './types.ts';
+import type { DialogButton, DialogOptions, DialogResult } from './types.ts';
 import { DialogContext, type DialogButtonHandler, type DialogControl } from './useDialog.ts';
 
 interface DialogProps extends DialogOptions {
     onResult: (result: DialogResult) => void;
-    openDialog: OpenDialogFn;
 }
 
 export const Dialog: FC<DialogProps> = ({
@@ -16,7 +15,6 @@ export const Dialog: FC<DialogProps> = ({
     style: customStyle,
     showClose = true,
     onResult,
-    openDialog,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const closedViaApi = useRef(false);
@@ -66,7 +64,6 @@ export const Dialog: FC<DialogProps> = ({
             }
         },
         close: () => closeWith({ closedBy: 'cross' }),
-        openDialog,
     };
 
     return (

@@ -23,7 +23,6 @@ export const openDialog: OpenDialogFn = ((options: DialogOptions) => {
             createElement(Dialog, {
                 ...options,
                 onResult: handleResult,
-                openDialog,
             }),
         );
     });
