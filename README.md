@@ -135,8 +135,8 @@ Try to use modern browser features such as:
     - dialog has scrollable content, not the whole dialog
 
 -bug
-    - responsivity - check max size of a dialog
     - responsivity - change password labels and inputs separate rows
+    - **test behaviour after midnight** - mainly inRow is wrong
 
 [Patch notes](https://github.com/DcNiemandd/mini-diary/blob/main/src/hooks/usePatchNotes.tsx)
 - v1:

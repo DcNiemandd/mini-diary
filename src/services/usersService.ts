@@ -5,7 +5,7 @@ import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './db';
 export const getCurrentUser = async (): Promise<Required<UserRecord> | null> => {
     const db = await getDb();
     const all = await db.getAll(USERS_STORE);
-    return all[0] ?? null;
+    return all.at(-1) ?? null;
 };
 
 export const putUser = async (user: UserRecord): Promise<Required<UserRecord>> => {

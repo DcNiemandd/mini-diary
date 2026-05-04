@@ -246,8 +246,25 @@ const importRawEntries = async (
 };
 
 const importEncryptedEntries = async (importObject: EncryptedExport): Promise<boolean> => {
-    console.log(importObject.exportedAt);
-    return false;
+    const db = await getDb();
+    const tx = db.transaction([USERS_STORE, ENTRIES_STORE], 'readwrite');
+
+    const newUserId = (await tx.objectStore(USERS_STORE).add(importObject.user)) as number;
+
+    const entriesStore = tx.objectStore(ENTRIES_STORE);
+    const sorted = importObject.entries.toSorted((a, b) => a.order - b.order);
+    for (const entry of sorted) {
+        const record: EntryRecord = {
+            userPk: newUserId,
+            encryptedDate: entry.encryptedDate,
+            encryptedContent: entry.encryptedContent,
+            inRow: entry.inRow,
+        };
+        await entriesStore.add(record);
+    }
+
+    await tx.done;
+    return true;
 };
 
 /**
