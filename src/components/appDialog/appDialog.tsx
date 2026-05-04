@@ -5,7 +5,7 @@ import style from './appDialog.module.scss';
 type AppDialogButtonTypes<O> = O extends { buttons: readonly DialogButton[] } ? DialogButtonTypes<O> : 'cancel';
 
 export const openAppDialog = <const O extends DialogOptions>(
-    options: O,
+    options: O
 ): Promise<DialogResult<AppDialogButtonTypes<O>>> => {
     return openDialog({
         ...options,
@@ -17,7 +17,7 @@ export const openAppDialog = <const O extends DialogOptions>(
               }))
             : [{ label: 'Ok', type: 'cancel' as const }],
         title: options.title && <h2>{options.title}</h2>,
-        content: options.content && <div className={style.content}>{options.content}</div>,
+        content: <div className={style.content}>{options.content}</div>,
     }) as Promise<DialogResult<AppDialogButtonTypes<O>>>;
 };
 
