@@ -154,5 +154,6 @@ Try to use modern browser features such as:
     - enabled logout timer setting
     - fixes
         - ~~change password dialog styling~~
+        - font doesn't know "ď"
 - (v3):
     - multiple users support

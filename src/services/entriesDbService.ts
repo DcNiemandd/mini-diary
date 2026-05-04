@@ -14,7 +14,7 @@ export interface EntriesPage {
 
 const PAGE_SIZE = 15;
 
-const entryRecordToEntry = async (
+export const entryRecordToEntry = async (
     record: EntryRecord,
     decryptData: (s: string) => Promise<string>
 ): Promise<Entry & { id: number }> => ({
@@ -24,7 +24,7 @@ const entryRecordToEntry = async (
     inRow: Number(await decryptData(record.inRow)),
 });
 
-const entryToEntryRecord = async (
+export const entryToEntryRecord = async (
     entry: Entry,
     userId: number,
     encryptData: (s: string) => Promise<string>
@@ -87,6 +87,51 @@ export const getIdBounds = async (userId: number): Promise<{ min: number; max: n
     const last = await idx.openCursor(range, 'prev');
     if (!first || !last) return null;
     return { min: first.value.id!, max: last.value.id! };
+};
+
+const findFirstIdAtLeast = async (userId: number, fromId: number, toId: number): Promise<number | null> => {
+    const db = await getDb();
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const range = IDBKeyRange.bound([userId, fromId], [userId, toId]);
+    const cursor = await idx.openCursor(range, 'next');
+    return cursor ? (cursor.value.id as number) : null;
+};
+
+/**
+ * Binary search for the date
+ */
+export const fetchEntryByDate = async (userId: number, date: DateTime, decryptData: (s: string) => Promise<string>) => {
+    const bounds = await getIdBounds(userId);
+    if (!bounds) return null;
+
+    const target = date.startOf('day');
+    let lo = bounds.min;
+    let hi = bounds.max;
+
+    while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const probeId = await findFirstIdAtLeast(userId, mid, hi);
+        if (probeId === null) {
+            // Switch to lower half
+            hi = mid - 1;
+            continue;
+        }
+
+        const entry = await fetchEntryById(userId, probeId, decryptData);
+        if (!entry) return null; // race with delete — give up cleanly
+
+        const entryDay = entry.date.startOf('day');
+        if (entryDay.equals(target)) return entry;
+        if (entryDay < target) {
+            lo = probeId + 1;
+        } else {
+            // probeId is the *first* existing id in [mid, hi], so [mid, probeId-1] is empty.
+            // Collapsing the upper bound to probeId-1 is safe.
+            hi = probeId - 1;
+        }
+    }
+
+    return null;
 };
 
 export const fetchTodayEntry = async (

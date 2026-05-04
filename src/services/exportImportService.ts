@@ -1,9 +1,14 @@
+import { DateTime } from 'luxon';
 import { z } from 'zod';
 import { ENTRIES_STORE, getDb, USERS_STORE, type EntryRecord } from './db';
+import { entryToEntryRecord, fetchEntryByDate, updateEntry, type Entry } from './entriesDbService';
 
 const EXPORT_VERSION = 1;
 
-const isoDateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Expected YYYY-MM-DD');
+const isoDateString = z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Expected YYYY-MM-DD')
+    .refine((s) => DateTime.fromISO(s).isValid);
 
 const rawEntrySchema = z.object({
     date: isoDateString,
@@ -26,7 +31,7 @@ const encryptedUserSchema = z.object({
 
 const baseExportSchema = z.object({
     version: z.literal(EXPORT_VERSION),
-    exportedAt: z.string().datetime(),
+    exportedAt: z.iso.datetime(),
 });
 
 export const rawExportSchema = baseExportSchema.extend({
@@ -110,5 +115,80 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
         user,
         entries,
     };
+};
+
+/**
+ * Inserts entries under logged user
+ * Notes will be merged by the date
+ */
+const importRawEntries = async (
+    importObject: RawExport,
+    userId: number,
+    decryptData: (s: string) => Promise<string>,
+    encryptData: (s: string) => Promise<string>
+): Promise<boolean> => {
+    const db = await getDb();
+    const localByDate = (date: DateTime) => fetchEntryByDate(userId, date, decryptData);
+
+    for (const entry of importObject.entries.toSorted(
+        (a, b) => +DateTime.fromISO(a.date) - +DateTime.fromISO(b.date)
+    )) {
+        const entryDate = DateTime.fromISO(entry.date);
+        // Find if there is existing entry for that day
+        const existingEntry = await localByDate(entryDate);
+
+        if (existingEntry) {
+            // Append existing to the end of that entry
+            await updateEntry(
+                userId,
+                existingEntry.id,
+                [existingEntry.content, entry.content].join('\n...\n'),
+                encryptData
+            );
+        } else {
+            // Create new entry
+            const previousDayEntry = await localByDate(entryDate.minus({ days: 1 }));
+            // inRow from previous
+            let inRow = previousDayEntry ? previousDayEntry.inRow + 1 : 1;
+            const entryWithInRow: Entry = { content: entry.content, inRow, date: entryDate };
+
+            const record = await entryToEntryRecord(entryWithInRow, userId, encryptData);
+            const transaction = db.transaction(ENTRIES_STORE, 'readwrite');
+
+            transaction.store.add(record);
+
+            // Update oncoming inRows
+            let nextEntry = await localByDate(entryDate.plus({ days: 1 }));
+            while (nextEntry) {
+                inRow += 1;
+                await transaction.store.put({ ...nextEntry, inRow });
+
+                nextEntry = await localByDate(nextEntry.date.plus({ days: 1 }));
+            }
+            await transaction.done;
+        }
+    }
+
+    return true;
+};
+
+const importEncryptedEntries = async (importObject: EncryptedExport): Promise<boolean> => {
+    console.log(importObject.exportedAt);
+    return false;
+};
+
+/**
+ * @throws see {@link z.ZodError}
+ */
+export const importEntries = async (
+    importObject: DiaryExport,
+    userId: number,
+    decryptData: (s: string) => Promise<string>,
+    encryptData: (s: string) => Promise<string>
+): Promise<boolean> => {
+    if (isEncryptedExport(importObject)) {
+        return importEncryptedEntries(encryptedExportSchema.parse(importObject));
+    }
+    return importRawEntries(rawExportSchema.parse(importObject), userId, decryptData, encryptData);
 };
 
