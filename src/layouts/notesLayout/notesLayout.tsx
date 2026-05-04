@@ -7,15 +7,15 @@ import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
-import { useTodayEntryQuery } from '../../hooks/useTodayEntryQuery.ts';
+import { queryKeys } from '../../queryKeys.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     useDevTools();
     useIdleLogout();
-    const { logout } = useContext(AuthContext);
+    const { logout, userId } = useContext(AuthContext);
 
-    const { queryKey } = useTodayEntryQuery();
+    const queryKey = queryKeys.todaysEntry(userId!);
     const isMutating = useIsMutating({ mutationKey: queryKey });
     const isSaved = isMutating === 0;
 
