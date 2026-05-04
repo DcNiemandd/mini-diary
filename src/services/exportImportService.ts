@@ -117,6 +117,8 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
     };
 };
 
+const IMPORT_JOINER = '\n...\n';
+
 /**
  * Inserts entries under logged user
  * Notes will be merged by the date
@@ -142,7 +144,7 @@ const importRawEntries = async (
             await updateEntry(
                 userId,
                 existingEntry.id,
-                [existingEntry.content, entry.content].join('\n...\n'),
+                [existingEntry.content, entry.content].join(IMPORT_JOINER),
                 encryptData
             );
         } else {
@@ -161,7 +163,7 @@ const importRawEntries = async (
             let nextEntry = await localByDate(entryDate.plus({ days: 1 }));
             while (nextEntry) {
                 inRow += 1;
-                await transaction.store.put({ ...nextEntry, inRow });
+                await transaction.store.put(await entryToEntryRecord({ ...nextEntry, inRow }, userId, encryptData));
 
                 nextEntry = await localByDate(nextEntry.date.plus({ days: 1 }));
             }
