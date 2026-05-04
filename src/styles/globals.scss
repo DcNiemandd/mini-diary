@@ -56,11 +56,12 @@ button {
         }
     }
 
-    &.button-success {
-        background-color: var(--success);
+    &.button-primary {
+        background-color: var(--primary);
         color: var(--highlight);
 
         &:hover {
+            background-color: unset;
             background-image: linear-gradient(rgba(0, 0, 0, 10%));
             color: var(--text-muted);
         }

@@ -12,7 +12,7 @@ export const ChangePasswordButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> =
             content: <ChangePasswordDialog changePassword={changePassword} />,
             showClose: true,
             buttons: [
-                { label: 'Confirm', type: 'confirm', className: 'button-success' },
+                { label: 'Confirm', type: 'confirm', className: 'button-primary' },
                 { label: 'Cancel', type: 'cancel' },
             ],
         });
