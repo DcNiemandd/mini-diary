@@ -22,7 +22,7 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
     padding: $top-bar-padding 2rem;
 
     @media (hover: hover) {
-        & > button:not(:hover) {
+        & > button:not(:is(:hover, :focus-visible)) {
             background: transparent;
         }
     }

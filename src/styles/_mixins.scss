@@ -1,0 +1,12 @@
+@mixin hover-focus {
+    &:hover,
+    &:focus-visible {
+        @content;
+    }
+}
+
+@mixin not-hover-focus {
+    &:not(:is(:hover, :focus-within)) {
+        @content;
+    }
+}

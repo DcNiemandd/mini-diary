@@ -1,3 +1,5 @@
+@use '/src/styles/mixins' as m;
+
 :root {
     font-family: var(--ff);
     font-style: normal;
@@ -19,7 +21,7 @@ button {
     padding: 0.5rem 1rem;
     outline: none;
 
-    &:hover {
+    @include m.hover-focus {
         background: var(--gradient-hover);
     }
 }
@@ -50,7 +52,7 @@ button {
         background-color: var(--danger);
         color: var(--highlight);
 
-        &:hover {
+        @include m.hover-focus {
             background-image: linear-gradient(rgba(0, 0, 0, 10%));
             color: var(--text-muted);
         }
@@ -60,7 +62,7 @@ button {
         background-color: var(--primary);
         color: var(--highlight);
 
-        &:hover {
+        @include m.hover-focus {
             background-color: unset;
             background-image: linear-gradient(rgba(0, 0, 0, 10%));
             color: var(--text-muted);
