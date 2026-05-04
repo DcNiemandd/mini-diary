@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
+import { usePatchNotes } from './hooks/usePatchNotes';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
 const NotesLayout = lazy(() =>
@@ -7,6 +8,7 @@ const NotesLayout = lazy(() =>
 );
 
 export const Router = () => {
+    usePatchNotes();
     const auth = useAuth();
 
     useEffect(() => {

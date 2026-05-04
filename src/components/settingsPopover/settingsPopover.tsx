@@ -1,11 +1,12 @@
 import { useContext } from 'react';
 import { Popover } from '../../../lib/popover';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
+import { openLatestPatchNotesDialog } from '../../hooks/usePatchNotes';
 import { ChangePasswordButton } from '../changePasswordDialog/changePasswordButton';
 import { ColorPicker } from '../colorPicker/colorPicker';
 import { openHelpDialog } from '../helpDialog/helpDialog';
 import { ThemeSwitcher } from '../themeSwitcher/themeSwitcher';
-import styles from './settingsPopover.module.css';
+import styles from './settingsPopover.module.scss';
 
 export const SettingsPopover = () => {
     const settings = useContext(SettingsContext);
@@ -38,7 +39,11 @@ export const SettingsPopover = () => {
 
                     <br />
                     <ChangePasswordButton />
-                    <button onClick={() => openHelpDialog()}>Help</button>
+
+                    <div className={`${styles['two-columns']} ${styles['same-width']}`}>
+                        <button onClick={() => openLatestPatchNotesDialog()}>Patch notes</button>
+                        <button onClick={() => openHelpDialog()}>Help</button>
+                    </div>
                 </div>
             </Popover.Content>
         </Popover>

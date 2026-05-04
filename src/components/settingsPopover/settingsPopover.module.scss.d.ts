@@ -8,6 +8,7 @@
 
 declare const content: string;
 declare const twoColumns: string;
+declare const sameWidth: string;
 
 export {
 	content
@@ -16,5 +17,6 @@ export {
 declare const __default_export__: {
 	content: typeof content;
 	"two-columns": typeof twoColumns;
+	"same-width": typeof sameWidth;
 };
 export default __default_export__;

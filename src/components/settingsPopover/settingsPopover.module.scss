@@ -1,3 +1,5 @@
+$column-gap: 0.5rem;
+
 .content {
     display: flex;
     flex-direction: column;
@@ -7,9 +9,13 @@
 .two-columns {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: $column-gap;
 
     :first-child {
         flex: 1;
+    }
+
+    &.same-width > * {
+        flex: 1 0 calc(50% - $column-gap / 2);
     }
 }

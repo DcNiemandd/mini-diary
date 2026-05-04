@@ -28,7 +28,7 @@ Thanks to aiming for one user only, we can store auth data in the local storage 
 
 ## Security
 
-This application is not aiming at multiple users. There will be only one user for one browser.
+This application is not aiming at multiple users, yet. There will be only one user for one browser.
 
 ### Password and Data
 
@@ -129,5 +129,22 @@ Try to use modern browser features such as:
     - ~~rename databaseKey to a userId~~
     - multiple users support
 
--big
+-bug
     - resposivity - check max size of a dialog
+
+[Patch notes](https://github.com/DcNiemandd/mini-diary/blob/main/src/hooks/usePatchNotes.tsx)
+- v1:
+    - changes behind the hood
+        - using the correct browser storage
+        - updated communication with the storage
+        - incremental loading of the notes
+        - updated dialog
+    - user can change password
+    - idle logout
+    - introduced this (patch notes)
+    - fixed bugs introduced by the changes mentioned before
+- (v2):
+    - enabled import and export
+    - enabled logout timer setting
+- (v3):
+    - multiple users support
