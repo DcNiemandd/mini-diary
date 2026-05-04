@@ -1,3 +1,4 @@
+import { useIsMutating } from '@tanstack/react-query';
 import { useContext, useEffect, useEffectEvent, useRef, type FC } from 'react';
 import { OldNotes } from '../../components/oldNotes/oldNotes.tsx';
 import { SettingsPopover } from '../../components/settingsPopover/settingsPopover.tsx';
@@ -6,7 +7,7 @@ import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
-import { useTodayNote } from '../../hooks/useTodayNote.ts';
+import { useTodayEntryQuery } from '../../hooks/useTodayEntryQuery.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
@@ -14,9 +15,9 @@ export const NotesLayout: FC = () => {
     useIdleLogout();
     const { logout } = useContext(AuthContext);
 
-    const { isSaved } = useTodayNote();
-    // FIXME: Not reacting
-    useEffect(() => console.log(`isSaved layout: ${isSaved}`), [isSaved]);
+    const { queryKey } = useTodayEntryQuery();
+    const isMutating = useIsMutating({ mutationKey: queryKey });
+    const isSaved = isMutating === 0;
 
     const { fetchNextPage, hasNextPage, isFetchingNextPage } = useEntriesQuery();
 
