@@ -115,12 +115,14 @@ Try to use modern browser features such as:
     - ~~add indication of a series of days in a row~~
 - ~~login layout~~
     - ~~add about/help button with dialog~~
+    - focus password field on load
 - notes layout
     - ~~settings/bottom/logout styling~~
     - ~~automatic loading when scrolling to the top~~
     - ~~change DB - autoincrement id for user - no need to remap entries~~
     - ~~expand settings with password change~~, ~~about/help~~
     - data export/import
+    - focus note field on load
     - ~~logout timeout~~, enable user to select time
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
@@ -131,7 +133,7 @@ Try to use modern browser features such as:
 - redo
     - change useAuth as hook to use instead of useContext(AuthContext);
 - bug
-    - isSaving in notesLayout is not working but in useTodayNote it does
+    - ~~isSaving in notesLayout is not working but in useTodayNote it does~~
     - mutating while the previouse mutation is running is not correctly working
-    - remake useTodayNote - use query as init and local state for input, combine comparision with ispending for isSaved
+    - ~~remake useTodayNote - use query as init and local state for input, combine comparision with ispending for isSaved~~
 

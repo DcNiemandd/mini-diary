@@ -1,4 +1,3 @@
-import { useIsMutating } from '@tanstack/react-query';
 import { useContext, useEffect, useEffectEvent, useRef, type FC } from 'react';
 import { OldNotes } from '../../components/oldNotes/oldNotes.tsx';
 import { SettingsPopover } from '../../components/settingsPopover/settingsPopover.tsx';
@@ -7,17 +6,15 @@ import { AuthContext } from '../../contexts/authContext/authContext';
 import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
-import { queryKeys } from '../../queryKeys.ts';
+import { useTodayNote } from '../../hooks/useTodayNote.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     useDevTools();
     useIdleLogout();
-    const { logout, userId } = useContext(AuthContext);
+    const { logout } = useContext(AuthContext);
 
-    const queryKey = queryKeys.todaysEntry(userId!);
-    const isMutating = useIsMutating({ mutationKey: queryKey });
-    const isSaved = isMutating === 0;
+    const { isSaved } = useTodayNote();
 
     const { fetchNextPage, hasNextPage, isFetchingNextPage } = useEntriesQuery();
 
