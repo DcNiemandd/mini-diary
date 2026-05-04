@@ -8,8 +8,13 @@ import { useToday } from './useToday';
 
 export const useTodayNote = () => {
     const { userId, encryptData, decryptData } = useContext(AuthContext);
-    const today = useToday();
     const queryClient = useQueryClient();
+    const today = useToday((_next, prev) => {
+        queryClient.removeQueries({
+            queryKey: [...queryKeys.todaysEntry(userId!), prev.toISODate()],
+            exact: false,
+        });
+    });
 
     const isoDate = today.toISODate()!;
     const savedKey = queryKeys.todaysSavedEntry(userId!, isoDate);
