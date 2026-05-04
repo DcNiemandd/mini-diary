@@ -19,5 +19,9 @@ export const HelpContent: FC = () => (
             <li>Light and dark mode support</li>
             <li>Works offline as a PWA</li>
         </ul>
+
+        <h3>Warning</h3>
+        <p>You cannot retrieve notes without password.</p>
     </div>
 );
+

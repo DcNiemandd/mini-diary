@@ -121,13 +121,17 @@ Try to use modern browser features such as:
     - ~~automatic loading when scrolling to the top~~
     - ~~change DB - autoincrement id for user - no need to remap entries~~
     - ~~expand settings with password change~~, ~~about/help~~
-    - data export/import
     - ~~focus note field on load~~ (bad practise - accessibility)
+    - data export/import
     - ~~logout timeout~~, enable user to select time
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
     - multiple users support
+
+-redo
+    - switch dialog close button to have no background and fixed size
+    - button colours on hover etc
 
 -bug
     - resposivity - check max size of a dialog
