@@ -115,14 +115,14 @@ Try to use modern browser features such as:
     - ~~add indication of a series of days in a row~~
 - ~~login layout~~
     - ~~add about/help button with dialog~~
-    - focus password field on load
+    - ~~focus password field on load~~ (bad practise - accessibility)
 - notes layout
     - ~~settings/bottom/logout styling~~
     - ~~automatic loading when scrolling to the top~~
     - ~~change DB - autoincrement id for user - no need to remap entries~~
     - ~~expand settings with password change~~, ~~about/help~~
     - data export/import
-    - focus note field on load
+    - ~~focus note field on load~~ (bad practise - accessibility)
     - ~~logout timeout~~, enable user to select time
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
