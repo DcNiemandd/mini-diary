@@ -132,9 +132,11 @@ Try to use modern browser features such as:
 -redo
     - switch dialog close button to have no background and fixed size
     - button colours on hover etc
+    - dialog has scrollable content, not the whole dialog
 
 -bug
-    - resposivity - check max size of a dialog
+    - responsivity - check max size of a dialog
+    - responsivity - change password labels and inputs separate rows
 
 [Patch notes](https://github.com/DcNiemandd/mini-diary/blob/main/src/hooks/usePatchNotes.tsx)
 - v1:
@@ -150,5 +152,7 @@ Try to use modern browser features such as:
 - (v2):
     - enabled import and export
     - enabled logout timer setting
+    - fixes
+        - ~~change password dialog styling~~
 - (v3):
     - multiple users support
