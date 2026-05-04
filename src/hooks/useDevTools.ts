@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../contexts/authContext/authContext';
+import { useEffect } from 'react';
 import { ENTRIES_STORE, getDb, type EntryRecord } from '../services/db';
 import { readRawEntries } from '../services/entriesStorageService';
+import { useAuth } from './useAuth';
 
 const STORAGE_KEY = 'state-entries-data';
 
@@ -17,7 +17,7 @@ declare global {
 }
 
 export function useDevTools() {
-    const { encryptData, decryptData, userId } = useContext(AuthContext);
+    const { encryptData, decryptData, userId } = useAuth();
 
     useEffect(() => {
         if (import.meta.env.DEV) {

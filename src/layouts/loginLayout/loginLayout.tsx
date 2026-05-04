@@ -1,12 +1,12 @@
-import { useContext, useEffect, type FC } from 'react';
+import { useEffect, type FC } from 'react';
 import { HelpButton } from '../../components/helpButton/HelpButton.tsx';
 import { openHelpDialog } from '../../components/helpDialog/helpDialog.tsx';
 import { LoginForm } from '../../components/loginForm/loginForm';
-import { AuthContext } from '../../contexts/authContext/authContext.ts';
+import { useAuth } from '../../hooks/useAuth.ts';
 import style from './loginLayout.module.scss';
 
 export const LoginLayout: FC = () => {
-    const { isUser, isInitializing } = useContext(AuthContext);
+    const { isUser, isInitializing } = useAuth();
 
     useEffect(() => {
         if (!isUser && !isInitializing) {

@@ -1,13 +1,12 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/authContext/authContext';
 import { queryKeys } from '../queryKeys';
 import { fetchEntriesPage } from '../services/entriesDbService';
+import { useAuth } from './useAuth';
 import { useToday } from './useToday';
 
 export const useEntriesQuery = () => {
-    const { decryptData, userId } = useContext(AuthContext);
+    const { decryptData, userId } = useAuth();
     const today = useToday();
 
     const query = useInfiniteQuery({

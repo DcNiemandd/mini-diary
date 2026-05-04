@@ -3,12 +3,12 @@ import { useContext, useRef, useState, type FC } from 'react';
 import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
-import { AuthContext } from '../../contexts/authContext/authContext';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
+import { useAuth } from '../../hooks/useAuth';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
-    const { logout } = useContext(AuthContext);
+    const { logout } = useAuth();
     const settings = useContext(SettingsContext);
     const [todayContent, setTodayContent] = useState('');
 

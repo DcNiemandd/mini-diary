@@ -1,5 +1,5 @@
-import { lazy, Suspense, useContext, useEffect } from 'react';
-import { AuthContext } from './contexts/authContext/authContext';
+import { lazy, Suspense, useEffect } from 'react';
+import { useAuth } from './hooks/useAuth';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
 const NotesLayout = lazy(() =>
@@ -7,7 +7,7 @@ const NotesLayout = lazy(() =>
 );
 
 export const Router = () => {
-    const auth = useContext(AuthContext);
+    const auth = useAuth();
 
     useEffect(() => {
         if (import.meta.env.DEV) {

@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../contexts/authContext/authContext';
+import { useEffect } from 'react';
 import { queryKeys } from '../queryKeys';
 import { createEntry, fetchTodayEntry, updateEntry, type Entry } from '../services/entriesDbService';
+import { useAuth } from './useAuth';
 import { useDebounceCall } from './useDebounceCall';
 import { useToday } from './useToday';
 
 export const useTodayNote = () => {
-    const { userId, encryptData, decryptData } = useContext(AuthContext);
+    const { userId, encryptData, decryptData } = useAuth();
     const queryClient = useQueryClient();
     const today = useToday((_next, prev) => {
         queryClient.removeQueries({

@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { useContext, useRef, useState, type FC } from 'react';
-import { AuthContext } from '../../contexts/authContext/authContext';
+import { useRef, useState, type FC } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import { RemoveAccountButton } from '../removeAccountButton/removeAccountButton';
 import style from './loginForm.module.scss';
 
 export const LoginForm: FC = () => {
-    const auth = useContext(AuthContext);
+    const auth = useAuth();
 
     const [resetAccountCounter, setResetAccountCounter] = useState(0);
     const passwordRef = useRef<HTMLInputElement>(null);

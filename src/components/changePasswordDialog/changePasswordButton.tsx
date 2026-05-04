@@ -1,10 +1,10 @@
-import { useContext, type ButtonHTMLAttributes, type FC } from 'react';
-import { AuthContext } from '../../contexts/authContext/authContext.ts';
+import { type ButtonHTMLAttributes, type FC } from 'react';
+import { useAuth } from '../../hooks/useAuth.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
 import { ChangePasswordDialog } from './changePasswordDialog.tsx';
 
 export const ChangePasswordButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
-    const { changePassword } = useContext(AuthContext);
+    const { changePassword } = useAuth();
 
     const onClick = () => {
         openAppDialog({
