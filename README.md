@@ -124,7 +124,7 @@ Try to use modern browser features such as:
     - ~~expand settings with password change~~, ~~about/help~~
     - ~~focus note field on load~~ (bad practise - accessibility)
     - ~~data export/import~~
-    - ~~logout timeout~~, **enable user to select time**
+    - ~~logout timeout, enable user to select time~~
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
