@@ -37,6 +37,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
     3: (
         <ul>
             <li>changed scroll behaviour in the dialog - header and buttons are still visible</li>
+            <li>highlighted an important info in the help dialog</li>
         </ul>
     ),
 };
