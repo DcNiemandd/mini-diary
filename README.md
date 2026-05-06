@@ -108,7 +108,8 @@ Try to use modern browser features such as:
 -   [pick ui colors video](https://www.youtube.com/watch?v=vvPklRN0Tco)
 -   [pick ui colors logic](https://codepen.io/whosajid/pen/QwbZOzG)
 
-## TODO
+
+## [Patch notes](./src/hooks/usePatchNotes.tsx)
 
 - ~~note component~~
     - ~~replace textarea with p for past entries~~
@@ -130,31 +131,12 @@ Try to use modern browser features such as:
     - multiple users support
 
 -redo
-    - switch dialog close button to have no background and fixed size
-    - button colours on hover etc
+    - ~~switch dialog close button to have no background and fixed size~~
+    - ~~button colours on hover etc~~
     - dialog has scrollable content, not the whole dialog
 
 -bug
-    - responsivity - change password labels and inputs separate rows
+    - ~~responsivity - change password labels and inputs separate rows~~
     - **test behaviour after midnight** - mainly inRow is wrong
-    - cannot type in the middle of the note - cursor moves to the end
+    - ~~cannot type in the middle of the note - cursor moves to the end~~
 
-[Patch notes](https://github.com/DcNiemandd/mini-diary/blob/main/src/hooks/usePatchNotes.tsx)
-- v1:
-    - changes behind the hood
-        - using the correct browser storage
-        - updated communication with the storage
-        - incremental loading of the notes
-        - updated dialog
-    - user can change password
-    - idle logout
-    - introduced this (patch notes)
-    - fixed bugs introduced by the changes mentioned before
-- (v2):
-    - enabled import and export
-    - enabled logout timer setting
-    - fixes
-        - ~~change password dialog styling~~
-        - font doesn't know "ď"
-- (v3):
-    - multiple users support

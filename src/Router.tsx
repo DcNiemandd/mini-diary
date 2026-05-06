@@ -7,6 +7,10 @@ const NotesLayout = lazy(() =>
     import('./layouts/notesLayout/notesLayout').then((module) => ({ default: module.NotesLayout }))
 );
 
+const TestLayout = import.meta.env.DEV
+    ? lazy(() => import('./layouts/testLayout/testLayout').then((module) => ({ default: module.TestLayout })))
+    : null;
+
 export const Router = () => {
     usePatchNotes();
     const auth = useAuth();
@@ -16,6 +20,14 @@ export const Router = () => {
             // auth.tryToLogin('testtest');
         }
     }, []);
+
+    if (TestLayout && window.location.pathname === '/mini-diary/test') {
+        return (
+            <Suspense fallback={<div className="loader">Loading...</div>}>
+                <TestLayout />
+            </Suspense>
+        );
+    }
 
     return (
         <Suspense fallback={<div className="loader">Loading...</div>}>

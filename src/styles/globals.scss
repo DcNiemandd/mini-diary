@@ -48,24 +48,39 @@ button {
         opacity: 0.6;
     }
 
-    &.button-danger {
-        background-color: var(--danger);
-        color: var(--highlight);
+    &.button-dark {
+        background-color: var(--text);
+        color: var(--bg-dark);
 
         @include m.hover-focus {
-            background-image: linear-gradient(rgba(0, 0, 0, 10%));
-            color: var(--text-muted);
+            background: var(--text-muted);
+        }
+    }
+
+    &.button-transparent {
+        background: transparent;
+        color: var(--text);
+
+        @include m.hover-focus {
+            background: var(--gradient-hover);
+        }
+    }
+
+    &.button-danger {
+        background-color: var(--danger);
+        color: var(--bg-light);
+
+        @include m.hover-focus {
+            background: color-mix(in oklch, var(--danger) 75%, var(--text));
         }
     }
 
     &.button-primary {
-        background-color: var(--primary);
+        background: var(--primary);
         color: var(--highlight);
 
         @include m.hover-focus {
-            background-color: unset;
-            background-image: linear-gradient(rgba(0, 0, 0, 10%));
-            color: var(--text-muted);
+            background: var(--secondary);
         }
     }
 }

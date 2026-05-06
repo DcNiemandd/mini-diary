@@ -13,11 +13,12 @@ export const openAppDialog = <const O extends DialogOptions>(
         buttons: options.buttons
             ? options.buttons.map((btn) => ({
                   ...btn,
-                  className: `${style.button} ${btn.className ?? ''}`,
+                  className: btn.className,
               }))
             : [{ label: 'Cancel', type: 'cancel' as const }],
         title: options.title && <h2>{options.title}</h2>,
         content: <div className={style.content}>{options.content}</div>,
+        closeButtonClassName: 'button-transparent',
     }) as Promise<DialogResult<AppDialogButtonTypes<O>>>;
 };
 

@@ -15,6 +15,7 @@ export interface DialogOptions<T extends string = string> {
     content?: ReactNode;
     buttons?: readonly DialogButton<T>[];
     className?: string;
+    closeButtonClassName?: string;
     style?: CSSProperties;
     showClose?: boolean;
 }
@@ -29,6 +30,5 @@ export type DialogButtonTypes<O> = O extends { buttons: readonly (infer B)[] }
         : never
     : never;
 
-export type OpenDialogFn = <const O extends DialogOptions>(
-    options: O,
-) => Promise<DialogResult<DialogButtonTypes<O>>>;
+export type OpenDialogFn = <const O extends DialogOptions>(options: O) => Promise<DialogResult<DialogButtonTypes<O>>>;
+

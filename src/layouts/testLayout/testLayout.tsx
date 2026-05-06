@@ -115,6 +115,11 @@ export const TestLayout: FC = () => {
                                     {color}
                                 </div>
                             ))}
+                            <button>Button</button>
+                            <button className="button-dark">Dark</button>
+                            <button className="button-transparent">Transparent</button>
+                            <button className="button-danger">Danger</button>
+                            <button className="button-primary">Primary</button>
                         </div>
                         <div>
                             <DailyNote

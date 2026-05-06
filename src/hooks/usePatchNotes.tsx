@@ -23,6 +23,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
     2: (
         <ul>
             <li>introduced import and export</li>
+            <li>changed design of the buttons</li>
             <li>
                 fixes
                 <ul>

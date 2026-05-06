@@ -15,6 +15,7 @@ export const Dialog: FC<DialogProps> = ({
     style: customStyle,
     showClose = true,
     onResult,
+    closeButtonClassName,
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const closedViaApi = useRef(false);
@@ -58,9 +59,7 @@ export const Dialog: FC<DialogProps> = ({
             if (type === undefined) {
                 setAllDisabled(disabled);
             } else {
-                setPerTypeDisabled((prev) =>
-                    prev[type] === disabled ? prev : { ...prev, [type]: disabled },
-                );
+                setPerTypeDisabled((prev) => (prev[type] === disabled ? prev : { ...prev, [type]: disabled }));
             }
         },
         close: () => closeWith({ closedBy: 'cross' }),
@@ -80,7 +79,7 @@ export const Dialog: FC<DialogProps> = ({
                     {showClose && (
                         <button
                             type="button"
-                            className={` ${style.close} dialog-close`}
+                            className={` ${style.close} dialog-close ${closeButtonClassName ?? ''}`}
                             onClick={handleCrossClick}
                             aria-label="Close"
                         >
@@ -109,3 +108,4 @@ export const Dialog: FC<DialogProps> = ({
         </dialog>
     );
 };
+
