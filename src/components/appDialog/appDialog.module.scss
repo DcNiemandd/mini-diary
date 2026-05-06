@@ -6,8 +6,10 @@
     box-shadow: var(--shadow);
     font: var(--p);
     padding: 1.5rem;
-    max-width: 32rem;
-    width: 90vw;
+    width: min(32rem, 90vw);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 
     &::backdrop {
         background-color: oklch(0 0 0 / 0.4);
@@ -25,5 +27,8 @@
 
 .content {
     margin: 2rem 0 1rem;
+    overflow-y: auto;
+    min-height: 0;
+    flex-grow: 1;
 }
 

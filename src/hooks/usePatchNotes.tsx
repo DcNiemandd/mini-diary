@@ -34,9 +34,14 @@ const PATCH_NOTES: Record<number, ReactNode> = {
             </li>
         </ul>
     ),
+    3: (
+        <ul>
+            <li>changed scroll behaviour in the dialog - header and buttons are still visible</li>
+        </ul>
+    ),
 };
 
-const VERSION = import.meta.env.DEV ? 1 : Object.keys(PATCH_NOTES).length;
+const VERSION = import.meta.env.DEV ? 2 : Object.keys(PATCH_NOTES).length;
 
 const openPatchNotesDialog = async (version: keyof typeof PATCH_NOTES) =>
     await openAppDialog({
