@@ -80,8 +80,9 @@ export const migrateLocalStorageEntries = async (
             }
 
             const entriesToAdd: EntryRecord[] = await Promise.all(
-                sorted.map(async (entry) => ({
+                sorted.map(async (entry, i) => ({
                     userPk: user.id!,
+                    order: i + 1,
                     encryptedDate: await encryptData(entry.date.toISODate()!),
                     encryptedContent: entry.content,
                     inRow: await encryptData(String(entry.inRow)),

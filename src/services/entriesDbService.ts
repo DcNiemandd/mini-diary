@@ -27,9 +27,11 @@ export const entryRecordToEntry = async (
 export const entryToEntryRecord = async (
     entry: Entry,
     userId: number,
+    order: number,
     encryptData: (s: string) => Promise<string>
 ): Promise<EntryRecord> => ({
     userPk: userId,
+    order,
     encryptedDate: await encryptData(entry.date.toISODate()!),
     encryptedContent: await encryptData(entry.content),
     inRow: await encryptData(entry.inRow.toString()),
@@ -183,7 +185,8 @@ export const createEntry = async (
 
     const entryWithInRow: Entry = { content: entryText, inRow, date: today };
 
-    const record = await entryToEntryRecord(entryWithInRow, userId, encryptData);
+    const order = (lastEntryRecord?.order ?? 0) + 1;
+    const record = await entryToEntryRecord(entryWithInRow, userId, order, encryptData);
     const id = (await db.transaction(ENTRIES_STORE, 'readwrite').store.add(record)) as number;
 
     return { id, ...entryWithInRow };

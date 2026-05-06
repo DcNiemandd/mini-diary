@@ -1,7 +1,7 @@
-import { openDB, type IDBPDatabase } from 'idb';
+import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
 
 const DB_NAME = 'mini-diary';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 export const ENTRIES_STORE = 'entries';
 export const USERS_STORE = 'users';
 
@@ -15,6 +15,7 @@ export interface UserRecord {
 export interface EntryRecord {
     id?: number;
     userPk: number; // FK → users.id
+    order: number;
     encryptedDate: string;
     encryptedContent: string;
     inRow: string;
@@ -32,15 +33,31 @@ const migrateToV1 = (db: IDBPDatabase): void => {
     entries.createIndex('userPk_id', ['userPk', 'id']);
 };
 
+const migrateToV2 = async (
+    transaction: IDBPTransaction<unknown, ArrayLike<string>, 'versionchange'>
+): Promise<void> => {
+    // Backfill `order = id` on every existing entry so the new index is fully
+    // populated, then create the compound index used for date-aware ordering.
+    const entries = transaction.objectStore(ENTRIES_STORE);
+    let cursor = await entries.openCursor();
+    while (cursor) {
+        const record = cursor.value as EntryRecord;
+        await cursor.update({ ...record, order: record.id! });
+        cursor = await cursor.continue();
+    }
+    entries.createIndex('userPk_order', ['userPk', 'order']);
+};
+
 let _db: Promise<IDBPDatabase> | null = null;
 
 export const getDb = (): Promise<IDBPDatabase> => {
     if (!_db) {
         _db = openDB(DB_NAME, DB_VERSION, {
-            upgrade(db, oldVersion) {
+            async upgrade(db, oldVersion, _newVersion, transaction) {
                 // Run migrations sequentially. Each `if` is a one-way step
                 // from oldVersion → next. New versions append a new branch.
                 if (oldVersion < 1) migrateToV1(db);
+                if (oldVersion < 2) await migrateToV2(transaction);
             },
             blocked(currentVersion, blockedVersion) {
                 // Older tab still holds the previous version open and ignored

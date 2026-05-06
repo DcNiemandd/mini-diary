@@ -212,12 +212,16 @@ const importRawEntries = async (
         }
     }
 
-    // Prepare data for the db
+    // Prepare data for the db. Phase 1: new imports stack on top of the existing
+    // max order — chronologically wrong, but matches today's id-based behavior
+    // until Phase 3 reworks this to renumber by date.
+    const maxOrder = records.at(-1)?.order ?? 0;
     const [newEncrypted, dirtyEncrypted] = await Promise.all([
         Promise.all(
             newLocals.map(
-                async (l): Promise<EntryRecord> => ({
+                async (l, i): Promise<EntryRecord> => ({
                     userPk: userId,
+                    order: maxOrder + i + 1,
                     encryptedDate: await encryptData(l.date.toISODate()!),
                     encryptedContent: await encryptData(l.content),
                     inRow: await encryptData(String(l.inRow)),
@@ -253,9 +257,11 @@ const importEncryptedEntries = async (importObject: EncryptedExport): Promise<bo
 
     const entriesStore = tx.objectStore(ENTRIES_STORE);
     const sorted = importObject.entries.toSorted((a, b) => a.order - b.order);
-    for (const entry of sorted) {
+    for (let i = 0; i < sorted.length; i++) {
+        const entry = sorted[i];
         const record: EntryRecord = {
             userPk: newUserId,
+            order: i + 1,
             encryptedDate: entry.encryptedDate,
             encryptedContent: entry.encryptedContent,
             inRow: entry.inRow,
