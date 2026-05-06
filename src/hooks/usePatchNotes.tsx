@@ -42,6 +42,12 @@ const PATCH_NOTES: Record<number, ReactNode> = {
             <li>
                 <b>highlighted</b> an important info in the help dialog
             </li>
+            <li>
+                fixes
+                <ul>
+                    <li>disabling logout button when the note is not saved</li>
+                </ul>
+            </li>
         </ul>
     ),
 };

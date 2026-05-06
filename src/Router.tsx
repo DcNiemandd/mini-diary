@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
+import { TodayNoteContextProvider } from './contexts/todayNoteContext/todayNoteContextProvider';
 import { useAuth } from './hooks/useAuth';
 import { usePatchNotes } from './hooks/usePatchNotes';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
@@ -31,7 +32,13 @@ export const Router = () => {
 
     return (
         <Suspense fallback={<div className="loader">Loading...</div>}>
-            {auth.isLoggedIn ? <NotesLayout /> : <LoginLayout />}
+            {auth.isLoggedIn ? (
+                <TodayNoteContextProvider>
+                    <NotesLayout />
+                </TodayNoteContextProvider>
+            ) : (
+                <LoginLayout />
+            )}
         </Suspense>
     );
 };

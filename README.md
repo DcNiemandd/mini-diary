@@ -128,7 +128,7 @@ Try to use modern browser features such as:
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
-    - *multiple users support*
+    - **multiple users support**
 
 -redo
     - ~~switch dialog close button to have no background and fixed size~~
