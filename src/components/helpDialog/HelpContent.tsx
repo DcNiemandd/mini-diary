@@ -22,6 +22,18 @@ export const HelpContent: FC = () => (
 
         <h3 className={style['danger-header']}>Warning</h3>
         <p>You cannot retrieve notes without password.</p>
+
+        <h3>Feedback</h3>
+        <p>
+            For feedback, support, or bug reports, please contact us in the&nbsp;
+            <a
+                href="https://github.com/DcNiemandd/mini-diary/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Github issues
+            </a>
+        </p>
     </div>
 );
 

@@ -1,3 +1,5 @@
+@use '/src/styles/mixins' as m;
+
 $top-bar-padding: 0.5rem;
 $top-bar-inside-height: 3rem;
 
@@ -21,8 +23,8 @@ $top-bar-height: $top-bar-inside-height + 2 * $top-bar-padding;
     gap: 2rem;
     padding: $top-bar-padding 2rem;
 
-    @media (hover: hover) {
-        & > button:not(:is(:hover, :focus-visible)) {
+    & > button {
+        @include m.not-hover-focus {
             background: transparent;
         }
     }

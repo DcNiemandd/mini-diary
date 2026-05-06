@@ -1,12 +1,27 @@
-@mixin hover-focus {
+/**
+* This mixin applies the styles on hover and focus, but also always when the device doesn't support hover
+*/
+@mixin hover-focus($for-touch: false) {
     &:hover,
     &:focus-visible {
         @content;
     }
-}
 
-@mixin not-hover-focus {
-    &:not(:is(:hover, :focus-within)) {
-        @content;
+    @if $for-touch {
+        @media (hover: none) {
+            @content;
+        }
     }
 }
+
+/**
+* This mixin applies the styles when not hovering, not focusing, and when the device doesn't support hover
+*/
+@mixin not-hover-focus {
+    @media (hover: hover) {
+        &:not(:is(:hover, :focus-within)) {
+            @content;
+        }
+    }
+}
+

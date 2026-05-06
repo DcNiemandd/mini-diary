@@ -61,7 +61,7 @@ button {
         background: transparent;
         color: var(--text);
 
-        @include m.hover-focus {
+        @include m.hover-focus(true) {
             background: var(--gradient-hover);
         }
     }
@@ -96,6 +96,15 @@ h3 {
 }
 h4 {
     font: var(--h4);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+
+    @include m.hover-focus {
+        text-decoration: underline;
+    }
 }
 
 p,
