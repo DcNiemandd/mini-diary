@@ -13,3 +13,9 @@
     }
 }
 
+.danger-header {
+    :is(&, & + p) {
+        color: var(--danger);
+    }
+}
+

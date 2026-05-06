@@ -7,6 +7,7 @@
  */
 
 declare const content: string;
+declare const dangerHeader: string;
 
 export {
 	content
@@ -14,5 +15,6 @@ export {
 
 declare const __default_export__: {
 	content: typeof content;
+	"danger-header": typeof dangerHeader;
 };
 export default __default_export__;
