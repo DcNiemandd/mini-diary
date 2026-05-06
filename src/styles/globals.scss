@@ -22,7 +22,9 @@ button {
     outline: none;
 
     @include m.hover-focus {
-        background: var(--gradient-hover);
+        &:not(:disabled) {
+            background: var(--gradient-hover);
+        }
     }
 }
 

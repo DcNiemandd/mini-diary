@@ -38,30 +38,53 @@ const PATCH_NOTES: Record<number, ReactNode> = {
         <ul>
             <li>custom idle timeout</li>
             <li>changed scroll behaviour in the dialog - header and buttons are still visible</li>
-            <li>highlighted an important info in the help dialog</li>
+            <li>option to view older patch notes</li>
+            <li>
+                <b>highlighted</b> an important info in the help dialog
+            </li>
         </ul>
     ),
 };
 
-const VERSION = import.meta.env.DEV ? 2 : Object.keys(PATCH_NOTES).length;
+const VERSION = Object.keys(PATCH_NOTES).length;
+const MIN_VERSION = 1;
 
-const openPatchNotesDialog = async (version: keyof typeof PATCH_NOTES) =>
-    await openAppDialog({
+const openPatchNotesDialog = async (version: number) => {
+    const result = await openAppDialog({
         title: `Patch notes v${version}`,
         content: PATCH_NOTES[version],
+        buttons: [
+            { type: 'prev' as const, label: 'Previous', disabled: version <= MIN_VERSION, className: 'button-primary' },
+            { type: 'next' as const, label: 'Next', disabled: version >= VERSION, className: 'button-primary' },
+            { type: 'cancel' as const, label: 'Cancel' },
+        ],
+        style: { height: '600px' },
     });
+    if (result.closedBy === 'button') return result.button.type;
+    return 'cancel' as const;
+};
 
-export const openLatestPatchNotesDialog = () => openPatchNotesDialog(VERSION);
+const navigatePatchNotes = async (startVersion: number) => {
+    let current = startVersion;
+    while (true) {
+        const action = await openPatchNotesDialog(current);
+        if (action === 'prev' && current > MIN_VERSION) current -= 1;
+        else if (action === 'next' && current < VERSION) current += 1;
+        else return;
+    }
+};
+
+export const openLatestPatchNotesDialog = () => navigatePatchNotes(VERSION);
 
 export const usePatchNotes = () => {
     const [lastPatchNotesShown, setLastPatchNotesShown] = useLocalStorage('migration-patch-notes-shown', 0);
 
     const showPatchnotes = useEffectEvent(async () => {
-        for (let i = lastPatchNotesShown + 1; i <= VERSION; i++) {
-            console.info(`Showing patchnotes: ${i}, version ${VERSION}`);
-            await openPatchNotesDialog(i);
-            setLastPatchNotesShown(i);
-        }
+        if (lastPatchNotesShown >= VERSION) return;
+        const startVersion = lastPatchNotesShown + 1;
+        console.info(`Showing patchnotes from v${startVersion}, version ${VERSION}`);
+        await navigatePatchNotes(startVersion);
+        setLastPatchNotesShown(VERSION);
     });
 
     useEffect(() => {
