@@ -28,6 +28,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
                 <ul>
                     <li>day streak computation</li>
                     <li>change password dialog styling</li>
+                    <li>fixed typing in middle of the note</li>
                 </ul>
             </li>
         </ul>

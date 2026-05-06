@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import type { Dispatch, FC } from 'react';
+import { type Dispatch, type FC } from 'react';
 import style from './dailyNote.module.scss';
 
 export interface DailyNoteProps {

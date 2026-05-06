@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { queryKeys } from '../queryKeys';
 import { createEntry, fetchTodayEntry, updateEntry, type Entry } from '../services/entriesDbService';
 import { useAuth } from './useAuth';
@@ -9,16 +9,17 @@ import { useToday } from './useToday';
 export const useTodayNote = () => {
     const { userId, encryptData, decryptData } = useAuth();
     const queryClient = useQueryClient();
+    const [draft, setDraft] = useState<string | null>(null);
     const today = useToday((_next, prev) => {
         queryClient.removeQueries({
             queryKey: [...queryKeys.todaysEntry(userId!), prev.toISODate()],
             exact: false,
         });
+        setDraft(null);
     });
 
     const isoDate = today.toISODate()!;
     const savedKey = queryKeys.todaysSavedEntry(userId!, isoDate);
-    const draftKey = queryKeys.todaysDraftEntry(userId!, isoDate);
 
     const savedQuery = useQuery({
         queryKey: savedKey,
@@ -27,12 +28,7 @@ export const useTodayNote = () => {
         staleTime: Infinity,
     });
 
-    const draftQuery = useQuery<string>({
-        queryKey: draftKey,
-        queryFn: () => savedQuery.data?.content ?? '',
-        enabled: Boolean(userId) && savedQuery.isSuccess,
-        staleTime: Infinity,
-    });
+    const savedContent = savedQuery.data?.content ?? '';
 
     const mutation = useMutation({
         mutationKey: savedKey,
@@ -55,12 +51,11 @@ export const useTodayNote = () => {
     const debouncedMutate = useDebounceCall(mutation.mutate, 500);
 
     const setTodayContent = (content: string) => {
-        queryClient.setQueryData(draftKey, content);
+        setDraft(content);
         debouncedMutate(content);
     };
 
-    const draftContent = draftQuery.data ?? '';
-    const savedContent = savedQuery.data?.content ?? '';
+    const draftContent = draft ?? savedContent;
     const isSaved = draftContent === savedContent && !mutation.isPending;
 
     const todayNote: Entry = {

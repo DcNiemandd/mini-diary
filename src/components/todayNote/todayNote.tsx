@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { type FC } from 'react';
 import { useTodayNote } from '../../hooks/useTodayNote';
 import { DailyNote } from '../dailyNote/dailyNote';
 
