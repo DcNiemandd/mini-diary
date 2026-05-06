@@ -212,16 +212,23 @@ const importRawEntries = async (
         }
     }
 
-    // Prepare data for the db. Phase 1: new imports stack on top of the existing
-    // max order — chronologically wrong, but matches today's id-based behavior
-    // until Phase 3 reworks this to renumber by date.
-    const maxOrder = records.at(-1)?.order ?? 0;
+    // Prepare data for the db
+    const all = [...byDate.values()].sort((a, b) => +a.date - +b.date);
+    const orderByLocal = new Map<Local, number>();
+    all.forEach((l, i) => {
+        const newOrder = i + 1;
+        orderByLocal.set(l, newOrder);
+        if (l.id !== PLACEHOLDER_ID && l.record!.order !== newOrder) {
+            dirtyIds.add(l.id);
+        }
+    });
+
     const [newEncrypted, dirtyEncrypted] = await Promise.all([
         Promise.all(
             newLocals.map(
-                async (l, i): Promise<EntryRecord> => ({
+                async (l): Promise<EntryRecord> => ({
                     userPk: userId,
-                    order: maxOrder + i + 1,
+                    order: orderByLocal.get(l)!,
                     encryptedDate: await encryptData(l.date.toISODate()!),
                     encryptedContent: await encryptData(l.content),
                     inRow: await encryptData(String(l.inRow)),
@@ -233,6 +240,7 @@ const importRawEntries = async (
                 const l = byId.get(id)!;
                 return {
                     ...l.record!,
+                    order: orderByLocal.get(l)!,
                     encryptedContent: await encryptData(l.content),
                     inRow: await encryptData(String(l.inRow)),
                 };

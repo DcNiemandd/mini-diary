@@ -18,8 +18,6 @@ export const ExportImportButtons: FC = () => {
         });
 
     const openImportDialog = () => {
-        alert('Importing currently is disabled due to bug.');
-        return;
         openAppDialog({
             title: 'Import',
             content: (
