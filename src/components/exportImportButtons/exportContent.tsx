@@ -38,6 +38,7 @@ export const ExportContent: FC<{ auth: AuthState }> = ({ auth }) => {
             <button
                 onClick={onClickHandler}
                 itemType="raw"
+                className="button-primary"
             >
                 Export
             </button>
@@ -47,6 +48,7 @@ export const ExportContent: FC<{ auth: AuthState }> = ({ auth }) => {
             <button
                 onClick={onClickHandler}
                 itemType="encrypted"
+                className="button-primary"
             >
                 Export
             </button>
