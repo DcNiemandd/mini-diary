@@ -1,13 +1,14 @@
-import { createContext, type CSSProperties, type Dispatch } from 'react';
-import type { Color, Theme } from '../../hooks/useColorTheme';
+import { createContext, type Dispatch } from 'react';
+import type { ThemeSettings } from '../../hooks/useColorTheme';
 
-export interface SettingsContextValue {
-    colorScheme: Theme;
-    setColorScheme: Dispatch<Theme>;
-    customColor: Color;
-    setCustomColor: Dispatch<CSSProperties['color'] | undefined>;
-    useCustomColor: boolean;
-    setUseCustomColor: Dispatch<boolean>;
+export const IDLE_TIMEOUT_OPTIONS = [1, 3, 5, 15, 30] as const;
+export type IdleTimeoutOption = (typeof IDLE_TIMEOUT_OPTIONS)[number];
+
+export interface IdleTimeoutSettings {
+    idleTimeout: IdleTimeoutOption;
+    setIdleTimeout: Dispatch<IdleTimeoutOption>;
 }
+
+export type SettingsContextValue = ThemeSettings & IdleTimeoutSettings;
 
 export const SettingsContext = createContext<SettingsContextValue>({} as SettingsContextValue);

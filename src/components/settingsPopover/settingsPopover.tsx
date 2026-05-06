@@ -6,6 +6,7 @@ import { ChangePasswordButton } from '../changePasswordDialog/changePasswordButt
 import { ColorPicker } from '../colorPicker/colorPicker';
 import { ExportImportButtons } from '../exportImportButtons/exportImportButtons';
 import { openHelpDialog } from '../helpDialog/helpDialog';
+import { IdleTimeoutSwitcher } from '../idleTimeoutSwitcher/idleTimeoutSwitcher';
 import { ThemeSwitcher } from '../themeSwitcher/themeSwitcher';
 import styles from './settingsPopover.module.scss';
 
@@ -21,22 +22,29 @@ export const SettingsPopover = () => {
                         <span>Theme:</span>
                         <ThemeSwitcher
                             colorScheme={settings.colorScheme}
-                            setColorScheme={(scheme) => settings.setColorScheme(scheme)}
+                            setColorScheme={settings.setColorScheme}
                         />
                     </div>
                     <label className={styles['two-columns']}>
                         <span>Use custom color:</span>
                         <input
                             type="checkbox"
-                            checked={settings.useCustomColor}
-                            onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+                            checked={settings.isUseCustomColor}
+                            onChange={(e) => settings.setIsUseCustomColor(e.currentTarget.checked)}
                         />
                     </label>
                     <ColorPicker
                         customColor={settings.customColor}
-                        setCustomColor={(color) => settings.setCustomColor(color)}
-                        disabled={!settings.useCustomColor}
+                        setCustomColor={settings.setCustomColor}
+                        disabled={!settings.isUseCustomColor}
                     />
+                    <div className={styles['two-columns']}>
+                        <span>Idle time:</span>
+                        <IdleTimeoutSwitcher
+                            idleTimeout={settings.idleTimeout}
+                            setIdleTimeout={settings.setIdleTimeout}
+                        />
+                    </div>
 
                     <br />
                     <ChangePasswordButton />

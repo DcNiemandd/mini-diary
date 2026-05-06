@@ -9,8 +9,8 @@ export interface ThemeSettings {
     setColorScheme: Dispatch<Theme>;
     customColor: Color;
     setCustomColor: Dispatch<Color>;
-    useCustomColor: boolean;
-    setUseCustomColor: Dispatch<boolean>;
+    isUseCustomColor: boolean;
+    setIsUseCustomColor: Dispatch<boolean>;
 }
 
 export const useColorTheme = (): ThemeSettings => {
@@ -19,7 +19,7 @@ export const useColorTheme = (): ThemeSettings => {
         'state-theme-custom-color',
         'oklch(0.76 0.2 20)'
     );
-    const [useCustomColor, setUseCustomColor] = useLocalStorage<boolean>('state-theme-use-custom-color', false);
+    const [isUseCustomColor, setIsUseCustomColor] = useLocalStorage<boolean>('state-theme-use-custom-color', false);
 
     const root = window.document.documentElement;
 
@@ -41,13 +41,13 @@ export const useColorTheme = (): ThemeSettings => {
 
     useEffect(
         function updateCustomColorOnRoo() {
-            if (customColor && useCustomColor) {
+            if (customColor && isUseCustomColor) {
                 root.style.setProperty('--custom-color', customColor);
             } else {
                 root.style.removeProperty('--custom-color');
             }
         },
-        [customColor, root.style, useCustomColor]
+        [customColor, root.style, isUseCustomColor]
     );
 
     return {
@@ -55,7 +55,7 @@ export const useColorTheme = (): ThemeSettings => {
         setColorScheme: setTheme,
         customColor,
         setCustomColor,
-        useCustomColor,
-        setUseCustomColor,
+        isUseCustomColor,
+        setIsUseCustomColor,
     };
 };

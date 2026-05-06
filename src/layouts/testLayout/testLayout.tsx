@@ -85,15 +85,15 @@ export const TestLayout: FC = () => {
                         Use custom color
                         <input
                             type="checkbox"
-                            checked={settings.useCustomColor}
-                            onChange={(e) => settings.setUseCustomColor(e.currentTarget.checked)}
+                            checked={settings.isUseCustomColor}
+                            onChange={(e) => settings.setIsUseCustomColor(e.currentTarget.checked)}
                         />
                     </label>
 
                     <ColorPicker
                         customColor={settings.customColor}
                         setCustomColor={(color) => settings.setCustomColor(color)}
-                        disabled={!settings.useCustomColor}
+                        disabled={!settings.isUseCustomColor}
                     />
                 </div>
             </div>
