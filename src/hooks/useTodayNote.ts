@@ -65,6 +65,22 @@ export const useTodayNote = () => {
     };
 
     useEffect(
+        function resetDraftOnInvalidation() {
+            const unsub = queryClient.getQueryCache().subscribe((event) => {
+                if (
+                    event.type === 'updated' &&
+                    event.action.type === 'invalidate' &&
+                    JSON.stringify(event.query.queryKey) === JSON.stringify(savedKey)
+                ) {
+                    setDraft(null);
+                }
+            });
+            return unsub;
+        },
+        [queryClient, savedKey]
+    );
+
+    useEffect(
         function blockNavigationBeforeSave() {
             const handleBeforeUnload = (e: BeforeUnloadEvent) => {
                 e.preventDefault();

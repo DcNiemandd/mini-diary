@@ -116,7 +116,7 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
     };
 };
 
-const IMPORT_JOINER = '\n\x1E\n';
+const IMPORT_JOINER = '\n\u2063\n';
 
 /**
  * Inserts entries under logged user. Same-day entries are merged with IMPORT_JOINER;
