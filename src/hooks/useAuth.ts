@@ -8,6 +8,7 @@ export interface AuthState {
     userId: number | null;
     tryToLogin: (password: string) => Promise<boolean>;
     logout: () => void;
+    reloadUser: () => Promise<void>;
     encryptData: (data: string) => Promise<string>;
     decryptData: (gibberish: string) => Promise<string>;
     removeAccount: () => void;

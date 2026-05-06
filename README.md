@@ -137,6 +137,6 @@ Try to use modern browser features such as:
 
 -bug
     - ~~responsivity - change password labels and inputs separate rows~~
-    - **test behaviour after midnight** - mainly inRow is wrong
     - ~~cannot type in the middle of the note - cursor moves to the end~~
+    - **test behaviour after midnight** - mainly inRow is wrong
 

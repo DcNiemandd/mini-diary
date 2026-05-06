@@ -91,6 +91,10 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         queryClient.clear();
     };
 
+    const reloadUser = async () => {
+        setUserAuth(await getCurrentUser());
+    };
+
     const encryptData = async (data: string): Promise<string> => {
         if (!userKey) throw new Error('No user auth available for encryption');
         return MyCrypto.encryptAESGCM(data, userKey);
@@ -107,6 +111,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         userId: userAuth?.id ?? null,
         tryToLogin,
         logout,
+        reloadUser,
         isUser: userAuth !== null,
         encryptData,
         decryptData,

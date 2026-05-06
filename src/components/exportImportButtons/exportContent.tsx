@@ -23,9 +23,9 @@ export const ExportContent: FC<{ auth: AuthState }> = ({ auth }) => {
         if (!auth.isLoggedIn) throw new Error('User is not logged.');
 
         if (e.currentTarget.getAttribute('itemType') === 'raw') {
-            downloadObjectAsJson(await exportRawEntries(auth.userId!, auth.decryptData), 'diary_raw_export');
+            downloadObjectAsJson(await exportRawEntries(auth.userId!, auth.decryptData), 'diary_raw_entries_export');
         } else {
-            downloadObjectAsJson(await exportEncryptedEntries(auth.userId!), 'diary_encrypted_export');
+            downloadObjectAsJson(await exportEncryptedEntries(auth.userId!), 'diary_encrypted_user_export');
         }
 
         close();
@@ -33,7 +33,7 @@ export const ExportContent: FC<{ auth: AuthState }> = ({ auth }) => {
 
     return (
         <div className={styles['content']}>
-            <h3>Raw export</h3>
+            <h3>Entries</h3>
             <p>Diary entries in a readable format.</p>
             <button
                 onClick={onClickHandler}
@@ -42,7 +42,7 @@ export const ExportContent: FC<{ auth: AuthState }> = ({ auth }) => {
                 Export
             </button>
             <hr />
-            <h3>Encrypted export</h3>
+            <h3>User profile</h3>
             <p>Encrypted user database. Ideal for migrating to a different browser.</p>
             <button
                 onClick={onClickHandler}
