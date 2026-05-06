@@ -17,7 +17,9 @@ export const ExportImportButtons: FC = () => {
             buttons: [],
         });
 
-    const openImportDialog = () =>
+    const openImportDialog = () => {
+        alert('Importing currently is disabled due to bug.');
+        return;
         openAppDialog({
             title: 'Import',
             content: (
@@ -38,6 +40,7 @@ export const ExportImportButtons: FC = () => {
                 { label: 'Cancel', type: 'cancel' },
             ],
         });
+    };
 
     return (
         <>

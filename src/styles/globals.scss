@@ -77,7 +77,7 @@ button {
 
     &.button-primary {
         background: var(--primary);
-        color: var(--highlight);
+        color: var(--bg-dark);
 
         @include m.hover-focus {
             background: var(--secondary);
