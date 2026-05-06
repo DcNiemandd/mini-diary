@@ -36,7 +36,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
     ),
 };
 
-const VERSION = 1; //Object.keys(PATCH_NOTES).length;
+const VERSION = import.meta.env.DEV ? 1 : Object.keys(PATCH_NOTES).length;
 
 const openPatchNotesDialog = async (version: keyof typeof PATCH_NOTES) =>
     await openAppDialog({
