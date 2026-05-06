@@ -55,7 +55,7 @@ export const exportRawEntries = async (
     decryptData: (s: string) => Promise<string>
 ): Promise<RawExport> => {
     const db = await getDb();
-    const transaction = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const transaction = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
 
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     let cursor = await transaction.openCursor(range, 'next');
@@ -91,7 +91,7 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
     const user = await transaction.objectStore(USERS_STORE).get(userId);
 
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
-    let cursor = await transaction.objectStore(ENTRIES_STORE).index('userPk_id').openCursor(range, 'next');
+    let cursor = await transaction.objectStore(ENTRIES_STORE).index('userPk_order').openCursor(range, 'next');
     const records: EntryRecord[] = [];
 
     while (cursor) {
@@ -99,11 +99,11 @@ export const exportEncryptedEntries = async (userId: number): Promise<EncryptedE
         cursor = await cursor.continue();
     }
 
-    const entries = records.map((r: EntryRecord, index): EncryptedExport['entries'][number] => ({
+    const entries = records.map((r: EntryRecord): EncryptedExport['entries'][number] => ({
         encryptedContent: r.encryptedContent,
         encryptedDate: r.encryptedDate,
         inRow: r.inRow,
-        order: index,
+        order: r.order,
     }));
 
     await transaction.done;
@@ -136,7 +136,7 @@ const importRawEntries = async (
     // Snapshot existing entries from the db
     const records: EntryRecord[] = [];
     {
-        const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+        const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
         const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
         let cur = await idx.openCursor(range, 'next');
         while (cur) {
@@ -257,11 +257,10 @@ const importEncryptedEntries = async (importObject: EncryptedExport): Promise<bo
 
     const entriesStore = tx.objectStore(ENTRIES_STORE);
     const sorted = importObject.entries.toSorted((a, b) => a.order - b.order);
-    for (let i = 0; i < sorted.length; i++) {
-        const entry = sorted[i];
+    for (const entry of sorted) {
         const record: EntryRecord = {
             userPk: newUserId,
-            order: i + 1,
+            order: entry.order,
             encryptedDate: entry.encryptedDate,
             encryptedContent: entry.encryptedContent,
             inRow: entry.inRow,

@@ -80,7 +80,7 @@ export const deleteUserAndEntries = async (userId: number): Promise<void> => {
 
     await tx.objectStore(USERS_STORE).delete(userId);
 
-    const idx = tx.objectStore(ENTRIES_STORE).index('userPk_id');
+    const idx = tx.objectStore(ENTRIES_STORE).index('userPk_order');
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     let cursor = await idx.openCursor(range);
     while (cursor) {

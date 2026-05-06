@@ -40,13 +40,13 @@ export const entryToEntryRecord = async (
 export const fetchEntriesPage = async (
     userId: number,
     decryptData: (s: string) => Promise<string>,
-    cursor: number | null // null = start from the newest
+    cursorOrder: number | null // null = start from the newest
 ): Promise<EntriesPage> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
 
-    const upperId = cursor !== null ? cursor - 1 : Infinity;
-    const range = IDBKeyRange.bound([userId, -Infinity], [userId, upperId]);
+    const upperOrder = cursorOrder !== null ? cursorOrder - 1 : Infinity;
+    const range = IDBKeyRange.bound([userId, -Infinity], [userId, upperOrder]);
 
     const records: EntryRecord[] = [];
     let idbCursor = await idx.openCursor(range, 'prev');
@@ -81,29 +81,35 @@ export const fetchEntryById = async (
 };
 
 /** For searching for a specific date */
-export const getIdBounds = async (userId: number): Promise<{ min: number; max: number } | null> => {
+export const getOrderBounds = async (userId: number): Promise<{ min: number; max: number } | null> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     const first = await idx.openCursor(range, 'next');
     const last = await idx.openCursor(range, 'prev');
     if (!first || !last) return null;
-    return { min: first.value.id!, max: last.value.id! };
+    return { min: first.value.order, max: last.value.order };
 };
 
-const findFirstIdAtLeast = async (userId: number, fromId: number, toId: number): Promise<number | null> => {
+const findFirstRecordAtLeast = async (
+    userId: number,
+    fromOrder: number,
+    toOrder: number
+): Promise<EntryRecord | null> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
-    const range = IDBKeyRange.bound([userId, fromId], [userId, toId]);
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
+    const range = IDBKeyRange.bound([userId, fromOrder], [userId, toOrder]);
     const cursor = await idx.openCursor(range, 'next');
-    return cursor ? (cursor.value.id as number) : null;
+    return cursor ? (cursor.value as EntryRecord) : null;
 };
 
 /**
- * Binary search for the date
+ * Binary search for the date. Relies on `order ↑ ⇔ date ↑`, which holds today
+ * (Phase 2: order == id, and id == insertion-order == date-order pre-import)
+ * and after Phase 3 reworks importRawEntries to renumber by date.
  */
 export const fetchEntryByDate = async (userId: number, date: DateTime, decryptData: (s: string) => Promise<string>) => {
-    const bounds = await getIdBounds(userId);
+    const bounds = await getOrderBounds(userId);
     if (!bounds) return null;
 
     const target = date.startOf('day');
@@ -112,24 +118,24 @@ export const fetchEntryByDate = async (userId: number, date: DateTime, decryptDa
 
     while (lo <= hi) {
         const mid = Math.floor((lo + hi) / 2);
-        const probeId = await findFirstIdAtLeast(userId, mid, hi);
-        if (probeId === null) {
+        const probeRecord = await findFirstRecordAtLeast(userId, mid, hi);
+        if (probeRecord === null) {
             // Switch to lower half
             hi = mid - 1;
             continue;
         }
 
-        const entry = await fetchEntryById(userId, probeId, decryptData);
-        if (!entry) return null; // race with delete — give up cleanly
+        const entry = await entryRecordToEntry(probeRecord, decryptData);
+        const probeOrder = probeRecord.order;
 
         const entryDay = entry.date.startOf('day');
         if (entryDay.equals(target)) return entry;
         if (entryDay < target) {
-            lo = probeId + 1;
+            lo = probeOrder + 1;
         } else {
-            // probeId is the *first* existing id in [mid, hi], so [mid, probeId-1] is empty.
-            // Collapsing the upper bound to probeId-1 is safe.
-            hi = probeId - 1;
+            // probeOrder is the *first* existing order in [mid, hi], so [mid, probeOrder-1] is empty.
+            // Collapsing the upper bound to probeOrder-1 is safe.
+            hi = probeOrder - 1;
         }
     }
 
@@ -141,7 +147,7 @@ export const fetchTodayEntry = async (
     decryptData: (s: string) => Promise<string>
 ): Promise<(Entry & { id: number }) | null> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
 
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
     const idbCursor = await idx.openCursor(range, 'prev');
@@ -169,7 +175,7 @@ export const createEntry = async (
     decryptData: (s: string) => Promise<string>
 ): Promise<Entry & { id: number }> => {
     const db = await getDb();
-    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_id');
+    const idx = db.transaction(ENTRIES_STORE, 'readonly').store.index('userPk_order');
 
     // Calculate inRow
     const range = IDBKeyRange.bound([userId, -Infinity], [userId, Infinity]);
