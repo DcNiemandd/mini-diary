@@ -123,20 +123,20 @@ Try to use modern browser features such as:
     - ~~change DB - autoincrement id for user - no need to remap entries~~
     - ~~expand settings with password change~~, ~~about/help~~
     - ~~focus note field on load~~ (bad practise - accessibility)
-    - data export/import
-    - ~~logout timeout~~, enable user to select time
+    - ~~data export/import~~
+    - ~~logout timeout~~, **enable user to select time**
 - ~~saving notes to indexedDB~~
     - ~~needs to refactor dataflow - extract todays note into own query/mutation~~
     - ~~rename databaseKey to a userId~~
-    - multiple users support
+    - *multiple users support*
 
 -redo
     - ~~switch dialog close button to have no background and fixed size~~
     - ~~button colours on hover etc~~
-    - dialog has scrollable content, not the whole dialog
+    - **dialog has scrollable content, not the whole dialog**
 
 -bug
     - ~~responsivity - change password labels and inputs separate rows~~
     - ~~cannot type in the middle of the note - cursor moves to the end~~
-    - **test behaviour after midnight** - mainly inRow is wrong
+    - **test behaviour after midnight** - double saving
 
