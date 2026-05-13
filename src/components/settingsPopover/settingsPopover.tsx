@@ -38,6 +38,9 @@ export const SettingsPopover = () => {
                         setCustomColor={settings.setCustomColor}
                         disabled={!settings.isUseCustomColor}
                     />
+
+                    <br />
+
                     <div className={styles['two-columns']}>
                         <span>Idle time:</span>
                         <IdleTimeoutSwitcher
@@ -45,14 +48,11 @@ export const SettingsPopover = () => {
                             setIdleTimeout={settings.setIdleTimeout}
                         />
                     </div>
-
-                    <br />
                     <ChangePasswordButton />
-
                     <div className={`${styles['two-columns']} ${styles['same-width']}`}>
                         <ExportImportButtons />
                     </div>
-
+                    <br />
                     <div className={`${styles['two-columns']} ${styles['same-width']}`}>
                         <button onClick={() => openLatestPatchNotesDialog()}>Patch notes</button>
                         <button onClick={() => openHelpDialog()}>Help</button>

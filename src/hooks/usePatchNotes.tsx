@@ -42,6 +42,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
             <li>
                 <b>highlighted</b> an important info in the help dialog
             </li>
+            <li>updated settings responsiveness</li>
             <li>
                 fixes
                 <ul>

@@ -1,9 +1,11 @@
 $column-gap: 0.5rem;
 
 .content {
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: min(420px, 75vw);
 }
 
 .two-columns {
@@ -15,7 +17,12 @@ $column-gap: 0.5rem;
         flex: 1;
     }
 
-    &.same-width > * {
-        flex: 1 0 calc(50% - $column-gap / 2);
+    &.same-width {
+        & > * {
+            flex: 1 0 calc(50% - $column-gap / 2);
+        }
+        @container (width < 40ch) {
+            display: contents;
+        }
     }
 }

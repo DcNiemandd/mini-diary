@@ -134,7 +134,7 @@ Try to use modern browser features such as:
     - ~~switch dialog close button to have no background and fixed size~~
     - ~~button colours on hover etc~~
     - ~~dialog has scrollable content, not the whole dialog~~
-    - **settings poporver responsivity**
+    - ~~settings poporver responsivity~~
 
 -bug
     - ~~responsivity - change password labels and inputs separate rows~~

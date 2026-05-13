@@ -18,6 +18,20 @@
     &[aria-disabled='true'] {
         opacity: 0.25;
     }
+
+    @container (width < 40ch) {
+        grid-template-columns: 1fr 1fr;
+
+        span {
+            width: auto;
+            grid-row: 1/1;
+        }
+
+        input:is(#chroma-slider, #hue-slider) {
+            grid-column: 1 / -1;
+            margin: 0;
+        }
+    }
 }
 
 #chroma-slider,

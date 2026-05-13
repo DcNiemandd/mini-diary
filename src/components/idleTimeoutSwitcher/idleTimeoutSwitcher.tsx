@@ -13,6 +13,7 @@ export const IdleTimeoutSwitcher: FC<IdleTimeoutSettings & { id?: string }> = ({
                 setIdleTimeout(Number(e.target.value) as IdleTimeoutOption);
             }}
             value={idleTimeout}
+            style={{ maxWidth: '8rem' }}
         >
             {IDLE_TIMEOUT_OPTIONS.map((option) => (
                 <option
