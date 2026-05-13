@@ -139,6 +139,6 @@ Try to use modern browser features such as:
 -bug
     - ~~responsivity - change password labels and inputs separate rows~~
     - ~~cannot type in the middle of the note - cursor moves to the end~~
-    - **upload disabled after os dialog canceled**
+    - ~~first createEntry breakes in transaction~~
+    - **upload button disabled after os dialog canceled**
     - **test behaviour after midnight** - double saving
-

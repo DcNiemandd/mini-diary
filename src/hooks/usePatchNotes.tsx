@@ -46,6 +46,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
                 fixes
                 <ul>
                     <li>disabling logout button when the note is not saved</li>
+                    <li>fixed auth when registering</li>
                 </ul>
             </li>
         </ul>

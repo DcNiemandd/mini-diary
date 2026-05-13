@@ -35,12 +35,13 @@ export const TodayNoteContextProvider: FC<PropsWithChildren> = ({ children }) =>
     const mutation = useMutation({
         mutationKey: savedKey,
         mutationFn: async (content: string): Promise<Entry & { id: number }> => {
+            if (!userId) throw new Error('User not authenticated');
             const existing = queryClient.getQueryData<(Entry & { id: number }) | null>(savedKey);
             if (existing?.id) {
-                await updateEntry(userId!, existing.id, content, encryptData);
+                await updateEntry(userId, existing.id, content, encryptData);
                 return { ...existing, content };
             }
-            return await createEntry(userId!, content, encryptData, decryptData);
+            return await createEntry(userId, content, encryptData, decryptData);
         },
         onSuccess: (saved) => {
             queryClient.setQueryData(savedKey, saved);

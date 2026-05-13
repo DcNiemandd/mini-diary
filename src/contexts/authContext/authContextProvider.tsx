@@ -37,9 +37,9 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
                 const userKey = MyCrypto.generaRandomString();
                 const userAuth = await generateUser(userKey, password);
 
-                await putUser(userAuth);
+                const newUserAuth = await putUser(userAuth);
 
-                setUserAuth(userAuth);
+                setUserAuth(newUserAuth);
                 setUserKey(userKey);
 
                 return true;
