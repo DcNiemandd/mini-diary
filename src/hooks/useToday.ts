@@ -31,5 +31,12 @@ export const useToday = (onChange?: (today: DateTime, previous: DateTime) => voi
         [today]
     );
 
+    useEffect(function devClockListener() {
+        if (!import.meta.env.DEV) return;
+        const onTick = () => setToday(startOfToday());
+        window.addEventListener('devclock-change', onTick);
+        return () => window.removeEventListener('devclock-change', onTick);
+    }, []);
+
     return today;
 };

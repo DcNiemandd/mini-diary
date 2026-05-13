@@ -9,6 +9,10 @@ import './styles/theme.scss';
 
 Settings.defaultLocale = navigator.language || 'cs-CZ';
 
+if (import.meta.env.DEV) {
+    import('./dev/devClock');
+}
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
