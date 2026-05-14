@@ -3,6 +3,7 @@ import { Popover } from '../../../lib/popover';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
 import { openLatestPatchNotesDialog } from '../../hooks/usePatchNotes';
 import { ChangePasswordButton } from '../changePasswordDialog/changePasswordButton';
+import { ChangeUsernameButton } from '../changeUsernameDialog/changeUsernameButton';
 import { ColorPicker } from '../colorPicker/colorPicker';
 import { ExportImportButtons } from '../exportImportButtons/exportImportButtons';
 import { openHelpDialog } from '../helpDialog/helpDialog';
@@ -48,7 +49,10 @@ export const SettingsPopover = () => {
                             setIdleTimeout={settings.setIdleTimeout}
                         />
                     </div>
-                    <ChangePasswordButton />
+                    <div className={`${styles['two-columns']} ${styles['same-width']}`}>
+                        <ChangeUsernameButton />
+                        <ChangePasswordButton />
+                    </div>
                     <div className={`${styles['two-columns']} ${styles['same-width']}`}>
                         <ExportImportButtons />
                     </div>

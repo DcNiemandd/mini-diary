@@ -3,14 +3,19 @@ import { useDialog } from '../../../lib/dialog/index.ts';
 import type { AuthState } from '../../hooks/useAuth.ts';
 import { formFactory } from '../../utils/formFactory.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
-import styles from './changePasswordDialog.module.css';
+import styles from '../../styles/dialogForm.module.css';
 
 const changePasswordForm = formFactory(['oldPassword', 'newPassword1', 'newPassword2']);
 const { fields: FIELD, setFieldError: setFieldErrorBase, clearErrors } = changePasswordForm;
 type FieldName = typeof changePasswordForm.types.FieldName;
 type ChangePasswordForm = typeof changePasswordForm.types.Form;
 
-export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePassword'] }> = ({ changePassword }) => {
+interface Props {
+    username: string;
+    changePassword: AuthState['changePassword'];
+}
+
+export const ChangePasswordDialog: FC<Props> = ({ username, changePassword }) => {
     const formRef = useRef<HTMLFormElement>(null);
     const { onButtonClick, disableButtons, close } = useDialog<'confirm' | 'cancel'>();
 
@@ -58,11 +63,20 @@ export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePasswor
             onSubmit={handleSubmit}
             onInput={handleInput}
         >
+            <input
+                type="text"
+                name="username"
+                autoComplete="username"
+                value={username}
+                readOnly
+                hidden
+            />
             <label className={styles['two-columns']}>
                 <span>Old password</span>
                 <input
                     name={FIELD.oldPassword}
                     type="password"
+                    autoComplete="current-password"
                     minLength={6}
                     required
                 />
@@ -72,6 +86,7 @@ export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePasswor
                 <input
                     name={FIELD.newPassword1}
                     type="password"
+                    autoComplete="new-password"
                     minLength={6}
                     required
                 />
@@ -81,6 +96,7 @@ export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePasswor
                 <input
                     name={FIELD.newPassword2}
                     type="password"
+                    autoComplete="new-password"
                     minLength={6}
                     required
                 />

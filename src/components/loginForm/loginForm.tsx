@@ -15,7 +15,13 @@ export const LoginForm: FC = () => {
 
     const isSentinel = auth.username === '';
     const isReturning = auth.username !== null && auth.username !== '';
-    const usernamePlaceholder = isSentinel ? 'Choose a username' : isReturning ? 'Last user' : 'Username';
+    const maskedLastUser =
+        isReturning && auth.username
+            ? auth.username.length <= 2
+                ? auth.username
+                : `${auth.username[0]}${'*'.repeat(auth.username.length - 2)}${auth.username[auth.username.length - 1]}`
+            : '';
+    const usernamePlaceholder = isSentinel ? 'Choose a username' : isReturning ? maskedLastUser : 'Username';
 
     const loginMutation = useMutation({
         mutationFn: async (form: LoginForm) => {
@@ -75,6 +81,10 @@ export const LoginForm: FC = () => {
                 setFieldError(form, 'username', 'Username required');
                 return;
             }
+            if (typedUsername.length < 20) {
+                setFieldError(form, 'username', 'Username must be at most 20 characters');
+                return;
+            }
             if (!password || password.length < 6) {
                 setFieldError(form, 'password', 'Password must be at least 6 characters');
                 return;
@@ -119,6 +129,7 @@ export const LoginForm: FC = () => {
                 name={FIELD.username}
                 placeholder={usernamePlaceholder}
                 autoComplete="username"
+                maxLength={20}
             />
             <input
                 type="password"
@@ -141,6 +152,7 @@ export const LoginForm: FC = () => {
                     aria-label="Create new user"
                     onClick={handleCreate}
                     disabled={isBusy}
+                    title="Create new user"
                 >
                     <span aria-hidden="true">+</span>
                 </button>
