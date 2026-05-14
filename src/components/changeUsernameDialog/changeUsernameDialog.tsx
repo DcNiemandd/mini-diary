@@ -2,9 +2,9 @@ import { useEffect, useRef, type FC, type InputEventHandler, type SubmitEventHan
 import { useDialog } from '../../../lib/dialog/index.ts';
 import type { AuthState } from '../../hooks/useAuth.ts';
 import { usernameExists } from '../../services/usersService.ts';
+import styles from '../../styles/dialogForm.module.css';
 import { formFactory } from '../../utils/formFactory.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
-import styles from '../../styles/dialogForm.module.css';
 
 const changeUsernameForm = formFactory(['newUsername']);
 const { fields: FIELD, setFieldError: setFieldErrorBase, clearErrors } = changeUsernameForm;
@@ -40,6 +40,14 @@ export const ChangeUsernameDialog: FC<Props> = ({ currentUsername, changeUsernam
 
         if (value === currentUsername) {
             setFieldError(form, FIELD.newUsername, 'New username matches the current one');
+            return;
+        }
+        if (value.length > 20) {
+            setFieldError(form, FIELD.newUsername, 'Username must be at most 20 characters');
+            return;
+        }
+        if (value.length < 3) {
+            setFieldError(form, FIELD.newUsername, 'Username must be at least 3 characters');
             return;
         }
 
@@ -94,6 +102,8 @@ export const ChangeUsernameDialog: FC<Props> = ({ currentUsername, changeUsernam
                     type="text"
                     autoComplete="username"
                     required
+                    minLength={3}
+                    maxLength={20}
                 />
             </label>
             <button
@@ -103,4 +113,3 @@ export const ChangeUsernameDialog: FC<Props> = ({ currentUsername, changeUsernam
         </form>
     );
 };
-

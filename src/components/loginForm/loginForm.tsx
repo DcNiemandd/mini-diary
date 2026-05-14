@@ -81,8 +81,12 @@ export const LoginForm: FC = () => {
                 setFieldError(form, 'username', 'Username required');
                 return;
             }
-            if (typedUsername.length < 20) {
+            if (typedUsername.length > 20) {
                 setFieldError(form, 'username', 'Username must be at most 20 characters');
+                return;
+            }
+            if (typedUsername.length < 3) {
+                setFieldError(form, 'username', 'Username must be at least 3 characters');
                 return;
             }
             if (!password || password.length < 6) {
@@ -130,6 +134,7 @@ export const LoginForm: FC = () => {
                 placeholder={usernamePlaceholder}
                 autoComplete="username"
                 maxLength={20}
+                minLength={3}
             />
             <input
                 type="password"
