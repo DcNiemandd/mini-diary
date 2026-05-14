@@ -52,6 +52,20 @@ const PATCH_NOTES: Record<number, ReactNode> = {
             </li>
         </ul>
     ),
+    4: (
+        <ul>
+            <li>multi-user support - notes and settings are now tied to your account</li>
+            <li>user can change username</li>
+            <li>redesigned login & register form</li>
+            <li>
+                changes behind the hood
+                <ul>
+                    <li>database migration to per-user storage</li>
+                    <li>settings cached on auth context</li>
+                </ul>
+            </li>
+        </ul>
+    ),
 };
 
 const VERSION = Object.keys(PATCH_NOTES).length;
