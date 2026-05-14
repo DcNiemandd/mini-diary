@@ -1,13 +1,19 @@
 .login-form {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column wrap;
     gap: 1rem;
+}
 
-    @container (width < 400px) {
-        flex-flow: column;
-    }
-
-    & > * {
-        flex: 1 0 auto;
+.button-group {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    gap: 1rem;
+    button {
+        flex: 1 1 auto;
+        &:global(.icon-button) {
+            flex: 0 0 auto;
+        }
     }
 }
+

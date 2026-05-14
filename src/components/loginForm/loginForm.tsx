@@ -1,67 +1,151 @@
 import { useMutation } from '@tanstack/react-query';
-import { useRef, useState, type FC } from 'react';
+import { useRef, type FC, type InputEventHandler, type SubmitEventHandler } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { RemoveAccountButton } from '../removeAccountButton/removeAccountButton';
+import { getUserByUsername, usernameExists } from '../../services/usersService';
+import { formFactory } from '../../utils/formFactory';
 import style from './loginForm.module.scss';
+
+const loginForm = formFactory(['username', 'password']);
+const { fields: FIELD, setFieldError, clearErrors } = loginForm;
+type LoginForm = typeof loginForm.types.Form;
 
 export const LoginForm: FC = () => {
     const auth = useAuth();
+    const formRef = useRef<LoginForm>(null);
 
-    const [resetAccountCounter, setResetAccountCounter] = useState(0);
-    const passwordRef = useRef<HTMLInputElement>(null);
+    const isSentinel = auth.username === '';
+    const isReturning = auth.username !== null && auth.username !== '';
+    const usernamePlaceholder = isSentinel ? 'Choose a username' : isReturning ? 'Last user' : 'Username';
 
     const loginMutation = useMutation({
-        mutationFn: async (password: string) => {
-            const isLoginSuccess = await auth.tryToLogin('', password);
+        mutationFn: async (form: LoginForm) => {
+            const typedUsername = form.elements.username.value.trim();
+            const password = form.elements.password.value;
 
-            if (!isLoginSuccess) {
-                passwordRef.current?.setCustomValidity('Incorrect password');
-                passwordRef.current?.reportValidity();
-                setResetAccountCounter((c) => c + 1);
-            } else {
-                passwordRef.current?.setCustomValidity('');
-                setResetAccountCounter(0);
+            if (isSentinel) {
+                if (!typedUsername) {
+                    setFieldError(form, 'username', 'Choose a username');
+                    return;
+                }
+                if (await usernameExists(typedUsername)) {
+                    setFieldError(form, 'username', 'Username already taken');
+                    return;
+                }
+                const ok = await auth.tryToLogin('', password);
+                if (!ok) {
+                    setFieldError(form, 'password', 'Incorrect password');
+                    return;
+                }
+                const renamed = await auth.changeUsername(typedUsername);
+                if (!renamed) setFieldError(form, 'username', 'Could not claim username');
+                return;
             }
-        },
-        onError: () => {
-            passwordRef.current?.setCustomValidity('Incorrect password');
+
+            const resolved = typedUsername || (auth.username ?? '');
+            if (!resolved) {
+                setFieldError(form, 'username', 'Username required');
+                return;
+            }
+
+            const target = await getUserByUsername(resolved);
+            if (!target) {
+                if (!typedUsername) {
+                    auth.forgetLastUser();
+                    setFieldError(form, 'username', 'Last user no longer exists');
+                } else {
+                    setFieldError(form, 'username', 'No such account — use + to create');
+                }
+                return;
+            }
+
+            const ok = await auth.tryToLogin(resolved, password);
+            if (!ok) {
+                setFieldError(form, 'password', 'Incorrect password');
+                return;
+            }
         },
     });
 
+    const signupMutation = useMutation({
+        mutationFn: async (form: LoginForm) => {
+            const typedUsername = form.elements.username.value.trim();
+            const password = form.elements.password.value;
+
+            if (!typedUsername) {
+                setFieldError(form, 'username', 'Username required');
+                return;
+            }
+            if (!password || password.length < 6) {
+                setFieldError(form, 'password', 'Password must be at least 6 characters');
+                return;
+            }
+            if (isSentinel) {
+                setFieldError(form, 'username', 'Claim your account first');
+                return;
+            }
+            if (await usernameExists(typedUsername)) {
+                setFieldError(form, 'username', 'Username already taken');
+                return;
+            }
+            const ok = await auth.signup(typedUsername, password);
+            if (!ok) setFieldError(form, 'username', 'Could not create account');
+        },
+    });
+
+    const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
+        e.preventDefault();
+        loginMutation.mutate(e.currentTarget as LoginForm);
+    };
+
+    const handleInput: InputEventHandler<HTMLFormElement> = (e) => {
+        clearErrors(e.currentTarget as LoginForm);
+    };
+
+    const handleCreate = (): void => {
+        if (formRef.current) signupMutation.mutate(formRef.current);
+    };
+
+    const isBusy = loginMutation.isPending || signupMutation.isPending;
+
     return (
         <form
+            ref={formRef}
             className={style['login-form']}
-            onSubmit={async (e) => {
-                e.preventDefault();
-                const values = Object.fromEntries(new FormData(e.currentTarget));
-                loginMutation.mutate(values.password as string);
-            }}
+            onSubmit={handleSubmit}
+            onInput={handleInput}
         >
             <input
-                ref={passwordRef}
+                type="text"
+                name={FIELD.username}
+                placeholder={usernamePlaceholder}
+                autoComplete="username"
+            />
+            <input
                 type="password"
-                name="password"
+                name={FIELD.password}
                 placeholder="Password"
                 required
                 minLength={6}
-                onInput={() => {
-                    passwordRef.current?.setCustomValidity('');
-                }}
+                autoComplete="current-password"
             />
-            <button type="submit">{auth.isUser ? 'Login' : 'Set Password'}</button>
-            <RemoveAccountButton
-                style={{ display: resetAccountCounter >= 3 ? undefined : 'none' }}
-                onReset={() => {
-                    auth.removeAccount();
-                    setResetAccountCounter(0);
-                    const pwInput = passwordRef.current;
-                    if (pwInput) {
-                        pwInput.value = '';
-                        pwInput.setCustomValidity('');
-                        pwInput.focus();
-                    }
-                }}
-            />
+            <div className={style['button-group']}>
+                <button
+                    type="submit"
+                    disabled={isBusy}
+                >
+                    {isSentinel ? 'Claim & Login' : 'Login'}
+                </button>
+                <button
+                    type="button"
+                    className="icon-button"
+                    aria-label="Create new user"
+                    onClick={handleCreate}
+                    disabled={isBusy}
+                >
+                    <span aria-hidden="true">+</span>
+                </button>
+            </div>
         </form>
     );
 };
+

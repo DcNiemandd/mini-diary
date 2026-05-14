@@ -7,8 +7,10 @@
  */
 
 declare const loginForm: string;
+declare const buttonGroup: string;
 
 declare const __default_export__: {
 	"login-form": typeof loginForm;
+	"button-group": typeof buttonGroup;
 };
 export default __default_export__;

@@ -1,22 +1,14 @@
 import { useEffect, useRef, type FC, type InputEventHandler, type SubmitEventHandler } from 'react';
 import { useDialog } from '../../../lib/dialog/index.ts';
 import type { AuthState } from '../../hooks/useAuth.ts';
+import { formFactory } from '../../utils/formFactory.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
 import styles from './changePasswordDialog.module.css';
 
-const FIELD = {
-    oldPassword: 'oldPassword',
-    newPassword1: 'newPassword1',
-    newPassword2: 'newPassword2',
-} as const;
-
-type FieldName = keyof typeof FIELD;
-
-type ChangePasswordFormElements = HTMLFormControlsCollection & Record<FieldName, HTMLInputElement>;
-
-interface ChangePasswordForm extends HTMLFormElement {
-    readonly elements: ChangePasswordFormElements;
-}
+const changePasswordForm = formFactory(['oldPassword', 'newPassword1', 'newPassword2']);
+const { fields: FIELD, setFieldError: setFieldErrorBase, clearErrors } = changePasswordForm;
+type FieldName = typeof changePasswordForm.types.FieldName;
+type ChangePasswordForm = typeof changePasswordForm.types.Form;
 
 export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePassword'] }> = ({ changePassword }) => {
     const formRef = useRef<HTMLFormElement>(null);
@@ -30,8 +22,7 @@ export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePasswor
     }, [onButtonClick]);
 
     const setFieldError = (form: ChangePasswordForm, name: FieldName, message: string) => {
-        form.elements[name].setCustomValidity(message);
-        form.reportValidity();
+        setFieldErrorBase(form, name, message);
         disableButtons(true, 'confirm');
     };
 
@@ -56,10 +47,7 @@ export const ChangePasswordDialog: FC<{ changePassword: AuthState['changePasswor
     };
 
     const handleInput: InputEventHandler<HTMLFormElement> = (e) => {
-        const form = e.currentTarget;
-        for (const el of form.elements) {
-            if (el instanceof HTMLInputElement) el.setCustomValidity('');
-        }
+        clearErrors(e.currentTarget as ChangePasswordForm);
         disableButtons(false, 'confirm');
     };
 
