@@ -25,7 +25,7 @@ export const ExportImportButtons: FC = () => {
                     auth={auth}
                     onEncryptedImported={async () => {
                         auth.logout();
-                        await auth.reloadUser();
+                        await auth.logout();
                     }}
                     onRawImported={() => {
                         if (auth.userId === null) return;

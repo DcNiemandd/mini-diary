@@ -46,11 +46,13 @@ export const renameUser = async (userId: number, newUsername: string): Promise<R
     return updated;
 };
 
-export const updateUserSettings = async (userId: number, settings: UserSettings): Promise<void> => {
+export const updateUserSettings = async (userId: number, settings: UserSettings): Promise<Required<UserRecord>> => {
     const db = await getDb();
     const existing = (await db.get(USERS_STORE, userId)) as UserRecord | undefined;
     if (!existing) throw new Error('User not found');
-    await db.put(USERS_STORE, { ...existing, id: userId, settings });
+    const updated = { ...existing, id: userId, settings };
+    await db.put(USERS_STORE, updated);
+    return updated;
 };
 
 /**
@@ -89,26 +91,28 @@ export const generateUser = async (userKey: string, password: string, username: 
 };
 
 /**
- * @throws No user
+ * @throws User not found
  * @throws Incorrect password
  */
-export const changeUserPassword = async (oldPassword: string, newPassword: string): Promise<UserRecord> => {
+export const changeUserPassword = async (
+    user: Required<UserRecord>,
+    oldPassword: string,
+    newPassword: string
+): Promise<Required<UserRecord>> => {
     const db = await getDb();
-
-    const oldUser = await getCurrentUser();
-    if (!oldUser) throw new Error('No user available');
 
     let userKey;
     try {
-        userKey = await tryLogin(oldUser, oldPassword);
+        userKey = await tryLogin(user, oldPassword);
     } catch (e) {
         throw new Error(`Old password incorrect - ${e}`);
     }
 
-    const newUser: UserRecord = {
-        ...(await generateUser(userKey, newPassword, oldUser.username)),
-        id: oldUser.id,
-        settings: oldUser.settings,
+    const fresh = await generateUser(userKey, newPassword, user.username);
+    const newUser: Required<UserRecord> = {
+        ...fresh,
+        id: user.id,
+        settings: user.settings,
     };
 
     await db.put(USERS_STORE, newUser);

@@ -12,7 +12,7 @@ export const LoginForm: FC = () => {
 
     const loginMutation = useMutation({
         mutationFn: async (password: string) => {
-            const isLoginSuccess = await auth.tryToLogin(password);
+            const isLoginSuccess = await auth.tryToLogin('', password);
 
             if (!isLoginSuccess) {
                 passwordRef.current?.setCustomValidity('Incorrect password');
