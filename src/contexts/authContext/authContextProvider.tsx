@@ -17,26 +17,17 @@ import { MyCrypto } from '../../utils/crypto';
 import { AuthContext } from './authContext';
 
 const LAST_USERNAME_KEY = 'last-username';
-const CACHED_THEME_KEY = 'cached-theme-theme';
-const CACHED_CUSTOM_COLOR_KEY = 'cached-theme-custom-color';
-const CACHED_USE_CUSTOM_COLOR_KEY = 'cached-theme-use-custom-color';
 
-const persistLoginCache = (user: UserRecord): void => {
+const persistLastUsername = (username: string): void => {
     try {
-        localStorage.setItem(LAST_USERNAME_KEY, user.username);
-        localStorage.setItem(CACHED_THEME_KEY, JSON.stringify(user.settings.colorScheme));
-        localStorage.setItem(CACHED_CUSTOM_COLOR_KEY, JSON.stringify(user.settings.customColor));
-        localStorage.setItem(CACHED_USE_CUSTOM_COLOR_KEY, JSON.stringify(user.settings.isUseCustomColor));
+        localStorage.setItem(LAST_USERNAME_KEY, username);
     } catch {
         // Non-fatal; next login retries.
     }
 };
 
-const clearLoginCache = (): void => {
+const clearLastUsername = (): void => {
     localStorage.removeItem(LAST_USERNAME_KEY);
-    localStorage.removeItem(CACHED_THEME_KEY);
-    localStorage.removeItem(CACHED_CUSTOM_COLOR_KEY);
-    localStorage.removeItem(CACHED_USE_CUSTOM_COLOR_KEY);
 };
 
 export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -76,7 +67,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
         setUserAuth(target);
         setUserKey(resolvedUserKey);
-        persistLoginCache(target);
+        persistLastUsername(target.username);
         return true;
     };
 
@@ -89,7 +80,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
             const stored = await putUser(newUser);
             setUserAuth(stored);
             setUserKey(newUserKey);
-            persistLoginCache(stored);
+            persistLastUsername(stored.username);
             return true;
         } catch (e) {
             console.error(`Signup failed. ${e}`);
@@ -99,22 +90,16 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const changeSettings = async (newSettings: Partial<UserSettings>): Promise<boolean> => {
         if (!userAuth || userAuth.id === undefined) return false;
-        const oldUsername = userAuth.username;
         const mergedSettings: UserSettings = { ...userAuth.settings, ...newSettings };
-        let next: UserRecord = userAuth;
 
         try {
-            next = await updateUserSettings(userAuth.id, mergedSettings);
+            const next = await updateUserSettings(userAuth.id, mergedSettings);
+            setUserAuth(next);
+            return true;
         } catch (e) {
             console.error(`Changing settings failed. ${e}`);
             return false;
         }
-
-        setUserAuth(next);
-
-        const pointerMatchedOld = localStorage.getItem(LAST_USERNAME_KEY) === oldUsername;
-        if (pointerMatchedOld) persistLoginCache(next);
-        return true;
     };
 
     const changeUsername = async (newUsername: string): Promise<boolean> => {
@@ -134,7 +119,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setUserAuth(next);
 
         const pointerMatchedOld = localStorage.getItem(LAST_USERNAME_KEY) === oldUsername;
-        if (pointerMatchedOld) persistLoginCache(next);
+        if (pointerMatchedOld) persistLastUsername(next.username);
         return true;
     };
 
@@ -154,7 +139,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         if (userAuth?.id !== undefined) {
             const wasLastLogin = localStorage.getItem(LAST_USERNAME_KEY) === userAuth.username;
             await deleteUserAndEntries(userAuth.id);
-            if (wasLastLogin) clearLoginCache();
+            if (wasLastLogin) clearLastUsername();
         }
         setUserAuth(null);
         setUserKey(null);
