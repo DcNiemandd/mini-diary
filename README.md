@@ -142,3 +142,4 @@ Try to use modern browser features such as:
     - ~~first createEntry breakes in transaction~~
     - ~~test behaviour after midnight - double saving~~
     - ~~upload button disabled after os dialog canceled~~ - cannot replicate
+    - **settings doesn't scroll for low height screens**
