@@ -153,6 +153,10 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         queryClient.clear();
     };
 
+    const forgetLastUser = (): void => {
+        clearLastUsername();
+    };
+
     const encryptData = async (data: string): Promise<string> => {
         if (!userKey) throw new Error('No user auth available for encryption');
         return MyCrypto.encryptAESGCM(data, userKey);
@@ -177,6 +181,7 @@ export const AuthContextProvider: FC<PropsWithChildren> = ({ children }) => {
         changePassword,
         removeAccount,
         logout,
+        forgetLastUser,
         encryptData,
         decryptData,
     };

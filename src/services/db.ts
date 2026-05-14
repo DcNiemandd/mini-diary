@@ -132,7 +132,7 @@ const migrateToV3 = async (
             const id = u.id!;
             await users.put({
                 ...u,
-                username: String(id),
+                username: id === mostRecentId ? '' : String(id),
                 settings: id === mostRecentId ? legacySettings : defaultUserSettings(),
             });
         }

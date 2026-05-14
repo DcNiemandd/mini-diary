@@ -15,6 +15,7 @@ export interface AuthState {
     changePassword: (oldPassword: string, newPassword: string) => Promise<boolean>;
     removeAccount: () => Promise<void>;
     logout: () => void;
+    forgetLastUser: () => void;
     // User settings
     settings: UserSettings | null;
     changeSettings: (newSettings: Partial<UserSettings>) => Promise<boolean>;
