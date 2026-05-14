@@ -1,8 +1,9 @@
 import { useEffect, type CSSProperties, type Dispatch } from 'react';
+import type { ColorScheme } from '../services/db';
 import { useLocalStorage } from './useStorage';
 
-export type Theme = 'light' | 'dark' | 'system';
-export type Color = CSSProperties['color'] | undefined;
+type Theme = ColorScheme;
+type Color = CSSProperties['color'] | undefined;
 
 export interface ThemeSettings {
     colorScheme: Theme;

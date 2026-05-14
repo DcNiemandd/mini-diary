@@ -1,17 +1,56 @@
 import { MyCrypto } from '../utils/crypto';
-import { ENTRIES_STORE, getDb, USERS_STORE, type UserRecord } from './db';
+import { defaultUserSettings, ENTRIES_STORE, getDb, USERS_STORE, type UserRecord, type UserSettings } from './db';
 
-/** ONLY ONE USER FOR NOW */
+/**
+ * Returns the most-recently-inserted user, or `null` if none.
+ * Post-v3 there is at most one row pre-claim (the sentinel `username === ''`);
+ * UI flows use {@link getUserByUsername} once accounts are named.
+ */
 export const getCurrentUser = async (): Promise<Required<UserRecord> | null> => {
     const db = await getDb();
     const all = await db.getAll(USERS_STORE);
-    return all.at(-1) ?? null;
+    return (all.at(-1) as Required<UserRecord> | undefined) ?? null;
+};
+
+export const getUserByUsername = async (username: string): Promise<Required<UserRecord> | null> => {
+    const db = await getDb();
+    const user = (await db.getFromIndex(USERS_STORE, 'username', username)) as Required<UserRecord> | undefined;
+    return user ?? null;
+};
+
+export const usernameExists = async (username: string): Promise<boolean> => {
+    return (await getUserByUsername(username)) !== null;
 };
 
 export const putUser = async (user: UserRecord): Promise<Required<UserRecord>> => {
     const db = await getDb();
     const id = await db.put(USERS_STORE, user);
     return { ...user, id: id as number };
+};
+
+/**
+ * @throws Username required
+ * @throws Username already taken
+ * @throws User not found
+ */
+export const renameUser = async (userId: number, newUsername: string): Promise<Required<UserRecord>> => {
+    if (!newUsername) throw new Error('Username required');
+    const conflict = await getUserByUsername(newUsername);
+    if (conflict && conflict.id !== userId) throw new Error('Username already taken');
+
+    const db = await getDb();
+    const existing = (await db.get(USERS_STORE, userId)) as UserRecord | undefined;
+    if (!existing) throw new Error('User not found');
+    const updated: Required<UserRecord> = { ...existing, id: userId, username: newUsername };
+    await db.put(USERS_STORE, updated);
+    return updated;
+};
+
+export const updateUserSettings = async (userId: number, settings: UserSettings): Promise<void> => {
+    const db = await getDb();
+    const existing = (await db.get(USERS_STORE, userId)) as UserRecord | undefined;
+    if (!existing) throw new Error('User not found');
+    await db.put(USERS_STORE, { ...existing, id: userId, settings });
 };
 
 /**
@@ -34,19 +73,19 @@ export const tryLogin = async (userAuth: UserRecord, password: string) => {
     return userKey;
 };
 
-export const generateUser = async (userKey: string, password: string) => {
+export const generateUser = async (userKey: string, password: string, username: string = ''): Promise<UserRecord> => {
     const salt = MyCrypto.generaRandomString();
     const encodedPassword = await MyCrypto.encodePassword(password, salt);
     const encodedUserKey = await MyCrypto.encryptAESGCM(userKey, encodedPassword);
     const hmac = await MyCrypto.generateHMAC(userKey, encodedPassword);
 
-    const userAuth: UserRecord = {
+    return {
+        username,
         encryptedUserKey: encodedUserKey,
         salt,
         hmac,
+        settings: defaultUserSettings(),
     };
-
-    return userAuth;
 };
 
 /**
@@ -66,8 +105,11 @@ export const changeUserPassword = async (oldPassword: string, newPassword: strin
         throw new Error(`Old password incorrect - ${e}`);
     }
 
-    const newUser = await generateUser(userKey, newPassword);
-    newUser.id = oldUser.id;
+    const newUser: UserRecord = {
+        ...(await generateUser(userKey, newPassword, oldUser.username)),
+        id: oldUser.id,
+        settings: oldUser.settings,
+    };
 
     await db.put(USERS_STORE, newUser);
 

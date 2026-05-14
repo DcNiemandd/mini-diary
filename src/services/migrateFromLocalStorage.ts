@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ENTRIES_STORE, getDb, USERS_STORE, type EntryRecord, type UserRecord } from './db';
+import { defaultUserSettings, ENTRIES_STORE, getDb, USERS_STORE, type EntryRecord, type UserRecord } from './db';
 import type { Entry } from './entriesDbService';
 import { putUser } from './usersService';
 
@@ -29,9 +29,11 @@ export const migrateLocalStorageUser = async (): Promise<void> => {
         const oldUser: LocalStorageUser = JSON.parse(oldUserAuth);
 
         await putUser({
+            username: '',
             hmac: oldUser.hmac,
             salt: oldUser.salt,
             encryptedUserKey: oldUser.databaseKey,
+            settings: defaultUserSettings(),
         });
         localStorage.setItem(AUTH_MIGRATED_FLAG, 'true');
     }
