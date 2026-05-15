@@ -183,16 +183,19 @@ Left for the memories.
     - ~~rename databaseKey to a userId~~
     - ~~multiple users support~~
 
--redo
+- redo
     - ~~switch dialog close button to have no background and fixed size~~
     - ~~button colours on hover etc~~
     - ~~dialog has scrollable content, not the whole dialog~~
     - ~~settings poporver responsivity~~
 
--bug
+- bug
     - ~~responsivity - change password labels and inputs separate rows~~
     - ~~cannot type in the middle of the note - cursor moves to the end~~
     - ~~first createEntry breakes in transaction~~
     - ~~test behaviour after midnight - double saving~~
     - ~~upload button disabled after os dialog canceled~~ - cannot replicate
     - ~~settings doesn't scroll for low height screens~~
+
+
+- ping user to save periodically
