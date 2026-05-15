@@ -1,7 +1,55 @@
-@position-try --left {
+@position-try --below-left {
     top: anchor(bottom);
     left: unset;
     right: anchor(right);
+}
+
+@position-try --above-right {
+    top: unset;
+    bottom: anchor(top);
+    left: anchor(left);
+}
+
+@position-try --above-left {
+    top: unset;
+    bottom: anchor(top);
+    left: unset;
+    right: anchor(right);
+}
+
+@position-try --over-top-right {
+    top: anchor(top);
+    left: anchor(left);
+}
+
+@position-try --over-top-left {
+    top: anchor(top);
+    left: unset;
+    right: anchor(right);
+}
+
+@position-try --over-bottom-right {
+    top: unset;
+    bottom: anchor(bottom);
+    left: anchor(left);
+}
+
+@position-try --over-bottom-left {
+    top: unset;
+    bottom: anchor(bottom);
+    left: unset;
+    right: anchor(right);
+}
+
+@position-try --center {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    align-self: center;
+    justify-self: center;
+    max-width: var(--popover-max-width-center);
+    max-height: var(--popover-max-height-center);
 }
 
 .content {
@@ -9,5 +57,8 @@
     top: anchor(bottom);
     left: anchor(left);
 
-    position-try-fallbacks: --left;
+    position-try-fallbacks:
+        --below-left, --above-right, --above-left, --over-top-right, --over-top-left, --over-bottom-right,
+        --over-bottom-left, --center;
 }
+

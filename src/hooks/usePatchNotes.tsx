@@ -61,7 +61,13 @@ const PATCH_NOTES: Record<number, ReactNode> = {
                 changes behind the hood
                 <ul>
                     <li>database migration to per-user storage</li>
-                    <li>settings cached on auth context</li>
+                    <li>last user theme shown on login screen</li>
+                </ul>
+            </li>
+            <li>
+                fixes
+                <ul>
+                    <li>dynamic popover positioning and sizing</li>
                 </ul>
             </li>
         </ul>

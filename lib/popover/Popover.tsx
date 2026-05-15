@@ -75,6 +75,8 @@ export const Popover: FC<PopoverProps> & {
      * <Popover.Content style={{ top: `anchor(var(--popover-id) bottom)`, left: `anchor(var(--popover-id) left)` }}>
      *     Content
      * </Popover.Content>
+     *
+     * You can set max sizes for centered contgent with `--popover-max-width-center` and `--popover-max-height-center`;
      */
     Content: FC<ContentProps>;
 } = ({ children }) => {

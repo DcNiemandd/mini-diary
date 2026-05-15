@@ -1,6 +1,9 @@
 @use '/src/styles/mixins' as m;
 
 :root {
+    --popover-max-width-center: 85dvw;
+    --popover-max-height-center: 85dvh;
+
     font-family: var(--ff);
     font-style: normal;
     font-optical-sizing: auto;

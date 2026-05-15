@@ -3,9 +3,9 @@ import { OldNotes } from '../../components/oldNotes/oldNotes.tsx';
 import { SettingsPopover } from '../../components/settingsPopover/settingsPopover.tsx';
 import { TodayNote } from '../../components/todayNote/todayNote.tsx';
 import { useDevTools } from '../../hooks/useDevTools';
-import { useLogin } from '../../hooks/useLogin.ts';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
+import { useLogin } from '../../hooks/useLogin.ts';
 import { useTodayNote } from '../../hooks/useTodayNote.ts';
 import style from './notesLayout.module.scss';
 

@@ -77,18 +77,7 @@ export const LoginForm: FC = () => {
                 setFieldError(form, 'username', 'Username required');
                 return;
             }
-            if (typedUsername.length > 20) {
-                setFieldError(form, 'username', 'Username must be at most 20 characters');
-                return;
-            }
-            if (typedUsername.length < 3) {
-                setFieldError(form, 'username', 'Username must be at least 3 characters');
-                return;
-            }
-            if (!password || password.length < 6) {
-                setFieldError(form, 'password', 'Password must be at least 6 characters');
-                return;
-            }
+            if (!form.reportValidity()) return;
             if (isSentinel) {
                 setFieldError(form, 'username', 'Claim your account first');
                 return;
@@ -128,9 +117,10 @@ export const LoginForm: FC = () => {
                 type="text"
                 name={FIELD.username}
                 placeholder={usernamePlaceholder}
-                autoComplete="username"
-                maxLength={20}
+                required
                 minLength={3}
+                maxLength={20}
+                autoComplete="username"
             />
             <input
                 type="password"
@@ -161,3 +151,4 @@ export const LoginForm: FC = () => {
         </form>
     );
 };
+
