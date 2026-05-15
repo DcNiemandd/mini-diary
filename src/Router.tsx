@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react';
 import { SessionContextProvider } from './contexts/sessionContext/sessionContextProvider';
 import { TodayNoteContextProvider } from './contexts/todayNoteContext/todayNoteContextProvider';
 import { useLogin } from './hooks/useLogin';
-import { usePatchNotes } from './hooks/usePatchNotes';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
 const NotesLayout = lazy(() =>
@@ -14,7 +13,6 @@ const TestLayout = import.meta.env.DEV
     : null;
 
 export const Router = () => {
-    usePatchNotes();
     const { isLoggedIn } = useLogin();
 
     if (TestLayout && window.location.pathname === '/mini-diary/test') {

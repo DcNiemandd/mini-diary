@@ -11,6 +11,7 @@ import {
     usernameExists,
 } from '../../services/usersService';
 import { MyCrypto } from '../../utils/crypto';
+import { PATCH_NOTES_VERSION } from '../../hooks/usePatchNotes';
 import { LoginContext, type LastUserHint, type LoginContextValue } from './loginContext';
 
 const LAST_USERNAME_KEY = 'last-username';
@@ -79,6 +80,9 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
         try {
             const newUserKey = MyCrypto.generaRandomString();
             const newUser = await generateUser(newUserKey, password, username);
+            // New accounts should not see historic patch notes — mark every
+            // existing version as already-seen at signup time.
+            newUser.lastPatchNotesShown = PATCH_NOTES_VERSION;
             const stored = await putUser(newUser);
             setUserAuthState(stored);
             setUserKey(newUserKey);

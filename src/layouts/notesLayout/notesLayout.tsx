@@ -6,12 +6,14 @@ import { useDevTools } from '../../hooks/useDevTools';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
 import { useLogin } from '../../hooks/useLogin.ts';
+import { usePatchNotes } from '../../hooks/usePatchNotes.tsx';
 import { useTodayNote } from '../../hooks/useTodayNote.ts';
 import style from './notesLayout.module.scss';
 
 export const NotesLayout: FC = () => {
     useDevTools();
     useIdleLogout();
+    usePatchNotes();
     const { logout } = useLogin();
 
     const { isSaved } = useTodayNote();

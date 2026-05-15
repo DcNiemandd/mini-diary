@@ -44,6 +44,18 @@ export const updateUserSettings = async (userId: number, settings: UserSettings)
     return updated;
 };
 
+export const updateUserPatchNotesShown = async (
+    userId: number,
+    lastPatchNotesShown: number
+): Promise<Required<UserRecord>> => {
+    const db = await getDb();
+    const existing = (await db.get(USERS_STORE, userId)) as UserRecord | undefined;
+    if (!existing) throw new Error('User not found');
+    const updated = { ...existing, id: userId, lastPatchNotesShown };
+    await db.put(USERS_STORE, updated);
+    return updated;
+};
+
 /**
  * @throws Wrong password
  * @throws HMAC failed
@@ -76,6 +88,7 @@ export const generateUser = async (userKey: string, password: string, username: 
         salt,
         hmac,
         settings: defaultUserSettings(),
+        lastPatchNotesShown: 0,
     };
 };
 
@@ -102,6 +115,7 @@ export const changeUserPassword = async (
         ...fresh,
         id: user.id,
         settings: user.settings,
+        lastPatchNotesShown: user.lastPatchNotesShown,
     };
 
     await db.put(USERS_STORE, newUser);

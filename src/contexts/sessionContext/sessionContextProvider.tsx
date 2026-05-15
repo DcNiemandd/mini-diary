@@ -1,7 +1,12 @@
 import { type FC, type PropsWithChildren } from 'react';
 import { useLogin } from '../../hooks/useLogin';
 import type { UserRecord } from '../../services/db';
-import { changeUserPassword, deleteUserAndEntries, renameUser } from '../../services/usersService';
+import {
+    changeUserPassword,
+    deleteUserAndEntries,
+    renameUser,
+    updateUserPatchNotesShown,
+} from '../../services/usersService';
 import { MyCrypto } from '../../utils/crypto';
 import { SessionContext, type SessionContextValue } from './sessionContext';
 
@@ -43,6 +48,16 @@ export const SessionContextProvider: FC<PropsWithChildren> = ({ children }) => {
         login.internals.endSession();
     };
 
+    const markPatchNotesSeen = async (version: number): Promise<void> => {
+        if (activeUser.lastPatchNotesShown >= version) return;
+        try {
+            const next = await updateUserPatchNotesShown(activeUser.id, version);
+            login.internals.setUserAuth(next);
+        } catch (e) {
+            console.error(`Persisting patch-notes progress failed. ${e}`);
+        }
+    };
+
     const encryptData = async (data: string): Promise<string> => {
         return MyCrypto.encryptAESGCM(data, userKey);
     };
@@ -54,9 +69,11 @@ export const SessionContextProvider: FC<PropsWithChildren> = ({ children }) => {
     const value: SessionContextValue = {
         userId: activeUser.id,
         username: activeUser.username,
+        lastPatchNotesShown: activeUser.lastPatchNotesShown,
         changeUsername,
         changePassword,
         removeAccount,
+        markPatchNotesSeen,
         encryptData,
         decryptData,
     };

@@ -2,7 +2,7 @@ import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
 import type { CSSProperties } from 'react';
 
 const DB_NAME = 'mini-diary';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 export const ENTRIES_STORE = 'entries';
 export const USERS_STORE = 'users';
 
@@ -30,6 +30,7 @@ export interface UserRecord {
     salt: string;
     hmac: string;
     settings: UserSettings;
+    lastPatchNotesShown: number;
 }
 
 export interface EntryRecord {
@@ -143,6 +144,38 @@ const migrateToV3 = async (
     clearLegacySettings();
 };
 
+const LEGACY_PATCH_NOTES_SHOWN_KEY = 'migration-patch-notes-shown';
+
+const readLegacyPatchNotesShown = (): number => {
+    const raw = localStorage.getItem(LEGACY_PATCH_NOTES_SHOWN_KEY);
+    if (raw === null) return 0;
+    try {
+        const parsed: unknown = JSON.parse(raw);
+        return typeof parsed === 'number' && Number.isFinite(parsed) ? parsed : 0;
+    } catch {
+        return 0;
+    }
+};
+
+const migrateToV4 = async (
+    transaction: IDBPTransaction<unknown, ArrayLike<string>, 'versionchange'>
+): Promise<void> => {
+    // Patch-notes progress used to live in a single global localStorage key,
+    // which broke with multi-user: one user dismissing hid notes from everyone,
+    // and brand-new accounts saw the entire historic list. Copy the legacy
+    // value onto every existing user so single-user installs preserve progress,
+    // then drop the global key.
+    const legacyShown = readLegacyPatchNotesShown();
+    const users = transaction.objectStore(USERS_STORE);
+    let cursor = await users.openCursor();
+    while (cursor) {
+        const record = cursor.value as UserRecord;
+        await cursor.update({ ...record, lastPatchNotesShown: legacyShown });
+        cursor = await cursor.continue();
+    }
+    localStorage.removeItem(LEGACY_PATCH_NOTES_SHOWN_KEY);
+};
+
 let _db: Promise<IDBPDatabase> | null = null;
 
 export const getDb = (): Promise<IDBPDatabase> => {
@@ -154,6 +187,7 @@ export const getDb = (): Promise<IDBPDatabase> => {
                 if (oldVersion < 1) migrateToV1(db);
                 if (oldVersion < 2) await migrateToV2(transaction);
                 if (oldVersion < 3) await migrateToV3(transaction);
+                if (oldVersion < 4) await migrateToV4(transaction);
             },
             blocked(currentVersion, blockedVersion) {
                 // Older tab still holds the previous version open and ignored

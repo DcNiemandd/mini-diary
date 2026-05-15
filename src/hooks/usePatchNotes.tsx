@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, type ReactNode } from 'react';
 import { openAppDialog } from '../components/appDialog/appDialog';
-import { useLocalStorage } from './useStorage';
+import { useSession } from './useSession';
 
 const PATCH_NOTES: Record<number, ReactNode> = {
     1: (
@@ -74,7 +74,7 @@ const PATCH_NOTES: Record<number, ReactNode> = {
     ),
 };
 
-const VERSION = Object.keys(PATCH_NOTES).length;
+export const PATCH_NOTES_VERSION = Object.keys(PATCH_NOTES).length;
 const MIN_VERSION = 1;
 
 const openPatchNotesDialog = async (version: number) => {
@@ -83,7 +83,12 @@ const openPatchNotesDialog = async (version: number) => {
         content: PATCH_NOTES[version],
         buttons: [
             { type: 'prev' as const, label: 'Previous', disabled: version <= MIN_VERSION, className: 'button-primary' },
-            { type: 'next' as const, label: 'Next', disabled: version >= VERSION, className: 'button-primary' },
+            {
+                type: 'next' as const,
+                label: 'Next',
+                disabled: version >= PATCH_NOTES_VERSION,
+                className: 'button-primary',
+            },
             { type: 'cancel' as const, label: 'Cancel' },
         ],
         style: { height: '600px' },
@@ -92,30 +97,39 @@ const openPatchNotesDialog = async (version: number) => {
     return 'cancel' as const;
 };
 
-const navigatePatchNotes = async (startVersion: number) => {
+const navigatePatchNotes = async (startVersion: number): Promise<number> => {
     let current = startVersion;
+    let maxSeen = startVersion;
     while (true) {
         const action = await openPatchNotesDialog(current);
-        if (action === 'prev' && current > MIN_VERSION) current -= 1;
-        else if (action === 'next' && current < VERSION) current += 1;
-        else return;
+        if (action === 'prev' && current > MIN_VERSION) {
+            current -= 1;
+        } else if (action === 'next' && current < PATCH_NOTES_VERSION) {
+            current += 1;
+        } else {
+            return maxSeen;
+        }
+        if (current > maxSeen) {
+            maxSeen = current;
+        }
     }
 };
 
-export const openLatestPatchNotesDialog = () => navigatePatchNotes(VERSION);
+export const openLatestPatchNotesDialog = () => navigatePatchNotes(PATCH_NOTES_VERSION);
 
 export const usePatchNotes = () => {
-    const [lastPatchNotesShown, setLastPatchNotesShown] = useLocalStorage('migration-patch-notes-shown', 0);
+    const session = useSession();
 
     const showPatchnotes = useEffectEvent(async () => {
-        if (lastPatchNotesShown >= VERSION) return;
-        const startVersion = lastPatchNotesShown + 1;
-        console.info(`Showing patchnotes from v${startVersion}, version ${VERSION}`);
-        await navigatePatchNotes(startVersion);
-        setLastPatchNotesShown(VERSION);
+        if (session.lastPatchNotesShown >= PATCH_NOTES_VERSION) return;
+        const startVersion = session.lastPatchNotesShown + 1;
+        console.info(`Showing patchnotes from v${startVersion}, version ${PATCH_NOTES_VERSION}`);
+        const maxSeen = await navigatePatchNotes(startVersion);
+        await session.markPatchNotesSeen(maxSeen);
     });
 
     useEffect(() => {
         showPatchnotes();
-    }, []);
+    }, [session.userId]);
 };
+

@@ -34,6 +34,7 @@ export const migrateLocalStorageUser = async (): Promise<void> => {
             salt: oldUser.salt,
             encryptedUserKey: oldUser.databaseKey,
             settings: defaultUserSettings(),
+            lastPatchNotesShown: 0,
         });
         localStorage.setItem(AUTH_MIGRATED_FLAG, 'true');
     }
