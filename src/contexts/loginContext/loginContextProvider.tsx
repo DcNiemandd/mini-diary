@@ -1,12 +1,13 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, type FC, type PropsWithChildren } from 'react';
-import type { UserRecord } from '../../services/db';
+import type { UserRecord, UserSettings } from '../../services/db';
 import {
     generateUser,
     getUserByUsername,
     putUser,
     renameUser,
     tryLogin,
+    updateUserSettings,
     usernameExists,
 } from '../../services/usersService';
 import { MyCrypto } from '../../utils/crypto';
@@ -27,8 +28,7 @@ const clearLastUsername = (): void => {
 };
 
 export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
-    // `userAuth` write-only in Phase 1; SessionProvider consumes it in Phase 2.
-    const [, setUserAuth] = useState<UserRecord | null>(null);
+    const [userAuth, setUserAuthState] = useState<UserRecord | null>(null);
     const [userKey, setUserKey] = useState<string | null>(null);
     const [isInitializing, setIsInitializing] = useState(true);
     const [lastUserHint, setLastUserHint] = useState<LastUserHint | null>(null);
@@ -43,7 +43,7 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
                 if (!loaded) clearLastUsername();
             }
             if (loaded) {
-                setUserAuth(loaded);
+                setUserAuthState(loaded);
                 setLastUserHint({ username: loaded.username, isSentinel: loaded.username === '' });
             } else if (await usernameExists('')) {
                 setLastUserHint({ username: '', isSentinel: true });
@@ -66,7 +66,7 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
             return false;
         }
 
-        setUserAuth(target);
+        setUserAuthState(target);
         setUserKey(resolvedUserKey);
         persistLastUsername(target.username);
         setLastUserHint({ username: target.username, isSentinel: target.username === '' });
@@ -80,7 +80,7 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
             const newUserKey = MyCrypto.generaRandomString();
             const newUser = await generateUser(newUserKey, password, username);
             const stored = await putUser(newUser);
-            setUserAuth(stored);
+            setUserAuthState(stored);
             setUserKey(newUserKey);
             persistLastUsername(stored.username);
             setLastUserHint({ username: stored.username, isSentinel: false });
@@ -112,7 +112,7 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
             return false;
         }
 
-        setUserAuth(renamed);
+        setUserAuthState(renamed);
         setUserKey(resolvedUserKey);
         persistLastUsername(newUsername);
         setLastUserHint({ username: newUsername, isSentinel: false });
@@ -131,15 +131,57 @@ export const LoginContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setLastUserHint(null);
     };
 
+    const setUserAuth = (next: UserRecord): void => {
+        const oldUsername = userAuth?.username;
+        setUserAuthState(next);
+        setLastUserHint({ username: next.username, isSentinel: next.username === '' });
+        if (oldUsername !== undefined && oldUsername !== next.username) {
+            const pointerMatchedOld = localStorage.getItem(LAST_USERNAME_KEY) === oldUsername;
+            if (pointerMatchedOld) persistLastUsername(next.username);
+        }
+    };
+
+    const changeSettings = async (partial: Partial<UserSettings>): Promise<boolean> => {
+        if (!userAuth || userAuth.id === undefined) return false;
+        const merged: UserSettings = { ...userAuth.settings, ...partial };
+        try {
+            const next = await updateUserSettings(userAuth.id, merged);
+            setUserAuth(next);
+            return true;
+        } catch (e) {
+            console.error(`Changing settings failed. ${e}`);
+            return false;
+        }
+    };
+
+    const endSession = (): void => {
+        const removedUsername = userAuth?.username;
+        setUserAuthState(null);
+        setUserKey(null);
+        if (removedUsername !== undefined && localStorage.getItem(LAST_USERNAME_KEY) === removedUsername) {
+            clearLastUsername();
+            setLastUserHint(null);
+        }
+        queryClient.clear();
+    };
+
     const value: LoginContextValue = {
         isInitializing,
         isLoggedIn: Boolean(userKey),
         lastUserHint,
+        settings: userAuth?.settings ?? null,
         tryToLogin,
         signup,
         claimSentinel,
+        changeSettings,
         logout,
         forgetLastUser,
+        internals: {
+            userAuth,
+            userKey,
+            setUserAuth,
+            endSession,
+        },
     };
 
     return <LoginContext.Provider value={value}>{children}</LoginContext.Provider>;

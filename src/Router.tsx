@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
+import { SessionContextProvider } from './contexts/sessionContext/sessionContextProvider';
 import { TodayNoteContextProvider } from './contexts/todayNoteContext/todayNoteContextProvider';
-import { useAuth } from './hooks/useAuth';
+import { useLogin } from './hooks/useLogin';
 import { usePatchNotes } from './hooks/usePatchNotes';
 import { LoginLayout } from './layouts/loginLayout/loginLayout';
 
@@ -14,13 +15,7 @@ const TestLayout = import.meta.env.DEV
 
 export const Router = () => {
     usePatchNotes();
-    const auth = useAuth();
-
-    useEffect(() => {
-        if (import.meta.env.DEV) {
-            // auth.tryToLogin('testtest');
-        }
-    }, []);
+    const { isLoggedIn } = useLogin();
 
     if (TestLayout && window.location.pathname === '/mini-diary/test') {
         return (
@@ -32,10 +27,12 @@ export const Router = () => {
 
     return (
         <Suspense fallback={<div className="loader">Loading...</div>}>
-            {auth.isLoggedIn ? (
-                <TodayNoteContextProvider>
-                    <NotesLayout />
-                </TodayNoteContextProvider>
+            {isLoggedIn ? (
+                <SessionContextProvider>
+                    <TodayNoteContextProvider>
+                        <NotesLayout />
+                    </TodayNoteContextProvider>
+                </SessionContextProvider>
             ) : (
                 <LoginLayout />
             )}

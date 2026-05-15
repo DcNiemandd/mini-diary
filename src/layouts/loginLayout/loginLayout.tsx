@@ -2,17 +2,17 @@ import { useEffect, type FC } from 'react';
 import { HelpButton } from '../../components/helpButton/HelpButton.tsx';
 import { openHelpDialog } from '../../components/helpDialog/helpDialog.tsx';
 import { LoginForm } from '../../components/loginForm/loginForm';
-import { useAuth } from '../../hooks/useAuth.ts';
+import { useLogin } from '../../hooks/useLogin.ts';
 import style from './loginLayout.module.scss';
 
 export const LoginLayout: FC = () => {
-    const { isUser, isInitializing } = useAuth();
+    const { lastUserHint, isInitializing } = useLogin();
 
     useEffect(() => {
-        if (!isUser && !isInitializing) {
+        if (!lastUserHint && !isInitializing) {
             openHelpDialog();
         }
-    }, [isUser, isInitializing]);
+    }, [lastUserHint, isInitializing]);
 
     return (
         <div className={style['login-container']}>

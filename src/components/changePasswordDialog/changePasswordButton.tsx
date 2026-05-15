@@ -1,13 +1,12 @@
 import { type ButtonHTMLAttributes, type FC } from 'react';
-import { useAuth } from '../../hooks/useAuth.ts';
+import { useSession } from '../../hooks/useSession.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
 import { ChangePasswordDialog } from './changePasswordDialog.tsx';
 
 export const ChangePasswordButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
-    const { username, changePassword } = useAuth();
+    const { username, changePassword } = useSession();
 
     const onClick = () => {
-        if (!username) return;
         openAppDialog({
             title: 'Change password',
             content: <ChangePasswordDialog username={username} changePassword={changePassword} />,

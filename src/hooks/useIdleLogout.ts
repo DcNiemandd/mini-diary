@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { SettingsContext } from '../contexts/settingsContext/settingsContext';
-import { useAuth } from './useAuth';
 import { useIdle } from './useIdle';
+import { useLogin } from './useLogin';
 
 export const useIdleLogout = () => {
-    const { logout } = useAuth();
+    const { logout } = useLogin();
     const { idleTimeout } = useContext(SettingsContext);
     const queryClient = useQueryClient();
 

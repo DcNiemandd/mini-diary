@@ -1,6 +1,6 @@
 import { useEffect, useRef, type FC, type InputEventHandler, type SubmitEventHandler } from 'react';
 import { useDialog } from '../../../lib/dialog/index.ts';
-import type { AuthState } from '../../hooks/useAuth.ts';
+import type { SessionContextValue } from '../../contexts/sessionContext/sessionContext.ts';
 import { formFactory } from '../../utils/formFactory.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
 import styles from '../../styles/dialogForm.module.css';
@@ -12,7 +12,7 @@ type ChangePasswordForm = typeof changePasswordForm.types.Form;
 
 interface Props {
     username: string;
-    changePassword: AuthState['changePassword'];
+    changePassword: SessionContextValue['changePassword'];
 }
 
 export const ChangePasswordDialog: FC<Props> = ({ username, changePassword }) => {

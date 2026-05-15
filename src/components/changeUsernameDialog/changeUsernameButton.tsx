@@ -1,13 +1,12 @@
 import { type ButtonHTMLAttributes, type FC } from 'react';
-import { useAuth } from '../../hooks/useAuth.ts';
+import { useSession } from '../../hooks/useSession.ts';
 import { openAppDialog } from '../appDialog/appDialog.tsx';
 import { ChangeUsernameDialog } from './changeUsernameDialog.tsx';
 
 export const ChangeUsernameButton: FC<ButtonHTMLAttributes<HTMLButtonElement>> = (props) => {
-    const { username, changeUsername } = useAuth();
+    const { username, changeUsername } = useSession();
 
     const onClick = async () => {
-        if (!username) return;
         await openAppDialog({
             title: 'Change username',
             content: (

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, type CSSProperties, type Dispatch } from 'react';
 import { defaultUserSettings, type ColorScheme, type UserSettings } from '../services/db';
-import { useAuth } from './useAuth';
 
 type Theme = ColorScheme;
 type Color = CSSProperties['color'] | undefined;
@@ -61,28 +60,19 @@ const writeThemeCache = (fields: ThemeFields): void => {
     }
 };
 
-const clearThemeCache = (): void => {
-    localStorage.removeItem(CACHED_THEME_KEY);
-    localStorage.removeItem(CACHED_CUSTOM_COLOR_KEY);
-    localStorage.removeItem(CACHED_USE_CUSTOM_COLOR_KEY);
-};
-
-export const useColorTheme = (): ThemeSettings => {
-    const auth = useAuth();
+export const useColorTheme = (
+    sessionSettings: UserSettings | undefined,
+    changeSettings: (partial: Partial<UserSettings>) => Promise<boolean>
+): ThemeSettings => {
     const cached = useMemo(() => readCachedTheme(), []);
-    const source: ThemeFields = auth.settings ?? cached;
+    const source: ThemeFields = sessionSettings ?? cached;
     const { colorScheme, customColor, isUseCustomColor } = source;
 
     useEffect(
         function syncThemeCache() {
-            if (auth.isInitializing) return;
-            if (auth.settings) {
-                writeThemeCache(auth.settings);
-            } else {
-                clearThemeCache();
-            }
+            if (sessionSettings) writeThemeCache(sessionSettings);
         },
-        [auth.isInitializing, auth.settings]
+        [sessionSettings]
     );
 
     const root = window.document.documentElement;
@@ -117,16 +107,15 @@ export const useColorTheme = (): ThemeSettings => {
     return {
         colorScheme,
         setColorScheme: (value) => {
-            void auth.changeSettings({ colorScheme: value });
+            void changeSettings({ colorScheme: value });
         },
         customColor,
         setCustomColor: (value) => {
-            void auth.changeSettings({ customColor: value });
+            void changeSettings({ customColor: value });
         },
         isUseCustomColor,
         setIsUseCustomColor: (value) => {
-            void auth.changeSettings({ isUseCustomColor: value });
+            void changeSettings({ isUseCustomColor: value });
         },
     };
 };
-

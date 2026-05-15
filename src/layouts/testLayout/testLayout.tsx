@@ -4,11 +4,11 @@ import { ColorPicker } from '../../components/colorPicker/colorPicker';
 import { DailyNote } from '../../components/dailyNote/dailyNote';
 import { ThemeSwitcher } from '../../components/themeSwitcher/themeSwitcher';
 import { SettingsContext } from '../../contexts/settingsContext/settingsContext';
-import { useAuth } from '../../hooks/useAuth';
+import { useLogin } from '../../hooks/useLogin';
 import style from './testLayout.module.css';
 
 export const TestLayout: FC = () => {
-    const { logout } = useAuth();
+    const { logout } = useLogin();
     const settings = useContext(SettingsContext);
     const [todayContent, setTodayContent] = useState('');
 

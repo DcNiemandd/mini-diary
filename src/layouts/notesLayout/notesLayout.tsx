@@ -2,8 +2,8 @@ import { useEffect, useEffectEvent, useRef, type FC } from 'react';
 import { OldNotes } from '../../components/oldNotes/oldNotes.tsx';
 import { SettingsPopover } from '../../components/settingsPopover/settingsPopover.tsx';
 import { TodayNote } from '../../components/todayNote/todayNote.tsx';
-import { useAuth } from '../../hooks/useAuth.ts';
 import { useDevTools } from '../../hooks/useDevTools';
+import { useLogin } from '../../hooks/useLogin.ts';
 import { useEntriesQuery } from '../../hooks/useEntriesQuery.ts';
 import { useIdleLogout } from '../../hooks/useIdleLogout.ts';
 import { useTodayNote } from '../../hooks/useTodayNote.ts';
@@ -12,7 +12,7 @@ import style from './notesLayout.module.scss';
 export const NotesLayout: FC = () => {
     useDevTools();
     useIdleLogout();
-    const { logout } = useAuth();
+    const { logout } = useLogin();
 
     const { isSaved } = useTodayNote();
 

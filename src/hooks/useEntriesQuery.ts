@@ -2,17 +2,17 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { queryKeys } from '../queryKeys';
 import { fetchEntriesPage } from '../services/entriesDbService';
-import { useAuth } from './useAuth';
+import { useSession } from './useSession';
 import { useToday } from './useToday';
 
 export const useEntriesQuery = () => {
-    const { decryptData, userId } = useAuth();
+    const { decryptData, userId } = useSession();
     const today = useToday();
 
     const query = useInfiniteQuery({
-        queryKey: [...queryKeys.entries(userId!), today.toISODate()] as const,
+        queryKey: [...queryKeys.entries(userId), today.toISODate()] as const,
         queryFn: ({ pageParam }) =>
-            fetchEntriesPage(userId!, decryptData, pageParam).then((entriesPage) => ({
+            fetchEntriesPage(userId, decryptData, pageParam).then((entriesPage) => ({
                 ...entriesPage,
                 entries: entriesPage.entries.filter(
                     (entry) => entry.date.diff(DateTime.now().startOf('day'), 'days').days !== 0
@@ -20,7 +20,6 @@ export const useEntriesQuery = () => {
             })),
         initialPageParam: null as number | null,
         getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-        enabled: Boolean(userId),
         staleTime: Infinity,
     });
 

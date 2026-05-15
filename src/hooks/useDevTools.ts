@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { useEffect } from 'react';
 import { ENTRIES_STORE, getDb, type EntryRecord } from '../services/db';
 import { readRawEntries } from '../services/entriesStorageService';
-import { useAuth } from './useAuth';
+import { useSession } from './useSession';
 
 const STORAGE_KEY = 'state-entries-data';
 
@@ -17,7 +17,7 @@ declare global {
 }
 
 export function useDevTools() {
-    const { encryptData, decryptData, userId } = useAuth();
+    const { encryptData, decryptData, userId } = useSession();
 
     useEffect(() => {
         if (import.meta.env.DEV) {

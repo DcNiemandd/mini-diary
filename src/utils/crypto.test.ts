@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest';
 import { MyCrypto } from './crypto';
 
 describe('MyCrypto', () => {
-    // Helper: derive a valid 256-bit key string the same way useAuth does
+    // Helper: derive a valid 256-bit key string the same way LoginContextProvider does
     async function makeKey(password = 'test-password', salt = 'test-salt') {
         return MyCrypto.encodePassword(password, salt);
     }
@@ -115,7 +115,7 @@ describe('MyCrypto', () => {
     });
 
     describe('full login simulation', () => {
-        // mirrors exactly what useAuth.tryToLogin does on first login + re-login
+        // mirrors exactly what LoginContext.tryToLogin does on first login + re-login
         test('re-login with correct password recovers the database key', async () => {
             const password = 'my-secure-password';
 

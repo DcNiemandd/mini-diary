@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, type FC, type PropsWithChildren } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 import { useDebounceCall } from '../../hooks/useDebounceCall';
+import { useSession } from '../../hooks/useSession';
 import { useToday } from '../../hooks/useToday';
 import type { TodayNoteState } from '../../hooks/useTodayNote';
 import { queryKeys } from '../../queryKeys';
@@ -9,24 +9,23 @@ import { createEntry, fetchTodayEntry, updateEntry, type Entry } from '../../ser
 import { TodayNoteContext } from './todayNoteContext';
 
 export const TodayNoteContextProvider: FC<PropsWithChildren> = ({ children }) => {
-    const { userId, encryptData, decryptData } = useAuth();
+    const { userId, encryptData, decryptData } = useSession();
     const queryClient = useQueryClient();
     const [draft, setDraft] = useState<string | null>(null);
     const today = useToday((_next, prev) => {
         queryClient.removeQueries({
-            queryKey: [...queryKeys.todaysEntry(userId!), prev.toISODate()],
+            queryKey: [...queryKeys.todaysEntry(userId), prev.toISODate()],
             exact: false,
         });
         setDraft(null);
     });
 
     const isoDate = today.toISODate()!;
-    const savedKey = queryKeys.todaysSavedEntry(userId!, isoDate);
+    const savedKey = queryKeys.todaysSavedEntry(userId, isoDate);
 
     const savedQuery = useQuery({
         queryKey: savedKey,
-        queryFn: () => fetchTodayEntry(userId!, decryptData),
-        enabled: Boolean(userId),
+        queryFn: () => fetchTodayEntry(userId, decryptData),
         staleTime: Infinity,
     });
 
@@ -35,7 +34,6 @@ export const TodayNoteContextProvider: FC<PropsWithChildren> = ({ children }) =>
     const mutation = useMutation({
         mutationKey: savedKey,
         mutationFn: async (content: string): Promise<Entry & { id: number }> => {
-            if (!userId) throw new Error('User not authenticated');
             const existing = queryClient.getQueryData<(Entry & { id: number }) | null>(savedKey);
             if (existing?.id) {
                 await updateEntry(userId, existing.id, content, encryptData);

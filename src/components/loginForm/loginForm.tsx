@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRef, type FC, type InputEventHandler, type SubmitEventHandler } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useLogin } from '../../hooks/useLogin';
 import { getUserByUsername, usernameExists } from '../../services/usersService';
 import { formFactory } from '../../utils/formFactory';
 import style from './loginForm.module.scss';
@@ -10,16 +10,17 @@ const { fields: FIELD, setFieldError, clearErrors } = loginForm;
 type LoginForm = typeof loginForm.types.Form;
 
 export const LoginForm: FC = () => {
-    const auth = useAuth();
+    const login = useLogin();
     const formRef = useRef<LoginForm>(null);
 
-    const isSentinel = auth.username === '';
-    const isReturning = auth.username !== null && auth.username !== '';
+    const isSentinel = login.lastUserHint?.isSentinel ?? false;
+    const isReturning = login.lastUserHint !== null && !isSentinel;
+    const lastUsername = login.lastUserHint?.username ?? '';
     const maskedLastUser =
-        isReturning && auth.username
-            ? auth.username.length <= 2
-                ? auth.username
-                : `${auth.username[0]}${'*'.repeat(auth.username.length - 2)}${auth.username[auth.username.length - 1]}`
+        isReturning && lastUsername
+            ? lastUsername.length <= 2
+                ? lastUsername
+                : `${lastUsername[0]}${'*'.repeat(lastUsername.length - 2)}${lastUsername[lastUsername.length - 1]}`
             : '';
     const usernamePlaceholder = isSentinel ? 'Choose a username' : isReturning ? maskedLastUser : 'Username';
 
@@ -37,17 +38,12 @@ export const LoginForm: FC = () => {
                     setFieldError(form, 'username', 'Username already taken');
                     return;
                 }
-                const ok = await auth.tryToLogin('', password);
-                if (!ok) {
-                    setFieldError(form, 'password', 'Incorrect password');
-                    return;
-                }
-                const renamed = await auth.changeUsername(typedUsername);
-                if (!renamed) setFieldError(form, 'username', 'Could not claim username');
+                const ok = await login.claimSentinel(typedUsername, password);
+                if (!ok) setFieldError(form, 'password', 'Incorrect password');
                 return;
             }
 
-            const resolved = typedUsername || (auth.username ?? '');
+            const resolved = typedUsername || lastUsername;
             if (!resolved) {
                 setFieldError(form, 'username', 'Username required');
                 return;
@@ -56,7 +52,7 @@ export const LoginForm: FC = () => {
             const target = await getUserByUsername(resolved);
             if (!target) {
                 if (!typedUsername) {
-                    auth.forgetLastUser();
+                    login.forgetLastUser();
                     setFieldError(form, 'username', 'Last user no longer exists');
                 } else {
                     setFieldError(form, 'username', 'No such account — use + to create');
@@ -64,7 +60,7 @@ export const LoginForm: FC = () => {
                 return;
             }
 
-            const ok = await auth.tryToLogin(resolved, password);
+            const ok = await login.tryToLogin(resolved, password);
             if (!ok) {
                 setFieldError(form, 'password', 'Incorrect password');
                 return;
@@ -101,7 +97,7 @@ export const LoginForm: FC = () => {
                 setFieldError(form, 'username', 'Username already taken');
                 return;
             }
-            const ok = await auth.signup(typedUsername, password);
+            const ok = await login.signup(typedUsername, password);
             if (!ok) setFieldError(form, 'username', 'Could not create account');
         },
     });
@@ -165,4 +161,3 @@ export const LoginForm: FC = () => {
         </form>
     );
 };
-

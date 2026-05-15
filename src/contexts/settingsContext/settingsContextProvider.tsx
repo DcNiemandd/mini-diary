@@ -1,15 +1,16 @@
 import { type FC, type PropsWithChildren } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 import { useColorTheme } from '../../hooks/useColorTheme';
+import { useLogin } from '../../hooks/useLogin';
 import { defaultUserSettings } from '../../services/db';
 import { SettingsContext, type IdleTimeoutOption } from './settingsContext';
 
 export const SettingsContextProvider: FC<PropsWithChildren> = ({ children }) => {
-    const themeSettings = useColorTheme();
-    const auth = useAuth();
-    const idleTimeout: IdleTimeoutOption = auth.settings?.idleTimeout ?? defaultUserSettings().idleTimeout;
+    const login = useLogin();
+
+    const themeSettings = useColorTheme(login.settings ?? undefined, login.changeSettings);
+    const idleTimeout: IdleTimeoutOption = login.settings?.idleTimeout ?? defaultUserSettings().idleTimeout;
     const setIdleTimeout = (value: IdleTimeoutOption) => {
-        void auth.changeSettings({ idleTimeout: value });
+        void login.changeSettings({ idleTimeout: value });
     };
 
     const settings = {
