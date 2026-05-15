@@ -48,17 +48,20 @@
     right: 0;
     align-self: center;
     justify-self: center;
-    max-width: var(--popover-max-width-center);
-    max-height: var(--popover-max-height-center);
+    /* Waiting for better support on chromium */
+    /* max-width: var(--popover-max-width-center, 85dvw);
+    max-height: var(--popover-max-height-center, 85dvh); */
 }
 
 .content {
     position: fixed;
     top: anchor(bottom);
     left: anchor(left);
+    max-width: var(--popover-max-width-center, 85dvw);
+    max-height: var(--popover-max-height-center, 85dvh);
 
     position-try-fallbacks:
-        --below-left, --above-right, --above-left, --over-top-right, --over-top-left, --over-bottom-right,
-        --over-bottom-left, --center;
+        --below-left, --above-right, --above-left, --center, --over-top-right, --over-top-left, --over-bottom-right,
+        --over-bottom-left;
 }
 
