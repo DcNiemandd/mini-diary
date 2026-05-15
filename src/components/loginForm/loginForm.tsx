@@ -9,6 +9,17 @@ const loginForm = formFactory(['username', 'password']);
 const { fields: FIELD, setFieldError, clearErrors } = loginForm;
 type LoginForm = typeof loginForm.types.Form;
 
+const USERNAME_MIN = 3;
+const USERNAME_MAX = 20;
+
+function getUsernameError(typed: string, fallback: string | null = null): string | null {
+    if (!typed && fallback) return null;
+    if (!typed) return 'Username required';
+    if (typed.length < USERNAME_MIN) return `Username must be at least ${USERNAME_MIN} characters`;
+    if (typed.length > USERNAME_MAX) return `Username must be at most ${USERNAME_MAX} characters`;
+    return null;
+}
+
 export const LoginForm: FC = () => {
     const login = useLogin();
     const formRef = useRef<LoginForm>(null);
@@ -29,23 +40,20 @@ export const LoginForm: FC = () => {
             const typedUsername = form.elements.username.value.trim();
             const password = form.elements.password.value;
 
+            const err = getUsernameError(typedUsername, isSentinel ? null : lastUsername || null);
+            if (err) {
+                setFieldError(form, 'username', err);
+                return;
+            }
+            const resolved = typedUsername || lastUsername;
+
             if (isSentinel) {
-                if (!typedUsername) {
-                    setFieldError(form, 'username', 'Choose a username');
-                    return;
-                }
-                if (await usernameExists(typedUsername)) {
+                if (await usernameExists(resolved)) {
                     setFieldError(form, 'username', 'Username already taken');
                     return;
                 }
-                const ok = await login.claimSentinel(typedUsername, password);
+                const ok = await login.claimSentinel(resolved, password);
                 if (!ok) setFieldError(form, 'password', 'Incorrect password');
-                return;
-            }
-
-            const resolved = typedUsername || lastUsername;
-            if (!resolved) {
-                setFieldError(form, 'username', 'Username required');
                 return;
             }
 
@@ -73,8 +81,9 @@ export const LoginForm: FC = () => {
             const typedUsername = form.elements.username.value.trim();
             const password = form.elements.password.value;
 
-            if (!typedUsername) {
-                setFieldError(form, 'username', 'Username required');
+            const err = getUsernameError(typedUsername);
+            if (err) {
+                setFieldError(form, 'username', err);
                 return;
             }
             if (!form.reportValidity()) return;
@@ -117,9 +126,6 @@ export const LoginForm: FC = () => {
                 type="text"
                 name={FIELD.username}
                 placeholder={usernamePlaceholder}
-                required
-                minLength={3}
-                maxLength={20}
                 autoComplete="username"
             />
             <input
