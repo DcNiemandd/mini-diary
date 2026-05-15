@@ -1,19 +1,26 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { type FC } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useLogin } from '../../hooks/useLogin';
+import { useSession } from '../../hooks/useSession';
 import { queryKeys } from '../../queryKeys';
 import { openAppDialog } from '../appDialog/appDialog';
 import { ExportContent } from './exportContent';
 import { ImportContent } from './importContent';
 
 export const ExportImportButtons: FC = () => {
-    const auth = useAuth();
+    const { userId, decryptData, encryptData } = useSession();
+    const { logout } = useLogin();
     const queryClient = useQueryClient();
 
     const openExportDialog = () =>
         openAppDialog({
             title: 'Export',
-            content: <ExportContent auth={auth} />,
+            content: (
+                <ExportContent
+                    userId={userId}
+                    decryptData={decryptData}
+                />
+            ),
             buttons: [],
         });
 
@@ -22,14 +29,14 @@ export const ExportImportButtons: FC = () => {
             title: 'Import',
             content: (
                 <ImportContent
-                    auth={auth}
-                    onEncryptedImported={async () => {
-                        auth.logout();
-                        await auth.logout();
+                    userId={userId}
+                    decryptData={decryptData}
+                    encryptData={encryptData}
+                    onEncryptedImported={() => {
+                        logout();
                     }}
                     onRawImported={() => {
-                        if (auth.userId === null) return;
-                        queryClient.invalidateQueries({ queryKey: queryKeys.entries(auth.userId) });
+                        queryClient.invalidateQueries({ queryKey: queryKeys.entries(userId) });
                     }}
                 />
             ),

@@ -1,17 +1,25 @@
 import { useEffect, useRef, type FC } from 'react';
 import { useDialog } from '../../../lib/dialog';
-import type { AuthState } from '../../hooks/useAuth';
+import type { SessionContextValue } from '../../contexts/sessionContext/sessionContext';
 import { exportSchema, importEntries, isEncryptedExport, type DiaryExport } from '../../services/exportImportService';
 import { openAppDialog } from '../appDialog/appDialog';
 import styles from './exportImportButtons.module.css';
 
 interface ImportContentProps {
-    auth: AuthState;
+    userId: SessionContextValue['userId'];
+    decryptData: SessionContextValue['decryptData'];
+    encryptData: SessionContextValue['encryptData'];
     onEncryptedImported: () => void | Promise<void>;
     onRawImported: () => void | Promise<void>;
 }
 
-export const ImportContent: FC<ImportContentProps> = ({ auth, onEncryptedImported, onRawImported }) => {
+export const ImportContent: FC<ImportContentProps> = ({
+    userId,
+    decryptData,
+    encryptData,
+    onEncryptedImported,
+    onRawImported,
+}) => {
     const { onButtonClick, disableButtons, close } = useDialog<'upload' | 'cancel'>();
 
     const formRef = useRef<HTMLFormElement>(null);
@@ -65,7 +73,7 @@ export const ImportContent: FC<ImportContentProps> = ({ auth, onEncryptedImporte
 
             disableButtons(true);
             try {
-                await importEntries(parsed, auth.userId!, auth.decryptData, auth.encryptData);
+                await importEntries(parsed, userId, decryptData, encryptData);
             } catch {
                 await openAppDialog({
                     title: 'Import failed',
