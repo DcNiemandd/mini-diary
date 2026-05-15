@@ -1,17 +1,6 @@
 import { MyCrypto } from '../utils/crypto';
 import { defaultUserSettings, ENTRIES_STORE, getDb, USERS_STORE, type UserRecord, type UserSettings } from './db';
 
-/**
- * Returns the most-recently-inserted user, or `null` if none.
- * Post-v3 there is at most one row pre-claim (the sentinel `username === ''`);
- * UI flows use {@link getUserByUsername} once accounts are named.
- */
-export const getCurrentUser = async (): Promise<Required<UserRecord> | null> => {
-    const db = await getDb();
-    const all = await db.getAll(USERS_STORE);
-    return (all.at(-1) as Required<UserRecord> | undefined) ?? null;
-};
-
 export const getUserByUsername = async (username: string): Promise<Required<UserRecord> | null> => {
     const db = await getDb();
     const user = (await db.getFromIndex(USERS_STORE, 'username', username)) as Required<UserRecord> | undefined;
