@@ -199,3 +199,4 @@ Left for the memories.
 
 
 - ping user to save periodically
+- new user doesn't see "username to short", but manage password
